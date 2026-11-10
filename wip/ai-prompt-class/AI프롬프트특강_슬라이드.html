@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 잘 쓰면, 나도 잘 된다! · 중2 프롬프트 특강</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#0b0d16;color:#1C2340;
+  font-family:'Nanum Gothic','NanumGothic','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  -webkit-font-smoothing:antialiased}
+.fun,.f-fun{font-family:'Jua','Nanum Gothic','Malgun Gothic',sans-serif;font-synthesis:none}
+.f-fun b,.f-fun strong{font-weight:inherit}
+
+/* 선 아이콘 */
+.ico{width:1em;height:1em;vertical-align:-.14em;flex:none;display:inline-block}
+.ico-badge{display:inline-flex;align-items:center;justify-content:center;width:2.3em;height:2.3em;border-radius:50%;
+  background:var(--c,#2F7BFF);color:#fff;border:4px solid #1C2340;box-shadow:4px 4px 0 #1C2340;vertical-align:middle}
+.ico-badge .ico{width:1.25em;height:1.25em}
+.ico-line{display:inline-flex;align-items:center;gap:.35em}
+.ico-line .ico{color:var(--c,currentColor)}
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer}
+#app{position:fixed;inset:0}
+
+/* ---------- 무대(슬라이드) ---------- */
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background-color:#FFF8EE}
+.stage.dots{background-image:radial-gradient(rgba(28,35,64,.07) 2.6px,transparent 2.8px);background-size:44px 44px}
+.stage.enter{animation:stageIn .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes stageIn{from{opacity:0;filter:blur(14px) saturate(1.4)}to{opacity:1;filter:none}}
+.el{position:absolute}
+.el.pending{visibility:hidden}
+.el-in{position:absolute;inset:0;display:flex;flex-direction:column;overflow:visible;word-break:keep-all;overflow-wrap:break-word}
+.textbox .txt{width:100%;outline:none;min-height:1em}
+.txt b,.txt strong{font-weight:800}
+.txt p{margin:0}
+
+/* 등장 효과 */
+.a-fade{animation:aFade .6s ease both}
+.a-up{animation:aUp .6s cubic-bezier(.2,.8,.2,1) both}
+.a-zoom{animation:aZoom .55s cubic-bezier(.2,.8,.2,1) both}
+.a-pop{animation:aPop .6s cubic-bezier(.3,1.6,.5,1) both}
+.a-left{animation:aLeft .6s cubic-bezier(.2,.8,.2,1) both}
+.a-right{animation:aRight .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes aFade{from{opacity:0}to{opacity:1}}
+@keyframes aUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:none}}
+@keyframes aZoom{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@keyframes aPop{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:none}}
+@keyframes aLeft{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:none}}
+@keyframes aRight{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:none}}
+.a-swing{animation:aSwing .8s cubic-bezier(.3,1.5,.5,1) both;transform-origin:50% 0}
+@keyframes aSwing{0%{opacity:0;transform:rotate(-14deg) translateY(-40px)}50%{opacity:1;transform:rotate(6deg)}75%{transform:rotate(-3deg)}100%{transform:none}}
+.wd{display:inline-block;white-space:nowrap}
+.ltr{display:inline-block;animation:ltrIn .6s cubic-bezier(.25,1.6,.45,1) both}
+@keyframes ltrIn{0%{opacity:0;transform:translateY(.6em) rotate(12deg) scale(.6)}100%{opacity:1;transform:none}}
+
+/* ---------- 챕터 전환 모션 그래픽 ---------- */
+.chapter{overflow:hidden!important;background:var(--c1);color:#fff}
+.ch-stripes i{position:absolute;top:-15%;left:-10%;width:120%;height:130%;transform:translateX(-120%) skewX(-14deg);animation:chWipe 1.15s cubic-bezier(.7,0,.25,1) both}
+@keyframes chWipe{0%{transform:translateX(-125%) skewX(-14deg)}48%{transform:translateX(0) skewX(-14deg)}100%{transform:translateX(130%) skewX(-14deg)}}
+.ch-burst{position:absolute;left:520px;top:540px;width:1500px;height:1500px;margin:-750px 0 0 -750px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.22) 0 30%,rgba(255,255,255,.08) 30% 52%,transparent 52%);
+  animation:chBurst 1.1s .65s cubic-bezier(.2,.9,.3,1.2) both, chPulse 4s 1.8s ease-in-out infinite}
+@keyframes chBurst{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes chPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.ch-num{position:absolute;right:60px;bottom:-140px;font-family:'Jua',sans-serif;font-size:900px;line-height:1;color:transparent;
+  -webkit-text-stroke:8px rgba(255,255,255,.28);animation:chNum 1.4s .7s cubic-bezier(.2,.9,.3,1) both, chDrift 7s 2.1s ease-in-out infinite}
+@keyframes chNum{from{opacity:0;transform:translateX(300px) rotate(12deg)}to{opacity:1;transform:none}}
+@keyframes chDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-24px) rotate(-2deg)}}
+.ch-text{position:absolute;left:160px;top:300px;width:1500px}
+.ch-part{display:inline-block;font-family:'Jua',sans-serif;font-size:46px;background:#fff;color:var(--c1);padding:10px 34px;border-radius:999px;border:5px solid #1C2340;box-shadow:6px 6px 0 #1C2340;
+  animation:chSlam .7s .75s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes chSlam{0%{opacity:0;transform:scale(3) rotate(-14deg)}100%{opacity:1;transform:none}}
+.ch-title{font-family:'Jua',sans-serif;font-size:150px;line-height:1.15;margin-top:34px;text-shadow:7px 7px 0 rgba(28,35,64,.35)}
+.ch-l{display:inline-block;animation:chDrop .75s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes chDrop{0%{opacity:0;transform:translateY(-160px) rotate(-18deg) scale(1.3)}100%{opacity:1;transform:none}}
+.ch-sub{font-size:48px;font-weight:800;margin-top:30px;opacity:.95;animation:aUp .7s 1.9s cubic-bezier(.2,.8,.2,1) both}
+.ch-shape{position:absolute;animation:chPop .7s var(--d) cubic-bezier(.3,1.7,.5,1) both}
+.ch-shape > *{width:100%;height:100%;display:block;animation:chFloat var(--fd) calc(var(--d) + .7s) ease-in-out infinite}
+.ch-ring::before{content:'';display:block;width:100%;height:100%;border-radius:50%;border:14px solid currentColor;box-sizing:border-box;animation:chFloat var(--fd) calc(var(--d) + .7s) ease-in-out infinite}
+.ch-dot::before{content:'';display:block;width:100%;height:100%;border-radius:50%;background:currentColor;animation:chFloat var(--fd) calc(var(--d) + .7s) ease-in-out infinite}
+@keyframes chPop{0%{opacity:0;transform:scale(0) rotate(-90deg)}100%{opacity:1;transform:none}}
+@keyframes chFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-18px) rotate(8deg)}}
+.ch-confetti{position:absolute;left:640px;top:520px}
+.ch-confetti i{position:absolute;width:22px;height:12px;border-radius:3px;opacity:0;animation:chConf 1.6s cubic-bezier(.1,.7,.3,1) both}
+@keyframes chConf{0%{opacity:1;transform:translate(0,0) rotate(0) scale(.6)}80%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 160px)) rotate(var(--rot)) scale(1)}}
+.chapter.static *,.chapter.static *::before{animation:none!important}
+.chapter.static .ch-stripes,.chapter.static .ch-confetti{display:none}
+
+/* 본문에서 쓰는 꾸밈 */
+.chip{display:inline-flex;align-items:center;gap:.35em;padding:.24em .85em;border-radius:999px;border:3px solid #1C2340;
+  background:var(--c,#fff);color:var(--fc,#fff);margin:0 .3em .35em 0;line-height:1.25;font-family:'Jua','Nanum Gothic',sans-serif;font-weight:400}
+.ic{line-height:1;margin-bottom:.45em}
+.ct{font-size:1.25em;margin-bottom:.35em;line-height:1.25;font-family:'Jua','Nanum Gothic',sans-serif;font-weight:400}
+.muted{color:#5B6280;font-weight:400}
+.tag{display:inline-flex;align-items:center;gap:.3em;padding:.14em .75em;border-radius:999px;font-size:.8em;font-family:'Jua','Nanum Gothic',sans-serif;font-weight:400}
+.tag .ico{stroke-width:3}
+.tag.bad{background:#F04438;color:#fff}
+.tag.good{background:#17B26A;color:#fff}
+.hl{background:linear-gradient(transparent 58%,#FFE58A 58%)}
+.bubble-q{display:inline-block;background:#fff;border:3px solid #1C2340;border-radius:26px 26px 26px 6px;padding:.25em .8em;margin:0 .45em .4em 0;font-family:'Jua','Nanum Gothic',sans-serif;font-weight:400}
+ul.clean{margin:0;padding:0;list-style:none}
+ul.clean li{margin:.35em 0}
+ul.xlist li,ul.qlist li,ul.vlist li{position:relative;padding-left:1.4em}
+ul.xlist li::before,ul.qlist li::before,ul.vlist li::before{content:'';position:absolute;left:0;top:.22em;width:1em;height:1em;border-radius:50%;background-position:center;background-repeat:no-repeat;background-size:62%}
+ul.xlist li::before{background-color:#F04438;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7L7 17'/%3E%3C/svg%3E")}
+ul.qlist li::before{background-color:#2F7BFF;background-size:70%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 8.8a3 3 0 1 1 4.3 2.7c-.8.4-1.3 1-1.3 1.9v.6'/%3E%3Cpath d='M12 18h.01'/%3E%3C/svg%3E")}
+ul.vlist li::before{background-color:#17B26A;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")}
+ol.steps{margin:.2em 0 0;padding-left:1.3em}
+ol.steps li{margin:.35em 0}
+.num{flex:none;width:96px;height:96px;border-radius:50%;color:#fff;font-size:54px;font-weight:900;display:flex;align-items:center;justify-content:center;border:4px solid #1C2340}
+
+/* 이미지 · 영상 · 자리표시 */
+.imgbox{overflow:hidden!important}
+.imgbox img{width:100%;height:100%;display:block}
+.imgbox.img-missing{border-style:dashed!important;box-shadow:none!important}
+.imgbox.img-fb{border:0!important;box-shadow:none!important;background:transparent!important;align-items:center;justify-content:center;font-size:110px}
+.img-ph,.vid-ph,.qr-ph{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:5px dashed #B8BDCF;
+  border-radius:28px;background:rgba(255,255,255,.75);color:#5B6280;font-size:34px;font-weight:800;text-align:center;padding:24px;line-height:1.3}
+.ph-ic{font-size:72px;line-height:1}
+.ph-ic .ico{stroke-width:1.8}
+.ph-hint{font-size:24px;font-weight:500;color:#9AA0B5}
+.vidbox{background:#000;overflow:hidden!important;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+.vidbox video{width:100%;height:100%;display:block;background:#000}
+.vid-ph{background:#11152a;border-color:#3a4166;color:#c9cde0;border-radius:0}
+.vid-ph.err .ph-hint{color:#ffb4ad}
+body.mode-edit .vidbox video{pointer-events:none}
+
+/* 채팅 위젯 */
+.chat{background:#fff;border:4px solid #1C2340;border-radius:36px;box-shadow:10px 10px 0 #1C2340;overflow:hidden!important;font-size:34px}
+.chat-head{padding:22px 30px;border-bottom:3px solid #EEF0F6;display:flex;align-items:center;gap:12px;font-size:30px;font-family:'Jua','Nanum Gothic',sans-serif}
+.chat-dot{width:16px;height:16px;border-radius:50%;background:#17B26A}
+.chat-body{flex:1;padding:28px;display:flex;flex-direction:column;gap:22px;justify-content:flex-end;background:#F7F8FC;min-height:0}
+.msg{display:flex;align-items:flex-end;gap:14px}
+.msg.me{justify-content:flex-end}
+.msg.off{display:none}
+.msg.in{animation:aUp .45s cubic-bezier(.2,.8,.2,1) both}
+.bubble{max-width:80%;padding:18px 26px;border-radius:28px;line-height:1.45;font-weight:700}
+.msg.me .bubble{background:#2F7BFF;color:#fff;border-bottom-right-radius:8px}
+.msg.ai .bubble{background:#fff;border:3px solid #E3E6EF;border-bottom-left-radius:8px}
+.avatar{width:56px;height:56px;border-radius:50%;background:#8A5CFF;border:3px solid #1C2340;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;flex:none}
+.msg .bubble.doc{background:transparent!important;padding:0;border:0!important}
+.doc-paper{width:290px;height:340px;background:#fff;border:3px solid #1C2340;border-radius:14px;padding:24px 22px;transform:rotate(-3deg);box-shadow:6px 6px 0 rgba(28,35,64,.25);color:#1C2340}
+.doc-title{font-size:28px;margin-bottom:18px;line-height:1.3;font-family:'Jua','Nanum Gothic',sans-serif}
+.doc-paper i{display:block;height:10px;border-radius:5px;background:#E3E6EF;margin:15px 0}
+.doc-paper i:nth-of-type(2){width:85%}
+.doc-paper i:nth-of-type(4){width:70%}
+.doc-cap{font-size:22px;color:#5B6280;text-align:right;margin-top:10px;font-weight:700}
+.chat-input{margin:0 22px 22px;padding:16px 24px;border-radius:999px;background:#F0F2F8;display:flex;justify-content:space-between;color:#9AA0B5;font-size:26px}
+.typing i{display:inline-block;width:12px;height:12px;border-radius:50%;background:#9AA0B5;margin:0 4px;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-6px)}}
+
+/* 자동완성 위젯 */
+.ac{background:#fff;border:4px solid #1C2340;border-radius:36px;box-shadow:10px 10px 0 #1C2340;padding:34px;gap:22px;overflow:hidden!important}
+.ac-field{min-height:150px;font-size:46px;font-weight:700;line-height:1.35;padding:20px 26px;border-radius:20px;background:#F7F8FC;border:3px solid #E3E6EF}
+.ac-caret{display:inline-block;width:4px;height:1.1em;background:#2F7BFF;vertical-align:-.15em;margin-left:6px;animation:caret 1s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+.ac-bar{display:grid;grid-template-columns:1fr 1fr 1fr;border-radius:18px;background:#EEF0F6;overflow:hidden;flex:none}
+.ac-chip{padding:20px 10px;text-align:center;font-size:36px;font-weight:700;color:#5B6280;border-right:2px solid #DDE1EC;transition:background .15s;min-height:88px}
+.ac-chip:last-child{border-right:0}
+.ac-chip:nth-child(2){color:#1C2340;font-weight:900}
+.ac-chip.pick{background:#FFC21A;color:#1C2340}
+.ac-kb{display:flex;flex-direction:column;gap:10px}
+.ac-row{display:flex;justify-content:center;gap:10px}
+.ac-row span{width:64px;height:60px;border-radius:12px;background:#F0F2F8;border:2px solid #E3E6EF;display:flex;align-items:center;justify-content:center;font-size:28px;color:#5B6280}
+
+/* 재료 위젯 */
+.ing{display:grid!important;grid-template-columns:repeat(6,1fr) 1.05fr;gap:22px;align-items:stretch}
+.ing-tile{position:relative;background:#fff;border:4px dashed #B8BDCF;border-radius:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 8px;text-align:center}
+.ing-tile.bonus{margin-left:22px}
+.ing-badge{position:relative;width:150px;height:150px;border-radius:50%;background:#E9EBF2;display:flex;align-items:center;justify-content:center;font-size:78px;margin-bottom:22px;border:4px solid transparent}
+.ing-ic{color:#B8BDCF;display:flex}
+.ing-ic .ico{stroke-width:2}
+.ing-lock{position:absolute;right:-6px;bottom:-6px;width:58px;height:58px;border-radius:50%;background:#5B6280;color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;border:4px solid #fff}
+.ing-lock .ico{stroke-width:2.6}
+.ing-name{font-size:42px;color:#9AA0B5;font-family:'Jua','Nanum Gothic','Malgun Gothic',sans-serif;line-height:1.2}
+.ing-label{font-size:26px;font-weight:800;color:#9AA0B5;margin-top:8px}
+.ing-tile.open{border:4px solid #1C2340;box-shadow:8px 8px 0 #1C2340}
+.ing-tile.open .ing-badge{background:var(--c);border-color:#1C2340}
+.ing-tile.open .ing-ic{color:#fff}
+.ing-img{position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);object-fit:contain;display:none;filter:grayscale(1);opacity:.35}
+.ing-tile.has-img .ing-img{display:block}
+.ing-tile.has-img .ing-ic{visibility:hidden}
+.ing-tile.has-img .ing-badge{background:transparent;border-color:transparent}
+.ing-tile.open .ing-img{filter:none;opacity:1}
+.ing-tile.open .ing-lock{display:none}
+.ing-tile.open .ing-name{color:#1C2340}
+.ing-tile.open .ing-label{color:var(--c)}
+.ing-tile.unlocking{animation:unlock .95s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes unlock{0%{transform:none}15%{transform:scale(1.04) rotate(-4deg)}30%{transform:scale(1.04) rotate(4deg)}45%{transform:scale(.9)}70%{transform:scale(1.15)}100%{transform:none}}
+.ing-burst{position:absolute;inset:-30px;border-radius:44px;pointer-events:none;opacity:0}
+.ing-tile.unlocking .ing-burst{animation:burst .95s ease-out both;background:radial-gradient(circle,var(--c) 0%,transparent 65%)}
+@keyframes burst{0%{opacity:0;transform:scale(.5)}40%{opacity:.55}100%{opacity:0;transform:scale(1.4)}}
+
+/* ---------- 발표 화면 ---------- */
+#present{position:absolute;inset:0;background:#0b0d16}
+.stage-wrap{position:absolute;inset:0;overflow:hidden}
+#present.idle-cursor,#present.idle-cursor *{cursor:none!important}
+.progress{position:absolute;left:0;bottom:0;height:5px;background:#FF7A1A;transition:width .3s;z-index:50}
+.toolbar{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:2px;align-items:center;padding:7px 9px;
+  background:rgba(18,22,40,.93);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:60;transition:opacity .3s,transform .3s;color:#fff}
+.toolbar.idle{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(20px)}
+#present.tb-hidden .toolbar,#present.tb-hidden .progress{display:none}
+.tb{min-width:42px;height:42px;border:0;border-radius:12px;background:transparent;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;padding:0 9px;gap:6px;white-space:nowrap}
+.tb .ico{stroke-width:2}
+.tb:hover{background:rgba(255,255,255,.13)}
+.tb.on{background:#FF7A1A}
+.tb .lbl{font-size:14px;font-weight:700}
+.tb-sep{width:1px;height:26px;background:rgba(255,255,255,.18);margin:0 4px}
+.counter{font-weight:800;font-size:15px;min-width:74px}
+.pen-sw{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.6);margin:0 3px;cursor:pointer}
+.pen-sw.on{box-shadow:0 0 0 3px #fff}
+canvas.ink{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:900;pointer-events:none}
+#present.tool-on canvas.ink{pointer-events:auto;cursor:crosshair}
+#present[data-tool="laser"] canvas.ink{cursor:none}
+.laser{position:absolute;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;z-index:901;pointer-events:none;display:none;
+  background:radial-gradient(circle,#ff3b3b 0 32%,rgba(255,45,45,.4) 55%,transparent 70%);box-shadow:0 0 22px 8px rgba(255,40,40,.45)}
+#present[data-tool="laser"] .laser.show{display:block}
+.blank{position:absolute;inset:0;z-index:80}
+.blank.black{background:#000}
+.blank.white{background:#fff}
+.jump{position:absolute;top:28px;left:50%;transform:translateX(-50%);background:rgba(18,22,40,.94);color:#fff;padding:14px 26px;border-radius:16px;font-size:26px;font-weight:800;z-index:90}
+.overlay{position:absolute;inset:0;background:rgba(8,10,20,.82);z-index:100;display:flex;align-items:center;justify-content:center}
+.grid{width:min(1560px,94vw);max-height:90vh;overflow:auto;display:flex;flex-wrap:wrap;gap:18px;padding:24px;justify-content:center}
+.grid-item{cursor:pointer;color:#fff;font-weight:700;font-size:14px}
+.grid-item .thumb{border:3px solid transparent;border-radius:12px}
+.grid-item.cur .thumb{border-color:#FF7A1A}
+.grid-item:hover .thumb{border-color:#fff}
+.grid-item.is-hidden .thumb{opacity:.4}
+.grid-num{margin-top:6px}
+.thumb{position:relative;overflow:hidden;border-radius:10px;background:#fff;flex:none}
+.thumb .stage{pointer-events:none}
+
+/* 타이머 */
+.timer{position:absolute;right:28px;top:28px;z-index:70;background:rgba(18,22,40,.95);color:#fff;border-radius:22px;padding:12px 16px 16px;
+  box-shadow:0 12px 40px rgba(0,0,0,.4);user-select:none;min-width:300px}
+.timer-head{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#aab;cursor:move;margin-bottom:4px;font-weight:700}
+.tlink{background:none;border:0;color:#cfd3e6;font-size:14px;padding:2px 6px;border-radius:6px;font-weight:700}
+.tlink:hover{background:rgba(255,255,255,.12)}
+.timer-disp{font-size:72px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px;cursor:text;line-height:1.1}
+.timer-disp input{width:100%;font-size:56px;text-align:center;border-radius:12px;border:0;padding:4px;font-weight:900}
+.timer.warn .timer-disp{color:#FFC21A}
+.timer.done{animation:tflash .6s steps(1) infinite}
+@keyframes tflash{50%{background:#F04438}}
+.timer-row{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.timer-row button{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:10px;padding:7px 11px;font-size:15px;font-weight:700}
+.timer-row button:hover{background:rgba(255,255,255,.22)}
+.timer-row button.primary{background:#FF7A1A}
+.timer.big{left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%);padding:24px 44px 34px;min-width:720px}
+.timer.big .timer-disp{font-size:240px}
+.timer.big .timer-row button{font-size:20px;padding:10px 16px}
+
+/* 랜덤 뽑기 */
+.picker{width:min(1320px,94vw);height:min(760px,88vh);background:#FFF8EE;border-radius:32px;display:grid;grid-template-columns:1.5fr 1fr;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.pk-main{padding:36px 40px;display:flex;flex-direction:column;align-items:center;gap:22px;min-height:0}
+.pk-title{font-size:30px;align-self:flex-start;font-family:'Jua','Nanum Gothic',sans-serif;display:flex;align-items:center;gap:10px}
+.pk-disp{width:100%;flex:1;display:flex;align-items:center;justify-content:center;background:#fff;border:5px solid #1C2340;border-radius:30px;box-shadow:10px 10px 0 #1C2340;
+  font-size:100px;text-align:center;padding:20px;word-break:keep-all;font-family:'Jua','Nanum Gothic','Malgun Gothic',sans-serif;line-height:1.15}
+.pk-disp.win{animation:aPop .6s cubic-bezier(.3,1.6,.5,1) both;background:#FFC21A}
+.pk-btn{font-size:36px;font-family:'Jua','Nanum Gothic',sans-serif;padding:14px 64px;border-radius:999px;border:4px solid #1C2340;background:#FF7A1A;color:#fff;box-shadow:6px 6px 0 #1C2340}
+.pk-btn:active{transform:translate(3px,3px);box-shadow:3px 3px 0 #1C2340}
+.pk-hist{display:flex;flex-wrap:wrap;gap:8px;align-self:stretch;min-height:36px}
+.pk-hist span{background:#fff;border:2px solid #1C2340;border-radius:999px;padding:4px 12px;font-weight:800;font-size:16px}
+.pk-side{background:#fff;padding:28px;display:flex;flex-direction:column;gap:12px;border-left:3px solid #EEF0F6;min-height:0;font-size:15px}
+.pk-side textarea{flex:1;min-height:120px;border:2px solid #DDE1EC;border-radius:14px;padding:12px;font:inherit;font-size:17px;resize:none}
+.pk-presets{display:flex;flex-wrap:wrap;gap:6px}
+.pk-presets button,.pk-close{border:1px solid #DDE1EC;background:#F6F7FB;border-radius:10px;padding:7px 12px;font-weight:700;font-size:14px}
+.pk-close{align-self:flex-end}
+
+/* 도움말 · 모달 · 알림 */
+.help{background:#fff;border-radius:24px;padding:28px 34px;width:min(1020px,94vw);max-height:88vh;overflow:auto;font-size:15px;color:#1C2340}
+.help h2{margin:0 0 6px;font-size:24px}
+.help h3{margin:18px 0 8px;font-size:17px}
+.help .cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.help table{width:100%;border-collapse:collapse}
+.help td{padding:6px 8px;border-bottom:1px solid #EEF0F6;vertical-align:top}
+.help td:first-child{white-space:nowrap;width:42%}
+kbd{display:inline-block;background:#F0F2F8;border:1px solid #D6DAE6;border-bottom-width:2px;border-radius:6px;padding:1px 7px;font-family:inherit;font-size:13px;font-weight:700;margin:1px 2px}
+.modal{background:#fff;border-radius:20px;width:min(660px,92vw);max-height:86vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;font-size:15px;color:#1C2340}
+.modal h3{margin:0;padding:18px 22px;border-bottom:1px solid #EEF0F6;font-size:18px}
+.modal .mb{padding:18px 22px;overflow:auto;display:flex;flex-direction:column;gap:10px;line-height:1.55}
+.modal .mf{padding:14px 22px;border-top:1px solid #EEF0F6;display:flex;justify-content:flex-end;gap:8px}
+.modal label{font-weight:700;font-size:14px}
+.modal textarea,.modal input[type=text],.modal input[type=number],.modal select{font:inherit;border:1px solid #DDE1EC;border-radius:10px;padding:8px 10px;width:100%}
+.modal textarea{min-height:170px;resize:vertical}
+.modal .hint{font-size:13px;color:#5B6280}
+.modal .ing-row{display:flex;gap:10px;align-items:center}
+.modal .ing-row input[type=number]{width:80px}
+.btn{height:38px;padding:0 16px;border-radius:10px;border:1px solid #DDE1EC;background:#fff;font-weight:700;color:#1C2340}
+.btn:hover{background:#F6F7FB}
+.btn.primary{background:#1C2340;color:#fff;border-color:#1C2340}
+.btn.danger{background:#F04438;color:#fff;border-color:#F04438}
+.toasts{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:rgba(18,22,40,.95);color:#fff;padding:10px 18px;border-radius:12px;font-size:15px;font-weight:600;animation:aUp .3s both;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.palette{position:fixed;z-index:400;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:10px;display:grid;grid-template-columns:repeat(7,26px);gap:6px}
+.palette .sw{width:26px;height:26px;border-radius:7px;border:1px solid rgba(0,0,0,.18);cursor:pointer}
+.palette .row{grid-column:1/-1;display:flex;gap:8px;align-items:center;font-size:13px;margin-top:4px}
+.palette .row button{border:1px solid #DDE1EC;background:#fff;border-radius:8px;padding:4px 8px;font-size:13px}
+
+/* ---------- 편집 화면 ---------- */
+#editor{position:absolute;inset:0;background:#EEF0F6;display:grid;grid-template-rows:auto auto 1fr;font-size:14px;color:#1C2340}
+.ed-top{display:flex;align-items:center;gap:4px;padding:7px 12px;background:#1C2340;color:#fff;flex-wrap:wrap}
+.ed-top .tb{height:36px;font-size:14px;min-width:auto;padding:0 11px;font-weight:700}
+.ed-top .tb .ico{width:17px;height:17px}
+.ed-top .tb.accent{background:#FF7A1A}
+.ed-top .grow{flex:1}
+.ed-save{font-size:13px;color:#b9bfd8;margin-right:6px}
+.ed-sep{width:1px;height:22px;background:rgba(255,255,255,.2);margin:0 4px}
+.ed-props{display:flex;align-items:center;gap:5px;padding:7px 12px;background:#fff;border-bottom:1px solid #DDE1EC;min-height:50px;flex-wrap:wrap}
+.pbtn{height:34px;border:1px solid #DDE1EC;background:#fff;border-radius:8px;padding:0 10px;font-size:14px;color:#1C2340;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pbtn:hover{background:#F3F5FA}
+.pbtn.on{background:#1C2340;color:#fff;border-color:#1C2340}
+.pbtn.danger{color:#F04438}
+.pnum{width:62px;height:34px;border:1px solid #DDE1EC;border-radius:8px;text-align:center;font:inherit}
+.psel{height:34px;border:1px solid #DDE1EC;border-radius:8px;font:inherit;padding:0 6px;background:#fff}
+.plabel{font-size:13px;font-weight:700;color:#5B6280;margin-left:4px}
+.phint{font-size:13px;color:#5B6280}
+.psep{width:1px;height:24px;background:#DDE1EC;margin:0 4px}
+.swatch{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.2);display:inline-block}
+.swatch.none{background:linear-gradient(135deg,#fff 45%,#F04438 45%,#F04438 55%,#fff 55%)}
+.bg-sw{width:28px;height:28px;border-radius:8px;border:2px solid #fff;box-shadow:0 0 0 1px #C9CEDB;cursor:pointer;padding:0}
+.bg-sw.on{box-shadow:0 0 0 3px #FF7A1A}
+.ed-main{display:grid;grid-template-columns:236px 1fr;min-height:0}
+.ed-side{overflow-y:auto;padding:12px 10px;background:#E2E5EE;border-right:1px solid #D3D7E3}
+.side-item{position:relative;display:flex;gap:6px;align-items:flex-start;padding:6px;border-radius:12px;margin-bottom:6px;cursor:pointer}
+.side-item:hover{background:rgba(255,255,255,.6)}
+.side-item.active{background:#fff;box-shadow:0 0 0 3px #FF7A1A}
+.side-num{width:22px;font-weight:800;color:#5B6280;font-size:13px;padding-top:4px;text-align:right;flex:none}
+.side-item .thumb{box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.side-item.is-hidden .thumb{opacity:.35}
+.side-hid{position:absolute;right:12px;top:10px;background:#1C2340;color:#fff;font-size:11px;padding:2px 6px;border-radius:6px}
+.side-item.drop-before{box-shadow:0 -4px 0 #2F7BFF}
+.side-item.drop-after{box-shadow:0 4px 0 #2F7BFF}
+.ed-center{display:grid;grid-template-rows:1fr auto;min-height:0}
+.ed-canvas{position:relative;overflow:hidden;margin:14px 16px 10px}
+.ed-canvas .stage{box-shadow:0 8px 30px rgba(28,35,64,.2)}
+.ed-bottom{display:flex;gap:10px;padding:0 16px 12px;align-items:stretch}
+.ed-notes-lbl{font-weight:800;color:#5B6280;padding-top:8px;font-size:13px}
+.ed-bottom textarea{flex:1;height:64px;border:1px solid #DDE1EC;border-radius:10px;padding:8px 12px;font:inherit;resize:vertical}
+body.mode-edit .stage .el{cursor:move}
+body.mode-edit .stage .el.editing{cursor:text}
+body.mode-edit .stage .el.editing .txt{outline:calc(3px * var(--inv,1)) dashed #2F7BFF;outline-offset:6px;cursor:text}
+.el.empty .txt:empty::before{content:'텍스트 입력';color:#B8BDCF}
+.step-badge{position:absolute;left:0;top:0;width:40px;height:40px;margin:-16px 0 0 -16px;border-radius:50%;background:#FF4D8D;color:#fff;font-size:22px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;z-index:5;border:3px solid #fff;transform:scale(var(--inv,1));pointer-events:none}
+.sel-box{position:absolute;border:calc(2px * var(--inv,1)) solid #2F7BFF;pointer-events:none;z-index:5000}
+.sel-box .h{position:absolute;width:calc(14px * var(--inv,1));height:calc(14px * var(--inv,1));background:#fff;border:calc(2px * var(--inv,1)) solid #2F7BFF;border-radius:3px;
+  pointer-events:auto;margin:calc(-7px * var(--inv,1)) 0 0 calc(-7px * var(--inv,1))}
+.h[data-h=nw]{left:0;top:0;cursor:nwse-resize}.h[data-h=n]{left:50%;top:0;cursor:ns-resize}.h[data-h=ne]{left:100%;top:0;cursor:nesw-resize}
+.h[data-h=e]{left:100%;top:50%;cursor:ew-resize}.h[data-h=se]{left:100%;top:100%;cursor:nwse-resize}.h[data-h=s]{left:50%;top:100%;cursor:ns-resize}
+.h[data-h=sw]{left:0;top:100%;cursor:nesw-resize}.h[data-h=w]{left:0;top:50%;cursor:ew-resize}
+.guide{position:absolute;background:#FF4D8D;z-index:4999;pointer-events:none}
+.guide.gv{width:calc(2px * var(--inv,1));top:0;bottom:0}
+.guide.gh{height:calc(2px * var(--inv,1));left:0;right:0}
+
+/* ---------- 발표자 화면 ---------- */
+body.presenter{background:#11142a;color:#fff}
+.pv{position:fixed;inset:0;display:grid;grid-template-rows:64px 1fr}
+.pv-top{display:flex;align-items:center;gap:14px;padding:0 22px;background:#0b0d1d;font-size:16px;font-weight:700}
+.pv-top .grow{flex:1}
+.pv-l{color:#8f96b8;font-size:13px}
+.pv-big{font-size:28px;font-variant-numeric:tabular-nums;font-weight:900;margin-right:8px}
+.pv-btn{background:#262b4d;color:#fff;border:0;border-radius:10px;padding:9px 16px;font-weight:800;font-size:15px}
+.pv-btn.primary{background:#FF7A1A}
+.pv-body{display:grid;grid-template-columns:1.65fr 1fr;gap:20px;padding:20px;min-height:0}
+.pv-col{display:flex;flex-direction:column;gap:8px;min-height:0}
+.pv-label{font-size:13px;color:#9aa0c0;font-weight:800;letter-spacing:.3px}
+.pv-stagebox{flex:1;min-height:0;position:relative}
+.pv-right{display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1.2fr);gap:16px;min-height:0}
+.pv-notes{flex:1;background:#1b1f3a;border-radius:14px;padding:18px 20px;font-size:23px;line-height:1.6;overflow:auto;white-space:pre-wrap}
+.pv-msg{padding:40px;font-size:22px;color:#cfd3e6}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script id="deck-data" type="application/json">{"deck":{"docId":"ai-prompt-class-g8","rev":"bmwatbyxq","title":"AI 잘 쓰면, 나도 잘 된다! (중2)","settings":{"pickerList":"1반\n2반\n3반\n4반\n5반","pickerPresets":{"1~5반":"1반\n2반\n3반\n4반\n5반","번호 1~30":"1번\n2번\n3번\n4번\n5번\n6번\n7번\n8번\n9번\n10번\n11번\n12번\n13번\n14번\n15번\n16번\n17번\n18번\n19번\n20번\n21번\n22번\n23번\n24번\n25번\n26번\n27번\n28번\n29번\n30번","미션 3 역할 카드":"축구 해설위원\n아이돌 리더\n래퍼\n유치원 선생님\n게임 속 NPC\n요리 유튜버\n기상 캐스터\n홈쇼핑 쇼호스트\n조선시대 선비\n탐정"}},"slides":[{"id":"s1","bg":"cream","elements":[{"id":"e1","type":"text","x":1460,"y":-170,"w":640,"h":640,"html":"","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#FF7A1A","radius":"50%"},"anim":"zoom"},{"id":"e2","type":"text","x":1650,"y":600,"w":420,"h":420,"html":"","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#2F7BFF","radius":"50%"},"anim":"zoom","delay":120},{"id":"e3","type":"text","x":-170,"y":800,"w":420,"h":420,"html":"","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#FFC21A","radius":"50%"},"anim":"zoom","delay":200},{"id":"e4","type":"text","x":1300,"y":640,"w":130,"h":130,"html":"","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#8A5CFF","radius":"50%"},"anim":"pop","delay":320},{"id":"e5","type":"text","x":1250,"y":150,"w":86,"h":86,"html":"","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#FF4D8D","radius":"50%"},"anim":"pop","delay":400},{"id":"e6","type":"image","x":1080,"y":230,"w":780,"h":660,"src":"images/s01-hero.png","fit":"contain","placeholder":"표지 그림 (학생과 AI 로봇)","style":{},"anim":"zoom","delay":450,"optional":true,"z":3},{"id":"e7","type":"text","x":160,"y":230,"w":580,"h":76,"html":"2026 중학교 2학년 AI 특강","style":{"fs":36,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#1C2340","radius":999,"pad":"0 24px","font":"fun"},"anim":"up","delay":100},{"id":"e8","type":"text","x":150,"y":335,"w":1100,"h":340,"html":"AI 잘 쓰면,\u003cbr>\u003cspan style=\"color:#FF7A1A\">나도 잘 된다!\u003c/span>","style":{"fs":156,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.08,"font":"fun"},"anim":"letters","delay":250,"z":4},{"id":"e9","type":"text","x":160,"y":700,"w":1100,"h":80,"html":"‘써줘’ 말고, AI에게 제대로 시키는 법","style":{"fs":56,"fw":800,"color":"#5B6280","align":"left","valign":"top","lh":1.45},"anim":"up","delay":900},{"id":"ea","type":"text","x":160,"y":815,"w":1250,"h":90,"html":"\u003cspan class=\"chip\" style=\"--c:#FF7A1A\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6h1.8A4.8 4.8 0 0 0 21 11c0-4.4-4-8-9-8z\"/>\u003ccircle cx=\"7.5\" cy=\"11.5\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/>\u003ccircle cx=\"10\" cy=\"7.3\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/>\u003ccircle cx=\"15\" cy=\"7.8\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/>\u003c/svg>디테일\u003c/span>\u003cspan class=\"chip\" style=\"--c:#2F7BFF\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003ccircle cx=\"12\" cy=\"12\" r=\"9\"/>\u003cpath d=\"M3 12h18\"/>\u003cpath d=\"M12 3c2.4 2.6 3.6 5.6 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.6-3.6-9S9.6 5.6 12 3z\"/>\u003c/svg>상황\u003c/span>\u003cspan class=\"chip\" style=\"--c:#8A5CFF\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003crect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/>\u003ccircle cx=\"9\" cy=\"10.5\" r=\"2.3\"/>\u003cpath d=\"M5.8 16c.7-1.5 1.8-2.2 3.2-2.2s2.5.7 3.2 2.2\"/>\u003cpath d=\"M15 10h3M15 13.5h3\"/>\u003c/svg>역할\u003c/span>\u003cspan class=\"chip\" style=\"--c:#17B26A\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003crect x=\"3.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"1.5\"/>\u003crect x=\"13.5\" y=\"3.5\" width=\"7\" height=\"7\" rx=\"1.5\"/>\u003crect x=\"3.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"1.5\"/>\u003crect x=\"13.5\" y=\"13.5\" width=\"7\" height=\"7\" rx=\"1.5\"/>\u003c/svg>모양\u003c/span>\u003cspan class=\"chip\" style=\"--c:#FF4D8D\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-5 4v-4H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z\"/>\u003cpath d=\"M10 9.3a2 2 0 1 1 2.9 1.8c-.6.3-.9.7-.9 1.3\"/>\u003cpath d=\"M12 14.3h.01\"/>\u003c/svg>질문받기\u003c/span>\u003cspan class=\"chip\" style=\"--c:#FFC21A;--fc:#1C2340\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z\"/>\u003c/svg>내 이야기\u003c/span>","style":{"fs":32,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45},"anim":"up","delay":1050},{"id":"eb","type":"text","x":160,"y":960,"w":1000,"h":56,"html":"강사 김보은 · 2026. ○○. ○○.","style":{"fs":30,"fw":700,"color":"#5B6280","align":"left","valign":"top","lh":1.45},"anim":"fade","delay":1200}],"notes":"인사하고 오늘 주제 소개.\n“오늘은 AI를 혼내는 시간이 아니라, AI를 더 잘 부리는 법을 배우는 시간이에요.”\n(날짜는 편집 모드에서 고쳐 주세요)"},{"id":"s2","bg":"cream","elements":[{"id":"ec","type":"text","x":120,"y":90,"w":270,"h":68,"html":"오늘의 질문","style":{"fs":34,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#FF7A1A","radius":999,"pad":"0 24px","font":"fun"}},{"id":"ed","type":"text","x":120,"y":185,"w":900,"h":290,"html":"솔직히…\u003cbr>이렇게 해 본 사람?","style":{"fs":108,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"ee","type":"chat","x":1060,"y":70,"w":740,"h":940,"config":{"title":"AI 채팅","messages":[{"who":"me","type":"doc","text":"국어 수행평가\n학습지"},{"who":"me","text":"써줘"},{"who":"ai","text":"물론이죠! 요청하신 내용으로 바로 작성해 드릴게요."}]},"style":{},"steps":3},{"id":"ef","type":"text","x":120,"y":540,"w":900,"h":160,"html":"\u003cspan class=\"ico-line\">\u003cspan class=\"ico-badge\" style=\"--c:#FF7A1A;font-size:.55em\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M18 11V6a2 2 0 0 0-4 0\"/>\u003cpath d=\"M14 10V4a2 2 0 0 0-4 0v2\"/>\u003cpath d=\"M10 10.5V6a2 2 0 0 0-4 0v8\"/>\u003cpath d=\"M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.3l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15\"/>\u003c/svg>\u003c/span>\u003cspan>해 본 사람, 손!\u003c/span>\u003c/span>","style":{"fs":92,"fw":400,"color":"#FF7A1A","align":"left","valign":"middle","lh":1.45,"font":"fun"},"step":4,"anim":"swing"},{"id":"eg","type":"text","x":120,"y":740,"w":900,"h":250,"html":"혼내려는 게 아니에요.\u003cbr>같은 AI로 \u003cspan class=\"hl\">훨씬 좋은 결과\u003c/span>를 내는 법을 배워 볼 거예요.","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.55},"step":5,"anim":"up"}],"notes":"클릭 1~3: 채팅이 하나씩 나와요 (학습지 사진 → “써줘” → AI 답).\n클릭 4: “해 본 사람, 손!” — 실제로 손 들게 하기.\n클릭 5: 혼내는 수업이 아니라는 점을 꼭 말해 주기."},{"id":"s3","bg":"blue","elements":[{"id":"eh","type":"chapter","x":0,"y":0,"w":1920,"h":1080,"config":{"part":"PART 1","title":"AI는 어떤 친구일까?","sub":"AI가 말을 만드는 방법을 알면, 왜 틀리는지도 보여요","num":"1","color":"#2F7BFF","accent":"#FFC21A"},"style":{}}],"notes":"PART 1: AI가 말을 만드는 방식부터 알아봐요.\n(화면이 열리는 애니메이션이 끝날 때까지 2초쯤 기다렸다가 말하기)"},{"id":"s4","bg":"cream","elements":[{"id":"ei","type":"text","x":120,"y":72,"w":1680,"h":130,"html":"AI는 검색 기계가 아니에요","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"ej","type":"text","x":120,"y":250,"w":800,"h":580,"html":"\u003cdiv class=\"ct\">검색\u003c/div>이미 있는 정답을 \u003cb style=\"color:#2F7BFF\">찾아\u003c/b> 온다","style":{"fs":44,"fw":800,"color":"#1C2340","align":"center","valign":"bottom","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"30px 34px 40px","shadow":"8px 8px 0 #1C2340"},"step":1,"anim":"left"},{"id":"ek","type":"image","x":160,"y":276,"w":720,"h":290,"src":"images/s04-search.png","fit":"contain","placeholder":"검색 그림","style":{},"step":1,"anim":"left","fallback":"search","fallbackColor":"#2F7BFF","z":2},{"id":"el","type":"text","x":1000,"y":250,"w":800,"h":580,"html":"\u003cdiv class=\"ct\">생성형 AI\u003c/div>그럴듯한 다음 말을 \u003cb style=\"color:#FF7A1A\">만들어\u003c/b> 낸다","style":{"fs":44,"fw":800,"color":"#1C2340","align":"center","valign":"bottom","lh":1.45,"bg":"#FFF1E5","border":"4px solid #1C2340","radius":28,"pad":"30px 34px 40px","shadow":"8px 8px 0 #1C2340"},"step":2,"anim":"right"},{"id":"em","type":"image","x":1040,"y":276,"w":720,"h":290,"src":"images/s04-create.png","fit":"contain","placeholder":"생성형 AI 그림","style":{},"step":2,"anim":"right","fallback":"pencil","fallbackColor":"#FF7A1A","z":2},{"id":"en","type":"text","x":120,"y":885,"w":1680,"h":140,"html":"AI는 정답을 ‘찾는’ 게 아니라, 그럴듯한 말을 ‘만들어요’","style":{"fs":54,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#1C2340","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":3,"anim":"up"}],"notes":"검색(찾기)과 생성(만들기)의 차이.\n“포털 검색이랑 AI 채팅은 뭐가 다를까?” 하고 먼저 물어봐도 좋아요."},{"id":"s5","bg":"cream","elements":[{"id":"eo","type":"text","x":120,"y":70,"w":250,"h":66,"html":"30초 체험","style":{"fs":34,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#17B26A","radius":999,"pad":"0 24px","font":"fun"}},{"id":"ep","type":"text","x":120,"y":150,"w":1680,"h":120,"html":"추천 단어만 눌러서 문장 만들기","style":{"fs":84,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"font":"fun"},"anim":"letters"},{"id":"eq","type":"text","x":120,"y":300,"w":620,"h":560,"html":"\u003cdiv class=\"ct\">해 보기\u003c/div>\u003col class=\"steps\">\u003cli>태블릿 메모장 열기\u003c/li>\u003cli>키보드 위 \u003cb style=\"color:#17B26A\">추천 단어\u003c/b>만 계속 누르기\u003c/li>\u003cli>어떤 문장이 나왔나요?\u003c/li>\u003c/ol>","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.5,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #1C2340"}},{"id":"er","type":"autocomplete","x":800,"y":290,"w":1000,"h":590,"config":{"words":["오늘","학교에서","친구랑","떡볶이를","먹었는데","진짜","맛있어서","내일","또","가고","싶다"],"pool":["그리고","나는","근데","너무","우리","집에","ㅋㅋ","좋아","이제","완전","혹시","많이"]},"style":{},"steps":1},{"id":"es","type":"text","x":120,"y":915,"w":1680,"h":125,"html":"생성형 AI는 \u003cspan style=\"color:#FFC21A\">엄청나게 똑똑한 자동완성\u003c/span>이에요","style":{"fs":54,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#1C2340","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":2,"anim":"up"}],"notes":"학생들이 30초 동안 태블릿 메모장에서 추천 단어만 눌러 보게 해요.\n클릭 1: 화면 예시 문장이 자동으로 만들어져요.\n몇 명에게 나온 문장을 읽어 보게 하면 웃음 포인트!\n클릭 2: AI도 이렇게 ‘다음에 올 그럴듯한 말’을 이어 붙인다고 정리."},{"id":"s6","bg":"cream","elements":[{"id":"et","type":"text","x":120,"y":72,"w":1680,"h":130,"html":"그럴듯하다고 사실은 아니에요","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"eu","type":"text","x":120,"y":260,"w":800,"h":470,"html":"\u003cdiv class=\"ic\">\u003cspan class=\"ico-badge\" style=\"--c:#5B6280\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z\"/>\u003ccircle cx=\"12\" cy=\"12\" r=\"3\"/>\u003c/svg>\u003c/span>\u003c/div>\u003cdiv style=\"font-size:.7em\">AI가 먼저 보는 것\u003c/div>\u003cdiv class=\"fun\" style=\"font-size:1.55em;margin-top:.1em\">그럴듯한가?\u003c/div>","style":{"fs":58,"fw":800,"color":"#1C2340","align":"center","valign":"middle","lh":1.35,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #1C2340"},"step":1,"anim":"left"},{"id":"ev","type":"text","x":1000,"y":260,"w":800,"h":470,"html":"\u003cdiv class=\"ic\">\u003cspan class=\"ico-badge\" style=\"--c:#F04438\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003ccircle cx=\"12\" cy=\"12\" r=\"9\"/>\u003cpath d=\"M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.4\"/>\u003cpath d=\"M12 16.8h.01\"/>\u003c/svg>\u003c/span>\u003c/div>\u003cdiv style=\"font-size:.7em\">AI가 잘 확인하지 못하는 것\u003c/div>\u003cdiv class=\"fun\" style=\"font-size:1.55em;margin-top:.1em;color:#F04438\">진짜 사실인가?\u003c/div>","style":{"fs":58,"fw":800,"color":"#1C2340","align":"center","valign":"middle","lh":1.35,"bg":"#FFF0EF","border":"4px solid #1C2340","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #1C2340"},"step":2,"anim":"right"},{"id":"ew","type":"text","x":120,"y":790,"w":1680,"h":230,"html":"그래서 \u003cspan style=\"color:#F04438\">없는 일도 자신 있게\u003c/span> 지어낼 때가 있어요.\u003cbr>정말 그런지 영상으로 볼까요?","style":{"fs":60,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"font":"fun"},"step":3,"anim":"up"}],"notes":"AI는 ‘그럴듯함’을 먼저 본다 → 그래서 틀릴 수 있다.\n다음 슬라이드 영상으로 연결해요."},{"id":"s7","bg":"navy","elements":[{"id":"ex","type":"text","x":120,"y":56,"w":160,"h":66,"html":"영상","style":{"fs":34,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#FF7A1A","radius":999,"pad":"0 24px","font":"fun"}},{"id":"ey","type":"text","x":310,"y":56,"w":1400,"h":66,"html":"챗GPT의 아무말 대잔치","style":{"fs":56,"fw":400,"color":"#FFFFFF","align":"left","valign":"middle","lh":1.45,"font":"fun"}},{"id":"ez","type":"video","x":240,"y":160,"w":1440,"h":810,"src":"영상1_맥북던짐사건.mp4","label":"맥북 던짐 사건 (1분 15초)","style":{"radius":24}},{"id":"e10","type":"text","x":240,"y":992,"w":1440,"h":50,"html":"1분 15초 · 영상을 클릭하면 재생돼요","style":{"fs":28,"fw":700,"color":"rgba(255,255,255,.65)","align":"center","valign":"top","lh":1.45}}],"notes":"영상 1분 15초. 영상 아래 재생 버튼을 눌러요.\n끝나면 “어떤 거짓말이 제일 웃겼어?” 하고 물어보기."},{"id":"s8","bg":"cream","elements":[{"id":"e11","type":"text","x":110,"y":150,"w":780,"h":780,"html":"","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#FFE3DF","radius":"50%"},"anim":"zoom"},{"id":"e12","type":"image","x":90,"y":120,"w":820,"h":840,"src":"images/s08-hallucination.png","fit":"contain","placeholder":"할루시네이션 그림 (자신만만하게 거짓말하는 로봇)","style":{},"anim":"zoom","delay":150,"fallback":"alert","fallbackColor":"#F04438"},{"id":"e13","type":"text","x":950,"y":110,"w":300,"h":68,"html":"이름 붙이기","style":{"fs":34,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#F04438","radius":999,"pad":"0 24px","font":"fun"}},{"id":"e14","type":"text","x":950,"y":195,"w":860,"h":120,"html":"AI의 당당한 거짓말","style":{"fs":84,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e15","type":"text","x":950,"y":310,"w":860,"h":160,"html":"할루시네이션","style":{"fs":138,"fw":400,"color":"#F04438","align":"left","valign":"top","lh":1.1,"font":"fun"},"anim":"pop","delay":700},{"id":"e16","type":"text","x":950,"y":490,"w":860,"h":120,"html":"없는 사실을 진짜처럼 지어내는 것","style":{"fs":50,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.3,"bg":"#FFC21A","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"anim":"up","delay":1000},{"id":"e17","type":"text","x":950,"y":635,"w":860,"h":395,"html":"\u003cdiv class=\"ct\">영상 속 AI의 거짓말\u003c/div>\u003cul class=\"clean xlist\">\u003cli>세종대왕 맥북 던짐 사건\u003c/li>\u003cli>조선시대 노래 ‘하입보이’\u003c/li>\u003cli>신사임당이 23번째 왕?\u003c/li>\u003c/ul>","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #1C2340"},"step":1,"anim":"up"},{"id":"e18","type":"text","x":130,"y":880,"w":760,"h":120,"html":"자신 있게 말해도 틀릴 수 있어요!","style":{"fs":50,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.45,"bg":"#1C2340","radius":24,"pad":"0 24px","font":"fun"},"step":2,"anim":"swing","rot":-3,"z":5}],"notes":"할루시네이션이라는 이름을 붙여 줘요.\n클릭 1: 영상 속 예시 다시 짚기.\n클릭 2: 자신 있게 말해도 틀릴 수 있다."},{"id":"s9","bg":"cream","elements":[{"id":"e19","type":"text","x":120,"y":72,"w":1680,"h":130,"html":"AI의 거짓말에 안 속는 법","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e1a","type":"text","x":120,"y":245,"w":520,"h":560,"html":"\u003cdiv class=\"ct\">① 의심하기\u003c/div>숫자·이름·날짜는\u003cbr>한 번 더 의심","style":{"fs":44,"fw":800,"color":"#1C2340","align":"center","valign":"bottom","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"30px 34px 40px","shadow":"8px 8px 0 #1C2340"},"step":1,"anim":"up"},{"id":"e1b","type":"image","x":160,"y":271,"w":440,"h":280,"src":"images/s09-doubt.png","fit":"contain","placeholder":"① 의심하기 그림","style":{},"step":1,"anim":"up","fallback":"search","fallbackColor":"#2F7BFF","z":2},{"id":"e1c","type":"text","x":700,"y":245,"w":520,"h":560,"html":"\u003cdiv class=\"ct\">② 확인하기\u003c/div>교과서·믿을 만한\u003cbr>사이트와 비교","style":{"fs":44,"fw":800,"color":"#1C2340","align":"center","valign":"bottom","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"30px 34px 40px","shadow":"8px 8px 0 #1C2340"},"step":2,"anim":"up"},{"id":"e1d","type":"image","x":740,"y":271,"w":440,"h":280,"src":"images/s09-check.png","fit":"contain","placeholder":"② 확인하기 그림","style":{},"step":2,"anim":"up","fallback":"book","fallbackColor":"#8A5CFF","z":2},{"id":"e1e","type":"text","x":1280,"y":245,"w":520,"h":560,"html":"\u003cdiv class=\"ct\">③ 안전장치 문장\u003c/div>“확실하지 않으면\u003cbr>모른다고 말해 줘”","style":{"fs":44,"fw":800,"color":"#1C2340","align":"center","valign":"bottom","lh":1.45,"bg":"#E7FAF9","border":"4px solid #1C2340","radius":28,"pad":"30px 34px 40px","shadow":"8px 8px 0 #1C2340"},"step":3,"anim":"up"},{"id":"e1f","type":"image","x":1320,"y":271,"w":440,"h":280,"src":"images/s09-safety.png","fit":"contain","placeholder":"③ 안전장치 문장 그림","style":{},"step":3,"anim":"up","fallback":"shield","fallbackColor":"#12B5B0","z":2},{"id":"e1g","type":"text","x":120,"y":850,"w":1680,"h":170,"html":"\u003cspan class=\"ico-line\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003crect x=\"3.5\" y=\"8\" width=\"17\" height=\"4.5\" rx=\"1\"/>\u003cpath d=\"M5.5 12.5V20h13v-7.5\"/>\u003cpath d=\"M12 8v12\"/>\u003cpath d=\"M12 8C10.5 4.5 6.5 4.3 6.5 6.6 6.5 8 9 8 12 8z\"/>\u003cpath d=\"M12 8c1.5-3.5 5.5-3.7 5.5-1.4C17.5 8 15 8 12 8z\"/>\u003c/svg>\u003cspan>보너스 재료 획득! \u003cspan style=\"color:#FFF3B0\">안전장치\u003c/span>\u003c/span>\u003c/span>\u003cdiv style=\"font-size:.6em;margin-top:.3em\">프롬프트 끝에 붙이면 AI가 지어낼 가능성이 줄어요\u003c/div>","style":{"fs":54,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#12B5B0","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":4,"anim":"pop"}],"notes":"세 가지 방법을 하나씩.\n③ 안전장치 문장은 오늘 미션 내내 쓰는 보너스 재료예요.\n클릭 4: 보너스 재료 획득."},{"id":"s10","bg":"purple","elements":[{"id":"e1h","type":"chapter","x":0,"y":0,"w":1920,"h":1080,"config":{"part":"PART 2","title":"프롬프트가 뭘까?","sub":"AI에게 ‘잘’ 말하는 법","num":"2","color":"#8A5CFF","accent":"#FFC21A","stripes":["#FFC21A","#2F7BFF","#FF4D8D","#FFFFFF","#8A5CFF"]},"style":{}}],"notes":"PART 2: 프롬프트가 무엇인지, 왜 잘 써야 하는지.\n(애니메이션이 끝날 때까지 2초쯤 기다리기)"},{"id":"s11","bg":"cream","elements":[{"id":"e1i","type":"text","x":120,"y":70,"w":340,"h":66,"html":"프롬프트 (Prompt)","style":{"fs":34,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#8A5CFF","radius":999,"pad":"0 24px","font":"fun"}},{"id":"e1j","type":"text","x":120,"y":150,"w":1680,"h":250,"html":"AI에게 하는 말·지시·질문,\u003cbr>전부 \u003cspan style=\"color:#8A5CFF\">프롬프트\u003c/span>예요","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e1k","type":"text","x":120,"y":425,"w":1680,"h":110,"html":"\u003cspan class=\"bubble-q\">“세종대왕 알려줘”\u003c/span>\u003cspan class=\"bubble-q\">“고양이 그려줘”\u003c/span>\u003cspan class=\"bubble-q\">“이거 써줘”\u003c/span>","style":{"fs":50,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.45},"step":1,"anim":"up"},{"id":"e1l","type":"text","x":120,"y":590,"w":1680,"h":410,"html":"\u003cdiv class=\"ct ico-line\" style=\"--c:#FFC21A\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M9 18h6M10 21h4\"/>\u003cpath d=\"M8.5 15c0-1.2-.5-2-1.3-2.9A6 6 0 1 1 16.8 12c-.8.9-1.3 1.8-1.3 3H8.5z\"/>\u003c/svg>\u003cspan>원래 무슨 뜻일까?\u003c/span>\u003c/div>\u003cdiv>‘prompt’에는 \u003cb style=\"color:#8A5CFF\">‘대사를 일러 주다’\u003c/b>라는 뜻이 있어요.\u003cbr>연극에서 배우에게 대사를 몰래 알려 주는 사람이 \u003cb style=\"color:#8A5CFF\">프롬프터\u003c/b>예요.\u003c/div>\u003cdiv class=\"fun\" style=\"margin-top:.5em;color:#8A5CFF;font-size:1.15em\">→ 프롬프트 = AI가 무엇을 말할지 알려 주는 신호!\u003c/div>","style":{"fs":44,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.5,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"34px 480px 34px 44px","shadow":"8px 8px 0 #1C2340"},"step":2,"anim":"up"},{"id":"e1m","type":"image","x":1390,"y":560,"w":400,"h":420,"src":"images/s11-prompter.png","fit":"contain","placeholder":"프롬프터 그림","style":{},"step":2,"anim":"zoom","delay":200,"fallback":"chatq","fallbackColor":"#8A5CFF","z":3}],"notes":"프롬프트 = AI에게 하는 말 전부.\n클릭 1: 우리가 평소에 쓰는 프롬프트 예시.\n클릭 2: 어원은 가볍게."},{"id":"s12","bg":"navy","elements":[{"id":"e1n","type":"text","x":120,"y":56,"w":160,"h":66,"html":"영상","style":{"fs":34,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.2,"bg":"#FF7A1A","radius":999,"pad":"0 24px","font":"fun"}},{"id":"e1o","type":"text","x":310,"y":56,"w":1400,"h":66,"html":"사람한테 컴퓨터처럼 시켜 보면?","style":{"fs":56,"fw":400,"color":"#FFFFFF","align":"left","valign":"middle","lh":1.45,"font":"fun"}},{"id":"e1p","type":"video","x":240,"y":160,"w":1440,"h":810,"src":"영상2_전과자.mp4","label":"전과자 컴퓨터공학과 (33초)","style":{"radius":24}},{"id":"e1q","type":"text","x":240,"y":992,"w":1440,"h":50,"html":"33초 · 영상을 클릭하면 재생돼요","style":{"fs":28,"fw":700,"color":"rgba(255,255,255,.65)","align":"center","valign":"top","lh":1.45}}],"notes":"영상 33초. 사람을 컴퓨터처럼 말로만 움직여 볶음밥을 먹게 하는 장면.\n“컴퓨터는 말한 것만 한다”를 웃으면서 보기."},{"id":"s13","bg":"cream","elements":[{"id":"e1r","type":"text","x":120,"y":72,"w":1680,"h":130,"html":"왜 처음엔 실패했을까?","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e1s","type":"text","x":120,"y":235,"w":800,"h":580,"html":"\u003cspan class=\"tag bad\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M6.5 6.5l11 11M17.5 6.5l-11 11\"/>\u003c/svg> 실패\u003c/span>\u003cdiv class=\"fun\" style=\"font-size:1.45em;margin:.5em 0 .55em;line-height:1.3\">“숟가락 집어서\u003cbr>볶음밥 퍼서 먹어”\u003c/div>\u003cdiv>어떻게 집으라는 건지 몰라서\u003cbr>시작부터 막혔어요\u003c/div>","style":{"fs":44,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.5,"bg":"#FFF0EF","border":"4px solid #F04438","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #F04438"},"step":1,"anim":"left"},{"id":"e1t","type":"text","x":1000,"y":235,"w":800,"h":580,"html":"\u003cspan class=\"tag good\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M5 12.5l4.5 4.5L19 7.5\"/>\u003c/svg> 성공\u003c/span>\u003cdiv class=\"fun\" style=\"font-size:1.15em;margin:.5em 0 .55em;line-height:1.4\">“다섯 손가락을 폈다가, 숟가락을 가운데 놓고 접어 봐.”\u003cbr>“그리고 볶음밥 쪽으로 숟가락을 가져다 놔.”\u003c/div>\u003cdiv>하나하나 자세히 말해 주니까 성공!\u003c/div>","style":{"fs":44,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.5,"bg":"#EAFBF2","border":"4px solid #17B26A","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #17B26A"},"step":2,"anim":"right"},{"id":"e1u","type":"text","x":120,"y":870,"w":1680,"h":140,"html":"컴퓨터는 \u003cspan style=\"color:#FFC21A\">내가 말한 만큼만\u003c/span> 해요","style":{"fs":62,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#1C2340","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":3,"anim":"up"}],"notes":"실패한 말과 성공한 말을 비교해요.\n“무엇이 달랐을까?” 물어보면 → “자세히, 하나하나”가 나오면 성공."},{"id":"s14","bg":"cream","elements":[{"id":"e1v","type":"text","x":120,"y":72,"w":1100,"h":130,"html":"AI도 똑같아요","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e1w","type":"text","x":120,"y":190,"w":1680,"h":80,"html":"내가 말해 주지 않은 건 몰라요","style":{"fs":58,"fw":400,"color":"#2F7BFF","align":"left","valign":"top","lh":1.45,"font":"fun"},"anim":"up","delay":500},{"id":"e1x","type":"text","x":120,"y":310,"w":520,"h":470,"html":"\u003cdiv class=\"ct\">AI가 받은 것\u003c/div>\u003cdiv style=\"line-height:1.6\">\u003cspan class=\"ico-line\" style=\"--c:#2F7BFF\">\u003csvg class=\"ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\">\u003cpath d=\"M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z\"/>\u003ccircle cx=\"12\" cy=\"13\" r=\"3.5\"/>\u003c/svg>\u003cspan>사진 1장\u003c/span>\u003c/span>\u003c/div>\u003cdiv class=\"fun\" style=\"font-size:2.3em;color:#2F7BFF;line-height:1.2;margin-top:.15em\">“써줘”\u003c/div>","style":{"fs":46,"fw":800,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #1C2340"},"step":1,"anim":"left"},{"id":"e1y","type":"image","x":720,"y":330,"w":480,"h":440,"src":"images/s14-robot.png","fit":"contain","placeholder":"고민하는 AI 로봇 그림","style":{},"step":2,"anim":"zoom","fallback":"question","fallbackColor":"#2F7BFF"},{"id":"e1z","type":"text","x":690,"y":300,"w":240,"h":86,"html":"몇 학년?","style":{"fs":44,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":999,"shadow":"5px 5px 0 #1C2340","font":"fun"},"step":2,"anim":"pop","delay":300,"z":4,"rot":-6},{"id":"e20","type":"text","x":990,"y":300,"w":270,"h":86,"html":"무슨 과목?","style":{"fs":44,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":999,"shadow":"5px 5px 0 #1C2340","font":"fun"},"step":2,"anim":"pop","delay":500,"z":4,"rot":5},{"id":"e21","type":"text","x":695,"y":700,"w":220,"h":86,"html":"몇 자?","style":{"fs":44,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":999,"shadow":"5px 5px 0 #1C2340","font":"fun"},"step":2,"anim":"pop","delay":700,"z":4,"rot":4},{"id":"e22","type":"text","x":975,"y":700,"w":280,"h":86,"html":"내 경험은?","style":{"fs":44,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":999,"shadow":"5px 5px 0 #1C2340","font":"fun"},"step":2,"anim":"pop","delay":900,"z":4,"rot":-4},{"id":"e23","type":"text","x":1280,"y":310,"w":520,"h":470,"html":"\u003cdiv class=\"ct\" style=\"color:#F04438\">그래서 나온 답\u003c/div>\u003cul class=\"clean xlist\">\u003cli>대학생 같은 말투\u003c/li>\u003cli>지어낸 내 경험\u003c/li>\u003cli>빠진 과제 조건\u003c/li>\u003c/ul>","style":{"fs":46,"fw":800,"color":"#1C2340","align":"left","valign":"top","lh":1.5,"bg":"#FFF0EF","border":"4px solid #1C2340","radius":28,"pad":"34px 40px","shadow":"8px 8px 0 #1C2340"},"step":3,"anim":"right"},{"id":"e24","type":"text","x":120,"y":840,"w":1680,"h":180,"html":"AI가 못해서가 아니라 \u003cspan style=\"color:#FFC21A\">내 상황을 몰라서\u003c/span> 틀린 거예요\u003cbr>상황을 알려 주는 것 = 프롬프트!","style":{"fs":52,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#2F7BFF","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":4,"anim":"up"}],"notes":"“써줘”만 받은 AI의 입장이 되어 보기.\n클릭 2: 로봇 주변으로 AI가 모르는 것들이 하나씩 튀어나와요.\n‘평균적인 답’이 아니라 ‘내 숙제에 안 맞는, 틀린 답’이 나온다는 점을 강조.\n앞 영상의 “숟가락 집어서 먹어”와 같은 상황이라고 연결."},{"id":"s15","bg":"cream","elements":[{"id":"e25","type":"text","x":120,"y":72,"w":1680,"h":130,"html":"같은 AI, 다른 결과","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e26","type":"text","x":120,"y":200,"w":820,"h":110,"html":"“고양이 그려줘”","style":{"fs":58,"fw":400,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":999,"shadow":"6px 6px 0 #1C2340","font":"fun"}},{"id":"e27","type":"image","x":120,"y":340,"w":820,"h":540,"src":"images/s15-cat-simple.png","fit":"cover","placeholder":"‘고양이 그려줘’ 결과","style":{"radius":24,"border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","bg":"#FFFFFF"}},{"id":"e28","type":"text","x":980,"y":192,"w":820,"h":130,"html":"\u003cspan class=\"chip\" style=\"--c:#FF7A1A\">웹툰 그림체\u003c/span>\u003cspan class=\"chip\" style=\"--c:#2F7BFF\">교복\u003c/span>\u003cspan class=\"chip\" style=\"--c:#17B26A\">매점\u003c/span>\u003cspan class=\"chip\" style=\"--c:#FF4D8D\">마지막 빵\u003c/span>\u003cspan class=\"chip\" style=\"--c:#FFC21A;--fc:#1C2340\">깜짝 놀란 표정\u003c/span>","style":{"fs":34,"fw":800,"color":"#1C2340","align":"left","valign":"middle","lh":1.15},"step":1,"anim":"up"},{"id":"e29","type":"image","x":980,"y":340,"w":820,"h":540,"src":"images/s15-cat-detail.png","fit":"cover","placeholder":"재료를 넣은 프롬프트 결과","style":{"radius":24,"border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","bg":"#FFFFFF"},"step":1,"anim":"zoom"},{"id":"e2a","type":"text","x":120,"y":925,"w":1680,"h":110,"html":"차이는 딱 하나, \u003cspan style=\"color:#1C2340\">프롬프트\u003c/span>!","style":{"fs":60,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#FF7A1A","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":2,"anim":"pop"}],"notes":"왼쪽: “고양이 그려줘” 한 줄로 만든 그림.\n클릭 1: 재료(웹툰 그림체, 교복, 매점, 마지막 빵, 놀란 표정)를 넣은 그림.\n클릭 2: 결론.\n그림은 images 폴더의 s15-cat-simple.png / s15-cat-detail.png 파일이에요."},{"id":"s16","bg":"cream","elements":[{"id":"e2b","type":"text","x":120,"y":72,"w":1680,"h":130,"html":"오늘 모을 프롬프트 재료","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e2c","type":"text","x":120,"y":200,"w":1680,"h":80,"html":"미션을 하나 깰 때마다 재료가 하나씩 열려요","style":{"fs":48,"fw":800,"color":"#5B6280","align":"left","valign":"top","lh":1.45}},{"id":"e2d","type":"ingredients","x":120,"y":320,"w":1680,"h":520,"config":{"items":[{"name":"디테일","icon":"palette","img":"images/s16-ing-detail.png","color":"#FF7A1A","label":"미션 1"},{"name":"상황","icon":"globe","img":"images/s16-ing-situation.png","color":"#2F7BFF","label":"미션 2"},{"name":"역할","icon":"badge","img":"images/s16-ing-role.png","color":"#8A5CFF","label":"미션 3"},{"name":"모양","icon":"layout","img":"images/s16-ing-shape.png","color":"#17B26A","label":"미션 4"},{"name":"질문받기","icon":"chatq","img":"images/s16-ing-question.png","color":"#FF4D8D","label":"미션 5"},{"name":"내 이야기","icon":"heart","img":"images/s16-ing-story.png","color":"#FFC21A","label":"미션 6"},{"name":"안전장치","icon":"shield","img":"images/s16-ing-safety.png","color":"#12B5B0","label":"보너스","bonus":true,"open":true}],"unlock":[]},"style":{},"steps":0},{"id":"e2e","type":"text","x":120,"y":890,"w":1680,"h":125,"html":"재료를 많이 넣을수록 \u003cspan style=\"color:#FFC21A\">내가 원하는 답\u003c/span>에 가까워져요","style":{"fs":54,"fw":400,"color":"#FFFFFF","align":"center","valign":"middle","lh":1.3,"bg":"#1C2340","radius":28,"pad":"18px 40px","border":"4px solid #1C2340","shadow":"8px 8px 0 #1C2340","font":"fun"},"step":1,"anim":"up"}],"notes":"오늘 모을 재료 6개 + 보너스(안전장치, 이미 획득).\n미션마다 하나씩 열린다고 예고해요."},{"id":"s17","bg":"cream","elements":[{"id":"e2f","type":"text","x":120,"y":72,"w":1100,"h":130,"html":"미션은 이렇게 진행해요","style":{"fs":92,"fw":400,"color":"#1C2340","align":"left","valign":"top","lh":1.15,"font":"fun"},"anim":"letters"},{"id":"e2g","type":"text","x":120,"y":240,"w":1100,"h":210,"html":"\u003cdiv style=\"display:flex;gap:30px;align-items:center\">\u003cdiv class=\"num fun\" style=\"background:#5B6280\">1\u003c/div>\u003cdiv>\u003cdiv class=\"ct\" style=\"margin:0 0 .2em\">1차 — 한 줄로 시켜 보기\u003c/div>\u003cdiv style=\"font-size:.85em\">평소처럼 짧게! 결과를 \u003cb>Before\u003c/b>에 올려요\u003c/div>\u003c/div>\u003c/div>","style":{"fs":42,"fw":800,"color":"#1C2340","align":"left","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"26px 34px","shadow":"8px 8px 0 #1C2340"},"step":1,"anim":"left"},{"id":"e2h","type":"text","x":120,"y":490,"w":1100,"h":210,"html":"\u003cdiv style=\"display:flex;gap:30px;align-items:center\">\u003cdiv class=\"num fun\" style=\"background:#FF7A1A\">2\u003c/div>\u003cdiv>\u003cdiv class=\"ct\" style=\"margin:0 0 .2em\">2차 — 재료 넣어서 다시\u003c/div>\u003cdiv style=\"font-size:.85em\">재료를 고르면 프롬프트가 완성 → \u003cb>After\u003c/b>에 올려요\u003c/div>\u003c/div>\u003c/div>","style":{"fs":42,"fw":800,"color":"#1C2340","align":"left","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"26px 34px","shadow":"8px 8px 0 #1C2340"},"step":2,"anim":"left"},{"id":"e2i","type":"text","x":120,"y":740,"w":1100,"h":210,"html":"\u003cdiv style=\"display:flex;gap:30px;align-items:center\">\u003cdiv class=\"num fun\" style=\"background:#2F7BFF\">3\u003c/div>\u003cdiv>\u003cdiv class=\"ct\" style=\"margin:0 0 .2em\">비교 — 뭐가 달라졌지?\u003c/div>\u003cdiv style=\"font-size:.85em\">큰 화면에서 Before와 After를 나란히!\u003c/div>\u003c/div>\u003c/div>","style":{"fs":42,"fw":800,"color":"#1C2340","align":"left","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"pad":"26px 34px","shadow":"8px 8px 0 #1C2340"},"step":3,"anim":"left"},{"id":"e2j","type":"qr","x":1300,"y":240,"w":500,"h":500,"config":{"label":"제출 페이지 QR"},"style":{}},{"id":"e2k","type":"text","x":1300,"y":780,"w":500,"h":170,"html":"\u003cdiv style=\"font-size:.6em\">입장 코드\u003c/div>\u003cdiv class=\"fun\" style=\"font-size:1.6em;letter-spacing:.15em\">- - - -\u003c/div>","style":{"fs":48,"fw":800,"color":"#1C2340","align":"center","valign":"middle","lh":1.45,"bg":"#FFFFFF","border":"4px solid #1C2340","radius":28,"shadow":"8px 8px 0 #1C2340"}}],"notes":"미션 진행 방법 안내.\nQR과 입장 코드는 제출 페이지를 연결하면 자동으로 채워져요 (3단계에서 연결)."}]},"media":{}}</script>
+<script>
+/* 선 아이콘 모음 (24×24, 선 두께는 CSS로) — 이모지 대신 사용 */
+var ICONS = {
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/>',
+  pencil: '<path d="M4 20h4.5L19.3 9.2a2.1 2.1 0 0 0 0-3L17.8 4.7a2.1 2.1 0 0 0-3 0L4 15.5V20z"/><path d="M13.5 6l4.5 4.5"/>',
+  book: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2"/><path d="M4 19.5a2 2 0 0 0 2 2h14"/><path d="M9 7.5h7"/>',
+  shield: '<path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6L12 3z"/><path d="M8.8 12.2l2.3 2.3 4.3-4.6"/>',
+  gift: '<rect x="3.5" y="8" width="17" height="4.5" rx="1"/><path d="M5.5 12.5V20h13v-7.5"/><path d="M12 8v12"/><path d="M12 8C10.5 4.5 6.5 4.3 6.5 6.6 6.5 8 9 8 12 8z"/><path d="M12 8c1.5-3.5 5.5-3.7 5.5-1.4C17.5 8 15 8 12 8z"/>',
+  camera: '<path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+  chat: '<path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-5 4v-4H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/>',
+  chatq: '<path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-5 4v-4H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/><path d="M10 9.3a2 2 0 1 1 2.9 1.8c-.6.3-.9.7-.9 1.3"/><path d="M12 14.3h.01"/>',
+  bulb: '<path d="M9 18h6M10 21h4"/><path d="M8.5 15c0-1.2-.5-2-1.3-2.9A6 6 0 1 1 16.8 12c-.8.9-1.3 1.8-1.3 3H8.5z"/>',
+  x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  question: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.6.3-1 .8-1 1.5v.4"/><path d="M12 16.8h.01"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/>',
+  palette: '<path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6h1.8A4.8 4.8 0 0 0 21 11c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="10" cy="7.3" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="7.8" r="1.2" fill="currentColor" stroke="none"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.4 2.6 3.6 5.6 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.6-3.6-9S9.6 5.6 12 3z"/>',
+  badge: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10.5" r="2.3"/><path d="M5.8 16c.7-1.5 1.8-2.2 3.2-2.2s2.5.7 3.2 2.2"/><path d="M15 10h3M15 13.5h3"/>',
+  layout: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.1 4.1 0 0 1 12 7.4a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"/>',
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff: '<path d="M3 3l18 18"/><path d="M10.6 5.6c.5-.1.9-.1 1.4-.1 6 0 9.5 6.5 9.5 6.5a16.5 16.5 0 0 1-2.6 3.4"/><path d="M6.4 6.9C3.9 8.5 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.2-1.1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15.5l-5-5L5.5 20"/>',
+  qr: '<rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"/><path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 20.5h1.5M20.5 14v1.5"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5L8 5.5z" fill="currentColor"/>',
+  alert: '<path d="M12 3.5l9 16H3l9-16z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
+  hand: '<path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.3l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
+  sparkle: '<path d="M12 3.5l1.9 5.3 5.3 1.9-5.3 1.9L12 17.9l-1.9-5.3-5.3-1.9 5.3-1.9L12 3.5z" fill="currentColor" stroke="none"/>',
+  left: '<path d="M15 5.5L8.5 12l6.5 6.5"/>',
+  right: '<path d="M9 5.5l6.5 6.5L9 18.5"/>',
+  expand: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  timer: '<circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 1.8"/><path d="M9.5 2.5h5"/>',
+  dice: '<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.3" cy="8.3" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.7" cy="15.7" r="1.4" fill="currentColor" stroke="none"/>',
+  highlighter: '<path d="M9.5 11.5l-5 5V19h3l5-5"/><path d="M9.5 11.5L15 6l3 3-5.5 5.5"/><path d="M13.5 20.5h7"/>',
+  laser: '<circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="7.5"/>',
+  eraser: '<path d="M8 20.5h12"/><path d="M5 15.5l9.2-9.2a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8L11.5 19H8.5l-3.5-3.5z"/><path d="M10 10.5l4.5 4.5"/>',
+  screenoff: '<rect x="3" y="4" width="18" height="12.5" rx="2" fill="currentColor"/><path d="M8.5 20.5h7M12 16.5v4"/>',
+  monitor: '<rect x="2.5" y="4" width="19" height="12.5" rx="2"/><path d="M8.5 20.5h7M12 16.5v4"/>',
+  sound: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  mute: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>',
+  download: '<path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 19.5h15"/>',
+  reset: '<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5V9h4.5"/>',
+  undo: '<path d="M9 14.5L4.5 10 9 5.5"/><path d="M4.5 10H15a5 5 0 0 1 0 10h-3"/>',
+  redo: '<path d="M15 14.5l4.5-4.5L15 5.5"/><path d="M19.5 10H9a5 5 0 0 0 0 10h3"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  trash: '<path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 13h9l1-13"/>',
+  type: '<path d="M5 6.5V5h14v1.5"/><path d="M12 5v14"/><path d="M9.5 19h5"/>',
+  square: '<rect x="4" y="5" width="16" height="14" rx="3"/>',
+  video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3"/>'
+};
+function icoSvg(name, cls) {
+  return '<svg class="ico' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+}
+if (typeof module !== 'undefined' && module.exports) module.exports = { ICONS: ICONS, icoSvg: icoSvg };
+
+/* AI 프롬프트 특강 · 슬라이드 엔진 (발표 + 편집) */
+(function () {
+  'use strict';
+
+  // 내보내기용: 아무것도 그리기 전의 원본 HTML
+  const PRISTINE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+  const W = 1920, H = 1080;
+  const INK = '#1C2340';
+  const FONT_MAIN = "'Nanum Gothic','NanumGothic','Malgun Gothic','Apple SD Gothic Neo',sans-serif";
+  const FONT_FUN = "'Jua','Nanum Gothic','Malgun Gothic',sans-serif";
+  const ico = (name, cls) => icoSvg(name, cls);
+  const PALETTE = ['#1C2340', '#5B6280', '#9AA0B5', '#FFFFFF', '#FFF8EE', '#151B3A', '#000000',
+    '#FF7A1A', '#2F7BFF', '#8A5CFF', '#17B26A', '#FF4D8D', '#FFC21A', '#12B5B0',
+    '#F04438', '#FFF1E5', '#EEF4FF', '#F3EEFF', '#EAFBF2', '#FFF0EF', '#FFF7D6'];
+  const BG = { cream: '#FFF8EE', white: '#FFFFFF', navy: '#151B3A', orange: '#FF7A1A', blue: '#2F7BFF', purple: '#8A5CFF', green: '#17B26A', pink: '#FF4D8D', yellow: '#FFC21A', teal: '#12B5B0' };
+  const BG_NAMES = { cream: '크림', white: '흰색', navy: '남색', orange: '주황', blue: '파랑', purple: '보라', green: '초록', pink: '분홍', yellow: '노랑', teal: '청록' };
+  const DARK_BG = { navy: 1, orange: 1, blue: 1, purple: 1, green: 1, pink: 1, teal: 1 };
+  const ANIMS = [['', '효과 없음'], ['fade', '페이드'], ['up', '아래에서 위로'], ['zoom', '확대'], ['pop', '튀어나오기'], ['left', '왼쪽에서'], ['right', '오른쪽에서'], ['letters', '글자 하나씩 톡톡'], ['type', '타자기(글자)'], ['swing', '흔들며 등장']];
+
+  /* ---------- 작은 도구들 ---------- */
+  const qs = (s, r) => (r || document).querySelector(s);
+  function h(tag, attrs) {
+    const n = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') n.className = v;
+      else if (k === 'style' && typeof v === 'object') Object.assign(n.style, v);
+      else if (k.slice(0, 2) === 'on' && typeof v === 'function') n.addEventListener(k.slice(2), v);
+      else if (k === 'html') n.innerHTML = v;
+      else if (k === 'text') n.textContent = v;
+      else n.setAttribute(k, v === true ? '' : v);
+    }
+    for (let i = 2; i < arguments.length; i++) {
+      const c = arguments[i];
+      if (c == null || c === false) continue;
+      if (Array.isArray(c)) c.forEach(x => x != null && n.appendChild(typeof x === 'string' ? document.createTextNode(x) : x));
+      else n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return n;
+  }
+  const uid = (p) => (p || 'e') + Math.random().toString(36).slice(2, 9);
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const isTyping = (t) => !!(t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)));
+  const fmtDate = (ms) => { const d = new Date(ms); return `${d.getMonth() + 1}월 ${d.getDate()}일 ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+
+  /* ---------- 저장소 (IndexedDB, 안 되면 메모리) ---------- */
+  const Store = {
+    db: null, mem: {},
+    open() {
+      return new Promise(res => {
+        try {
+          const r = indexedDB.open('ai-prompt-class', 1);
+          r.onupgradeneeded = () => r.result.createObjectStore('kv');
+          r.onsuccess = () => { this.db = r.result; res(true); };
+          r.onerror = () => res(false);
+          r.onblocked = () => res(false);
+        } catch (e) { res(false); }
+      });
+    },
+    get(k) {
+      if (!this.db) return Promise.resolve(this.mem[k]);
+      return new Promise(res => {
+        try { const r = this.db.transaction('kv', 'readonly').objectStore('kv').get(k); r.onsuccess = () => res(r.result); r.onerror = () => res(undefined); }
+        catch (e) { res(undefined); }
+      });
+    },
+    set(k, v) {
+      if (!this.db) { this.mem[k] = v; return Promise.resolve(false); }
+      return new Promise(res => {
+        try { const tx = this.db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(true); tx.onerror = () => res(false); tx.onabort = () => res(false); }
+        catch (e) { res(false); }
+      });
+    },
+    del(k) {
+      if (!this.db) { delete this.mem[k]; return Promise.resolve(true); }
+      return new Promise(res => {
+        try { const tx = this.db.transaction('kv', 'readwrite'); tx.objectStore('kv').delete(k); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }
+        catch (e) { res(false); }
+      });
+    }
+  };
+
+  /* ---------- 상태 ---------- */
+  const isPresenter = /[?&]presenter\b/.test(location.search);
+  let deck = null, media = {}, baseRev = '';
+  let cur = 0, step = 0, mode = 'present';
+  let selId = null, editingId = null, editTxt = null, editSnap = null, savedRange = null;
+  let undoStack = [], redoStack = [], lastUndoAt = 0, lastUndoKey = '';
+  let saveTimer = null, resetting = false;
+  let elClipboard = null;
+  const live = new Map();
+  let presentStage = null, inkCanvas = null, laserEl = null;
+  const ink = {};
+  let tool = null, penColor = '#F04438', drawing = null, blankMode = null, jumpBuf = '';
+  let gridEl = null, helpEl = null;
+  let soundOn = true, actx = null;
+  let presWin = null;
+
+  // DOM
+  let app, presentRoot, stageWrap, progressEl, toolbarEl, counterEl, jumpEl, blankEl, toastBox, overlayRoot, penBox;
+  let editorRoot, edProps, edSide, edCanvas, edNotes, edSaveLbl, edStage = null, editNodes = new Map(), selBox = null;
+  const modalStack = [];
+
+  const curSlide = () => deck.slides[cur];
+  const findEl = (id) => curSlide().elements.find(e => e.id === id);
+  const resolveSrc = (src) => (src && src.indexOf('media:') === 0) ? (media[src.slice(6)] || '') : (src || '');
+  const saveKey = () => 'save:' + deck.docId;
+  function maxStepOf(s) { let m = 0; for (const e of s.elements) m = Math.max(m, (e.step || 0) + (e.steps || 0)); return m; }
+
+  /* ---------- 효과음 (파일 없이 합성) ---------- */
+  function sfx(name) {
+    if (!soundOn) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t = actx.currentTime;
+      const tone = (f, s, d, type, v) => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = type || 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t + s);
+        g.gain.linearRampToValueAtTime(v || 0.12, t + s + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + s + d);
+        o.connect(g); g.connect(actx.destination); o.start(t + s); o.stop(t + s + d + 0.05);
+      };
+      if (name === 'tick') tone(1300, 0, 0.035, 'square', 0.035);
+      else if (name === 'pop') tone(700, 0, 0.14, 'triangle', 0.13);
+      else if (name === 'unlock') [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.08, 0.28, 'triangle', 0.14));
+      else if (name === 'win') [784, 988, 1175, 1568].forEach((f, i) => tone(f, i * 0.07, 0.45, 'triangle', 0.13));
+      else if (name === 'end') [0, 0.35, 0.7, 1.05].forEach(s => tone(880, s, 0.25, 'square', 0.1));
+    } catch (e) { /* 소리 실패는 무시 */ }
+  }
+  function toggleSound() { soundOn = !soundOn; toast(soundOn ? '타이머·뽑기 효과음 켜짐' : '타이머·뽑기 효과음 꺼짐'); updateChrome(); }
+  function toggleToolbar() {
+    const hid = !presentRoot.classList.contains('tb-hidden');
+    presentRoot.classList.toggle('tb-hidden', hid);
+    try { localStorage.setItem('ai-class-tb-hidden', hid ? '1' : '0'); } catch (e) { }
+    toast(hid ? '툴바와 진행 막대를 숨겼어요 · A 키를 누르면 다시 보여요' : '툴바를 다시 보이게 했어요', 2600);
+  }
+
+  /* ---------- 알림 · 모달 ---------- */
+  function toast(msg, ms) {
+    if (!toastBox) return;
+    const t = h('div', { class: 'toast', text: msg });
+    toastBox.appendChild(t);
+    setTimeout(() => t.remove(), ms || 2200);
+  }
+  function modal(opts) {
+    return new Promise(res => {
+      const ov = h('div', { class: 'overlay' });
+      const foot = h('div', { class: 'mf' });
+      const entry = { ov, res };
+      (opts.buttons || [{ label: '확인', value: true, cls: 'primary' }]).forEach(b => {
+        foot.appendChild(h('button', {
+          class: 'btn ' + (b.cls || ''), text: b.label, onclick: () => {
+            if (b.validate && !b.validate()) return;
+            const i = modalStack.indexOf(entry); if (i >= 0) modalStack.splice(i, 1);
+            ov.remove(); res(b.value);
+          }
+        }));
+      });
+      const body = h('div', { class: 'mb' });
+      if (typeof opts.body === 'string') body.innerHTML = opts.body; else if (opts.body) body.appendChild(opts.body);
+      ov.appendChild(h('div', { class: 'modal' }, h('h3', { text: opts.title || '' }), body, foot));
+      overlayRoot.appendChild(ov);
+      modalStack.push(entry);
+      const first = body.querySelector('input,textarea,select'); if (first) setTimeout(() => first.focus(), 30);
+    });
+  }
+  function closeTopModal() { const m = modalStack.pop(); if (m) { m.ov.remove(); m.res(null); } }
+  const confirmBox = (title, body, okLabel, cls) => modal({ title, body, buttons: [{ label: '취소', value: false }, { label: okLabel || '확인', value: true, cls: cls || 'primary' }] });
+
+  /* ---------- 요소 그리기 ---------- */
+  function styleInner(inner, e) {
+    const s = e.style || {}, st = inner.style;
+    st.fontSize = (s.fs || 40) + 'px';
+    if (s.fw) st.fontWeight = s.fw;
+    st.color = s.color || INK;
+    st.textAlign = s.align || 'left';
+    st.lineHeight = s.lh || 1.35;
+    if (s.ls) st.letterSpacing = s.ls;
+    st.fontFamily = s.font === 'fun' ? FONT_FUN : FONT_MAIN;
+    inner.classList.toggle('f-fun', s.font === 'fun');
+    if (s.bg) st.background = s.bg;
+    if (s.border) st.border = s.border;
+    if (s.radius != null) st.borderRadius = typeof s.radius === 'number' ? s.radius + 'px' : s.radius;
+    if (s.pad) st.padding = s.pad;
+    if (s.shadow) st.boxShadow = s.shadow;
+    st.justifyContent = { top: 'flex-start', middle: 'center', bottom: 'flex-end' }[s.valign || 'top'];
+  }
+
+  const Widgets = {
+    text: {
+      render(e, inner) {
+        inner.classList.add('textbox');
+        const txt = h('div', { class: 'txt' });
+        txt.innerHTML = e.html || '';
+        inner.appendChild(txt);
+        return { txt };
+      }
+    },
+    image: {
+      render(e, inner, opts) {
+        inner.classList.add('imgbox');
+        const src = resolveSrc(e.src);
+        const isFile = e.src && e.src.indexOf('media:') !== 0;
+        const ph = () => h('div', { class: 'img-ph', html: `<div class="ph-ic">${ico('image')}</div><div>${esc(e.placeholder || '이미지 자리')}</div><div class="ph-hint">${isFile ? '<b>' + esc(e.src) + '</b> 파일을 넣으면 여기에 보여요' : '편집 모드에서 이 칸을 클릭하고 Ctrl+V로 붙여넣기'}${e.fallback || e.optional ? '<br>(없으면 발표 화면에서는 ' + (e.fallback ? '아이콘으로' : '안') + ' 보여요)' : ''}</div>` });
+        // 그림 파일이 없을 때: 편집 모드는 자리표시, 발표 모드는 아이콘(fallback) 또는 숨김(optional)
+        const missing = () => {
+          inner.innerHTML = '';
+          if (opts.mode !== 'edit' && e.fallback) {
+            inner.classList.add('img-fb');
+            inner.style.justifyContent = 'center';
+            inner.style.fontSize = Math.round(Math.min(e.w, e.h) * 0.3) + 'px';
+            inner.innerHTML = `<span class="ico-badge" style="--c:${esc(e.fallbackColor || '#2F7BFF')}">${ico(e.fallback)}</span>`;
+          } else if (opts.mode !== 'edit' && e.optional) {
+            inner.style.visibility = 'hidden';
+          } else { inner.classList.add('img-missing'); inner.appendChild(ph()); }
+        };
+        if (src) {
+          const img = h('img', { src, draggable: 'false', alt: '' });
+          img.style.objectFit = e.fit || 'contain';
+          img.addEventListener('error', missing);
+          inner.appendChild(img);
+        } else missing();
+        return {};
+      }
+    },
+    video: {
+      config: true,
+      render(e, inner, opts) {
+        inner.classList.add('vidbox');
+        if (opts.mode === 'thumb') {
+          inner.appendChild(h('div', { class: 'vid-ph', html: `<div class="ph-ic">${ico('play')}</div><div>${esc(e.label || e.src || '영상')}</div>` }));
+          return {};
+        }
+        const v = h('video', { src: e.src, controls: true, preload: 'metadata', playsinline: true });
+        v.addEventListener('error', () => {
+          inner.innerHTML = '';
+          inner.appendChild(h('div', { class: 'vid-ph err', html: `<div class="ph-ic">${ico('alert')}</div><div>영상 파일을 찾을 수 없어요</div><div class="ph-hint">이 HTML 파일과 같은 폴더에 <b>${esc(e.src)}</b> 파일이 있어야 해요</div>` }));
+        });
+        inner.appendChild(v);
+        return { video: v };
+      }
+    },
+    chat: {
+      config: true,
+      render(e, inner) {
+        inner.classList.add('chat');
+        const c = e.config || {};
+        const body = h('div', { class: 'chat-body' });
+        const msgs = (c.messages || []).map(m => {
+          const row = h('div', { class: 'msg ' + (m.who === 'ai' ? 'ai' : 'me') });
+          if (m.who === 'ai') row.appendChild(h('div', { class: 'avatar', html: ico('sparkle') }));
+          let html;
+          if (m.type === 'doc') html = `<div class="doc-paper"><div class="doc-title">${esc(m.text).replace(/\n/g, '<br>')}</div><i></i><i></i><i></i><i></i><i></i></div><div class="doc-cap">${ico('camera')} 사진</div>`;
+          else html = esc(m.text).replace(/\n/g, '<br>');
+          const b = h('div', { class: 'bubble' + (m.type === 'doc' ? ' doc' : ''), html });
+          row.appendChild(b); body.appendChild(row);
+          return { row, b, m, html };
+        });
+        inner.append(
+          h('div', { class: 'chat-head', html: `<span class="chat-dot"></span>${esc(c.title || 'AI 채팅')}` }),
+          body,
+          h('div', { class: 'chat-input', html: '<span>메시지 입력…</span><b>➤</b>' })
+        );
+        return {
+          update(k, animate) {
+            msgs.forEach((x, i) => {
+              const vis = i < k, was = !x.row.classList.contains('off');
+              x.row.classList.toggle('off', !vis);
+              clearTimeout(x.t);
+              if (!vis) { x.b.innerHTML = x.html; return; }
+              if (!was && animate) {
+                x.row.classList.remove('in'); void x.row.offsetWidth; x.row.classList.add('in');
+                if (x.m.who === 'ai') { x.b.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>'; x.t = setTimeout(() => { x.b.innerHTML = x.html; }, 950); }
+              } else x.b.innerHTML = x.html;
+            });
+          }
+        };
+      }
+    },
+    autocomplete: {
+      config: true,
+      render(e, inner) {
+        inner.classList.add('ac');
+        const c = e.config || {};
+        const words = c.words || [];
+        const pool = (c.pool && c.pool.length) ? c.pool : ['그리고', '나는', '근데', '너무', '우리', 'ㅋㅋ'];
+        const textSpan = h('span', { class: 'ac-text' });
+        const field = h('div', { class: 'ac-field' }, textSpan, h('span', { class: 'ac-caret' }));
+        const bar = h('div', { class: 'ac-bar' });
+        const chips = [0, 1, 2].map(() => bar.appendChild(h('div', { class: 'ac-chip' })));
+        const kb = h('div', { class: 'ac-kb' });
+        ['ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔ', 'ㅁㄴㅇㄹㅎㅗㅓㅏㅣ', 'ㅋㅌㅊㅍㅠㅜㅡ'].forEach(row => {
+          const r = h('div', { class: 'ac-row' }); for (const ch of row) r.appendChild(h('span', { text: ch })); kb.appendChild(r);
+        });
+        inner.append(field, bar, kb);
+        let timer = null;
+        const sugg = (i) => {
+          const w = words[i]; if (w == null) return ['', '', ''];
+          let a = pool[(i * 3 + 1) % pool.length], b = pool[(i * 7 + 4) % pool.length];
+          if (a === w) a = pool[(i + 2) % pool.length];
+          if (b === w || b === a) b = pool[(i + 5) % pool.length];
+          return [a, w, b];
+        };
+        const setState = (n, pick) => {
+          textSpan.textContent = words.slice(0, n).join(' ');
+          const s = sugg(n);
+          chips.forEach((ch, j) => { ch.textContent = s[j]; ch.classList.toggle('pick', !!pick && j === 1); });
+        };
+        return {
+          update(k, animate) {
+            clearTimeout(timer);
+            if (k <= 0) { setState(0, false); return; }
+            if (!animate) { setState(words.length, false); return; }
+            let n = 0; setState(0, false);
+            const tick = () => {
+              if (n >= words.length) return;
+              chips[1].classList.add('pick');
+              timer = setTimeout(() => { n++; setState(n, false); timer = setTimeout(tick, 240); }, 300);
+            };
+            timer = setTimeout(tick, 250);
+          },
+          destroy() { clearTimeout(timer); }
+        };
+      }
+    },
+    ingredients: {
+      config: true,
+      render(e, inner) {
+        inner.classList.add('ing');
+        const c = e.config || {}, items = c.items || [], unlock = c.unlock || [];
+        const tiles = items.map(it => {
+          const icon = ICONS[it.icon] ? ico(it.icon) : esc(it.icon || '');
+          const t = h('div', { class: 'ing-tile' + (it.bonus ? ' bonus' : ''), html: `<div class="ing-badge"><span class="ing-ic">${icon}</span><span class="ing-lock">${ico('lock')}</span></div><div class="ing-name">${esc(it.name)}</div><div class="ing-label">${esc(it.label || '')}</div><div class="ing-burst"></div>` });
+          t.style.setProperty('--c', it.color || '#FF7A1A');
+          if (it.img) {
+            // 이미지 파일이 있으면 아이콘 대신 그림으로
+            const im = h('img', { class: 'ing-img', src: it.img, alt: '', draggable: 'false' });
+            im.addEventListener('load', () => t.classList.add('has-img'));
+            t.querySelector('.ing-badge').appendChild(im);
+          }
+          inner.appendChild(t); return t;
+        });
+        return {
+          update(k, animate) {
+            items.forEach((it, i) => {
+              const idx = unlock.indexOf(i);
+              const open = !!it.open || (idx >= 0 && idx < k);
+              const was = tiles[i].classList.contains('open');
+              tiles[i].classList.toggle('open', open);
+              if (open && !was && animate) { tiles[i].classList.remove('unlocking'); void tiles[i].offsetWidth; tiles[i].classList.add('unlocking'); }
+            });
+          }
+        };
+      }
+    },
+    // 챕터 전환: 색 띠가 휩쓸고, 글자가 떨어지고, 도형이 튀어나오는 모션 그래픽
+    chapter: {
+      config: true,
+      render(e, inner, opts) {
+        const c = e.config || {};
+        inner.classList.add('chapter');
+        inner.style.color = '#FFFFFF';
+        if (opts.mode !== 'present') inner.classList.add('static');
+        inner.style.setProperty('--c1', c.color || '#2F7BFF');
+        inner.style.setProperty('--c2', c.accent || '#FFC21A');
+        const stripeColors = c.stripes || ['#FFC21A', '#FF4D8D', '#FF7A1A', '#FFFFFF', c.color || '#2F7BFF'];
+        const stripes = stripeColors.map((col, i) => `<i style="background:${col};animation-delay:${i * 70}ms"></i>`).join('');
+        let li = 0;
+        const title = esc(c.title || '').split(' ').map(w => '<span class="wd">' + Array.from(w).map(ch => `<span class="ch-l" style="animation-delay:${900 + (li++) * 55}ms">${ch}</span>`).join('') + '</span>').join(' ');
+        const shapes = [
+          { k: 'ring', x: 1280, y: 120, s: 150, d: 0, col: '#FFFFFF' }, { k: 'spark', x: 1650, y: 220, s: 110, d: 80, col: c.accent || '#FFC21A' },
+          { k: 'dot', x: 1480, y: 840, s: 70, d: 160, col: '#FF4D8D' }, { k: 'spark', x: 980, y: 820, s: 80, d: 240, col: '#FFFFFF' },
+          { k: 'ring', x: 120, y: 860, s: 120, d: 320, col: c.accent || '#FFC21A' }, { k: 'dot', x: 760, y: 110, s: 46, d: 400, col: '#FFFFFF' },
+          { k: 'squig', x: 1700, y: 600, s: 160, d: 200, col: '#FFFFFF' }, { k: 'spark', x: 300, y: 140, s: 64, d: 460, col: '#FF7A1A' }
+        ].map((s, i) => {
+          let inside = '';
+          if (s.k === 'spark') inside = ico('sparkle');
+          else if (s.k === 'squig') inside = '<svg viewBox="0 0 60 20" class="ico" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><path d="M3 10c6-9 12-9 18 0s12 9 18 0 12-9 18 0"/></svg>';
+          return `<div class="ch-shape ch-${s.k}" style="left:${s.x}px;top:${s.y}px;width:${s.s}px;height:${s.s}px;color:${s.col};--d:${1000 + s.d}ms;--fd:${3.6 + (i % 3) * 0.8}s">${inside}</div>`;
+        }).join('');
+        const confetti = Array.from({ length: 34 }, (_, i) => {
+          const ang = (i / 34) * Math.PI * 2 + (i % 2) * 0.2, dist = 420 + (i * 97) % 380;
+          const cols = ['#FFC21A', '#FF4D8D', '#FFFFFF', '#17B26A', '#FF7A1A', '#8A5CFF'];
+          return `<i style="--dx:${Math.round(Math.cos(ang) * dist)}px;--dy:${Math.round(Math.sin(ang) * dist * 0.75)}px;--rot:${(i * 47) % 360}deg;background:${cols[i % cols.length]};animation-delay:${1050 + (i % 6) * 25}ms"></i>`;
+        }).join('');
+        inner.innerHTML = `<div class="ch-burst"></div><div class="ch-num">${esc(c.num || '')}</div><div class="ch-shapes">${shapes}</div>
+          <div class="ch-text"><div class="ch-part">${esc(c.part || '')}</div><div class="ch-title">${title}</div><div class="ch-sub">${esc(c.sub || '')}</div></div>
+          <div class="ch-confetti">${confetti}</div><div class="ch-stripes">${stripes}</div>`;
+        return {};
+      }
+    },
+    qr: {
+      config: true,
+      render(e, inner) {
+        inner.classList.add('qrbox');
+        inner.appendChild(h('div', { class: 'qr-ph', html: `<div class="ph-ic">${ico('qr')}</div><div>${esc((e.config && e.config.label) || 'QR 코드')}</div><div class="ph-hint">제출 페이지를 연결하면 여기에 QR이 생겨요</div>` }));
+        return {};
+      }
+    }
+  };
+
+  function renderEl(e, opts) {
+    const node = h('div', { class: 'el el-' + e.type, 'data-id': e.id });
+    node.style.cssText = `left:${e.x}px;top:${e.y}px;width:${e.w}px;height:${e.h}px;z-index:${(e.z || 0) + 10};` +
+      (e.rot ? `transform:rotate(${e.rot}deg);` : '') + (e.opacity != null ? `opacity:${e.opacity};` : '');
+    const inner = h('div', { class: 'el-in' });
+    node.appendChild(inner);
+    styleInner(inner, e);
+    const Wd = Widgets[e.type] || Widgets.text;
+    const widget = Wd.render(e, inner, opts) || {};
+    return { e, node, inner, widget, hidden: false, lastK: undefined };
+  }
+
+  function makeStage(slide, opts) {
+    const stage = h('div', { class: 'stage' });
+    const bg = slide.bg || 'cream';
+    stage.style.backgroundColor = BG[bg] || bg;
+    if (bg === 'cream' || bg === 'white') stage.classList.add('dots');
+    const nodes = new Map();
+    for (const e of slide.elements) { const r = renderEl(e, opts); stage.appendChild(r.node); nodes.set(e.id, r); }
+    return { stage, nodes };
+  }
+
+  function fitStage(wrap, stage) {
+    const r = wrap.getBoundingClientRect();
+    const s = Math.max(0.05, Math.min(r.width / W, r.height / H));
+    stage.style.transform = `translate(${(r.width - W * s) / 2}px, ${(r.height - H * s) / 2}px) scale(${s})`;
+    stage._scale = s;
+    stage.style.setProperty('--inv', String(1 / s));
+    return s;
+  }
+
+  // 작은 미리보기 (stepVal이 있으면 그 클릭 상태로)
+  function makeThumb(slide, width, stepVal) {
+    const box = h('div', { class: 'thumb' });
+    box.style.width = width + 'px'; box.style.height = Math.round(width * H / W) + 'px';
+    const { stage, nodes } = makeStage(slide, { mode: 'thumb' });
+    nodes.forEach(r => {
+      const e = r.e, s = e.step || 0;
+      if (stepVal != null && stepVal < s) { r.node.classList.add('pending'); if (r.widget.update) r.widget.update(0, false); return; }
+      if (r.widget.update) r.widget.update(stepVal != null ? clamp(stepVal - s, 0, e.steps || 0) : (e.steps || 0), false);
+    });
+    stage.style.transform = `scale(${width / W})`;
+    box.appendChild(stage);
+    return box;
+  }
+
+  /* ---------- 등장 효과 ---------- */
+  function clearAnim(r) {
+    r.inner.className = r.inner.className.replace(/\ba-\w+/g, '').replace(/\s+/g, ' ').trim();
+    r.inner.style.animationDelay = '';
+    const txt = r.widget.txt;
+    if (txt && (txt._tt || txt._letters)) { clearTimeout(txt._tt); txt._tt = null; txt._letters = false; txt.innerHTML = r.e.html || ''; }
+  }
+  // 글자를 한 자씩 튀어 오르게 (단어는 줄바꿈 때 쪼개지지 않게 묶음)
+  function letterize(txt, delay) {
+    const nodes = [];
+    const walker = document.createTreeWalker(txt, NodeFilter.SHOW_TEXT);
+    let n; while ((n = walker.nextNode())) nodes.push(n);
+    let i = 0;
+    nodes.forEach(node => {
+      const frag = document.createDocumentFragment();
+      node.nodeValue.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        const wd = document.createElement('span'); wd.className = 'wd';
+        Array.from(part).forEach(ch => {
+          const s = document.createElement('span'); s.className = 'ltr'; s.textContent = ch;
+          s.style.animationDelay = ((delay || 0) + (i++) * 40) + 'ms'; wd.appendChild(s);
+        });
+        frag.appendChild(wd);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+    txt._letters = true;
+  }
+  function playAnim(r, delay) {
+    const a = r.e.anim; if (!a) return;
+    clearAnim(r);
+    if (a === 'type' && r.widget.txt) { typewrite(r.widget.txt, delay); return; }
+    if (a === 'letters' && r.widget.txt) { letterize(r.widget.txt, delay); return; }
+    void r.inner.offsetWidth;
+    r.inner.style.animationDelay = (delay || 0) + 'ms';
+    r.inner.classList.add('a-' + (a === 'type' || a === 'letters' ? 'fade' : a));
+  }
+  function typewrite(txt, delay) {
+    const parts = [];
+    const walker = document.createTreeWalker(txt, NodeFilter.SHOW_TEXT);
+    let n; while ((n = walker.nextNode())) { parts.push([n, n.nodeValue]); n.nodeValue = ''; }
+    const total = parts.reduce((a, p) => a + p[1].length, 0);
+    const speed = clamp(1600 / Math.max(total, 1), 16, 55);
+    let i = 0, j = 0;
+    const tick = () => {
+      if (i >= parts.length) { txt._tt = null; return; }
+      const [node, full] = parts[i];
+      j++; node.nodeValue = full.slice(0, j);
+      if (j >= full.length) { i++; j = 0; }
+      txt._tt = setTimeout(tick, speed);
+    };
+    clearTimeout(txt._tt); txt._tt = setTimeout(tick, delay || 0);
+  }
+
+  /* ---------- 발표 모드 ---------- */
+  function applyStep(animate, entry) {
+    for (const r of live.values()) {
+      const e = r.e, s = e.step || 0, n = e.steps || 0;
+      const vis = step >= s;
+      if (vis) {
+        if (r.hidden || entry) {
+          r.node.classList.remove('pending');
+          if (animate && r.hidden) playAnim(r, s === step ? (e.delay || 0) : 0);
+          else if (entry && s === 0 && e.anim) playAnim(r, e.delay || 0);
+          else if (!animate) clearAnim(r);
+        }
+        r.hidden = false;
+      } else {
+        r.node.classList.add('pending'); r.hidden = true; clearAnim(r);
+      }
+      if (r.widget.update) {
+        const k = vis ? clamp(step - s, 0, n) : 0;
+        if (r.lastK !== k) { r.widget.update(k, !!animate && r.lastK != null && k > r.lastK); r.lastK = k; }
+      }
+    }
+  }
+
+  function renderPresent(animateEntry) {
+    live.forEach(r => r.widget.destroy && r.widget.destroy());
+    live.clear();
+    const { stage, nodes } = makeStage(curSlide(), { mode: 'present' });
+    nodes.forEach((r, id) => { r.hidden = true; live.set(id, r); });
+    inkCanvas = h('canvas', { class: 'ink', width: W, height: H });
+    laserEl = h('div', { class: 'laser' });
+    stage.append(inkCanvas, laserEl);
+    bindInk(inkCanvas, stage);
+    stageWrap.innerHTML = '';
+    stageWrap.appendChild(stage);
+    presentStage = stage;
+    fitStage(stageWrap, stage);
+    applyStep(false, !!animateEntry);
+    if (animateEntry) stage.classList.add('enter');
+    redrawInk();
+    updateChrome();
+  }
+
+  function visibleIndex(from, dir) {
+    let i = from + dir;
+    while (i >= 0 && i < deck.slides.length && deck.slides[i].hidden) i += dir;
+    return (i >= 0 && i < deck.slides.length) ? i : -1;
+  }
+  function firstVisible() { const i = visibleIndex(-1, 1); return i < 0 ? 0 : i; }
+
+  function next() {
+    if (step < maxStepOf(curSlide())) { step++; applyStep(true, false); updateChrome(); syncPresenter(); return; }
+    const i = visibleIndex(cur, 1);
+    if (i >= 0) goSlide(i, 0, true); else toast('마지막 슬라이드예요');
+  }
+  function prev() {
+    if (step > 0) { step--; applyStep(false, false); updateChrome(); syncPresenter(); return; }
+    const i = visibleIndex(cur, -1);
+    if (i >= 0) goSlide(i, 'end', false);
+  }
+  function goSlide(i, st, animate) {
+    cur = clamp(i, 0, deck.slides.length - 1);
+    step = st === 'end' ? maxStepOf(curSlide()) : (st || 0);
+    if (mode === 'present') renderPresent(!!animate); else renderEditor();
+    syncPresenter();
+  }
+
+  function buildPresent() {
+    presentRoot = h('div', { id: 'present' });
+    stageWrap = h('div', { class: 'stage-wrap' });
+    progressEl = h('div', { class: 'progress' });
+    jumpEl = h('div', { class: 'jump hidden' });
+    blankEl = h('div', { class: 'blank hidden' });
+    toolbarEl = buildToolbar();
+    presentRoot.append(stageWrap, progressEl, jumpEl, blankEl, toolbarEl, Timer.build());
+    stageWrap.addEventListener('click', ev => {
+      if (mode !== 'present' || tool) return;
+      if (ev.target.closest('video,button,a,input,textarea,select,.no-advance')) return;
+      next();
+    });
+    blankEl.addEventListener('click', () => setBlank(null));
+    // 툴바: 마우스가 화면 아래쪽에 올 때만 나타나고, A 키로 완전히 숨길 수 있어요
+    let idleT = null, curT = null;
+    const hideBar = () => { if (!toolbarEl.matches(':hover')) toolbarEl.classList.add('idle'); };
+    const onMove = (ev) => {
+      presentRoot.classList.remove('idle-cursor');
+      clearTimeout(curT);
+      curT = setTimeout(() => { if (!tool) presentRoot.classList.add('idle-cursor'); }, 2200);
+      const nearBottom = ev && ev.clientY > window.innerHeight - 150;
+      if (nearBottom || toolbarEl.matches(':hover')) {
+        toolbarEl.classList.remove('idle');
+        clearTimeout(idleT); idleT = setTimeout(hideBar, 2200);
+      } else if (!toolbarEl.classList.contains('idle')) {
+        clearTimeout(idleT); idleT = setTimeout(hideBar, 700);
+      }
+    };
+    presentRoot.addEventListener('mousemove', onMove);
+    toolbarEl.classList.add('idle');
+    try { if (localStorage.getItem('ai-class-tb-hidden') === '1') presentRoot.classList.add('tb-hidden'); } catch (e) { }
+    return presentRoot;
+  }
+
+  function buildToolbar() {
+    const tb = h('div', { class: 'toolbar' });
+    const B = (icon, title, fn, key) => {
+      const b = h('button', { class: 'tb', title, html: ICONS[icon] ? ico(icon) : icon, onclick: ev => { ev.stopPropagation(); fn(); } });
+      if (key) b.dataset.k = key;
+      return b;
+    };
+    const sep = () => h('span', { class: 'tb-sep' });
+    counterEl = h('button', { class: 'tb counter', title: '전체 슬라이드 보기 (G)', onclick: ev => { ev.stopPropagation(); toggleGrid(); } });
+    penBox = h('span', { class: 'pen-box hidden', style: { display: 'flex', alignItems: 'center' } });
+    ['#F04438', '#2F7BFF', '#1C2340', '#17B26A'].forEach(c => {
+      const sw = h('span', { class: 'pen-sw', title: '펜 색', style: { background: c }, onclick: ev => { ev.stopPropagation(); penColor = c; setTool('pen'); } });
+      sw.dataset.c = c; penBox.appendChild(sw);
+    });
+    tb.append(
+      B('left', '이전 (←)', prev), counterEl, B('right', '다음 (→, Space)', next), sep(),
+      B('expand', '전체화면 (F)', toggleFullscreen, 'fs'), B('timer', '타이머 (T)', () => Timer.toggle(), 'timer'), B('dice', '랜덤 뽑기 (R)', () => Picker.open(), 'picker'), sep(),
+      B('pencil', '펜 (P)', () => setTool(tool === 'pen' ? null : 'pen'), 'pen'), penBox,
+      B('highlighter', '형광펜 (H)', () => setTool(tool === 'hl' ? null : 'hl'), 'hl'),
+      B('laser', '레이저 포인터 (L)', () => setTool(tool === 'laser' ? null : 'laser'), 'laser'),
+      B('eraser', '판서 지우기 (X)', clearInk), sep(),
+      B('screenoff', '화면 가리기 (B / W)', () => setBlank('black')), B('layout', '전체 슬라이드 (G)', toggleGrid),
+      B('monitor', '발표자 화면 열기 (S)', openPresenter), B('sound', '타이머·뽑기 효과음 켜기/끄기 (M)', toggleSound, 'snd'), sep(),
+      B(ico('pencil') + '<span class="lbl">편집</span>', '편집 모드 (E)', enterEdit), B('question', '도움말 (?)', toggleHelp),
+      B('eyeoff', '툴바 숨기기 (A) · 다시 보려면 A 키', () => toggleToolbar())
+    );
+    tb.addEventListener('click', ev => ev.stopPropagation());
+    return tb;
+  }
+
+  function updateChrome() {
+    if (!deck || !counterEl) return;
+    const N = deck.slides.length;
+    counterEl.textContent = `${cur + 1} / ${N}`;
+    progressEl.style.width = (N > 1 ? (cur / (N - 1)) * 100 : 100) + '%';
+    toolbarEl.querySelectorAll('[data-k]').forEach(b => {
+      const k = b.dataset.k;
+      b.classList.toggle('on', (k === tool) || (k === 'timer' && Timer.visible) || (k === 'fs' && !!document.fullscreenElement));
+      if (k === 'snd') b.innerHTML = ico(soundOn ? 'sound' : 'mute');
+    });
+    penBox.classList.toggle('hidden', tool !== 'pen');
+    penBox.querySelectorAll('.pen-sw').forEach(s => s.classList.toggle('on', s.dataset.c === penColor));
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) (document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : Promise.reject()).catch(() => toast('전체화면을 열 수 없어요'));
+    else document.exitFullscreen();
+  }
+
+  function setBlank(kind) {
+    blankMode = kind;
+    blankEl.className = 'blank ' + (kind ? kind : 'hidden');
+  }
+
+  /* ---------- 판서 · 레이저 ---------- */
+  function setTool(t) {
+    tool = t;
+    presentRoot.classList.toggle('tool-on', !!t);
+    presentRoot.dataset.tool = t || '';
+    if (laserEl) laserEl.classList.remove('show');
+    updateChrome();
+  }
+  function bindInk(canvas, stage) {
+    const toStage = ev => { const r = stage.getBoundingClientRect(); const s = r.width / W; return [(ev.clientX - r.left) / s, (ev.clientY - r.top) / s]; };
+    canvas.addEventListener('pointerdown', ev => {
+      if (tool !== 'pen' && tool !== 'hl') return;
+      ev.preventDefault(); ev.stopPropagation();
+      try { canvas.setPointerCapture(ev.pointerId); } catch (e) { }
+      const sid = curSlide().id;
+      drawing = { t: tool, c: tool === 'hl' ? '#FFE500' : penColor, w: tool === 'hl' ? 38 : 7, p: [toStage(ev)] };
+      (ink[sid] = ink[sid] || []).push(drawing);
+      redrawInk();
+    });
+    canvas.addEventListener('pointermove', ev => {
+      const p = toStage(ev);
+      if (tool === 'laser') { laserEl.style.left = p[0] + 'px'; laserEl.style.top = p[1] + 'px'; laserEl.classList.add('show'); }
+      if (!drawing) return;
+      drawing.p.push(p); redrawInk();
+    });
+    const end = () => { drawing = null; };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('pointerleave', () => laserEl && laserEl.classList.remove('show'));
+    canvas.addEventListener('click', ev => ev.stopPropagation());
+  }
+  function redrawInk() {
+    if (!inkCanvas || !deck) return;
+    const ctx = inkCanvas.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    (ink[curSlide().id] || []).forEach(s => {
+      ctx.save();
+      ctx.globalAlpha = s.t === 'hl' ? 0.38 : 1;
+      ctx.strokeStyle = s.c; ctx.lineWidth = s.w; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      s.p.forEach((pt, i) => i ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1]));
+      if (s.p.length === 1) ctx.lineTo(s.p[0][0] + 0.1, s.p[0][1]);
+      ctx.stroke(); ctx.restore();
+    });
+  }
+  function clearInk() { delete ink[curSlide().id]; redrawInk(); }
+
+  /* ---------- 전체 보기 · 도움말 ---------- */
+  function toggleGrid() {
+    if (gridEl) { gridEl.remove(); gridEl = null; return; }
+    gridEl = h('div', { class: 'overlay', onclick: ev => { if (ev.target === gridEl || ev.target.classList.contains('grid')) toggleGrid(); } });
+    const g = h('div', { class: 'grid' });
+    deck.slides.forEach((s, i) => {
+      g.appendChild(h('div', {
+        class: 'grid-item' + (i === cur ? ' cur' : '') + (s.hidden ? ' is-hidden' : ''),
+        onclick: () => { toggleGrid(); if (mode === 'present') goSlide(i, 0, true); else { cur = i; renderEditor(); } }
+      }, makeThumb(s, 280), h('div', { class: 'grid-num', text: (i + 1) + (s.hidden ? ' · 숨김' : '') })));
+    });
+    gridEl.appendChild(g);
+    (mode === 'present' ? presentRoot : overlayRoot).appendChild(gridEl);
+  }
+
+  function toggleHelp() {
+    if (helpEl) { helpEl.remove(); helpEl = null; return; }
+    const row = (k, d) => `<tr><td>${k}</td><td>${d}</td></tr>`;
+    helpEl = h('div', { class: 'overlay', onclick: ev => { if (ev.target === helpEl) toggleHelp(); } },
+      h('div', {
+        class: 'help', html: `<h2>사용법</h2>
+        <div class="cols"><div><h3>발표할 때</h3><div class="muted" style="margin-bottom:6px">툴바는 마우스를 화면 아래쪽으로 가져가면 나타나요.</div><table>
+        ${row('<kbd>→</kbd><kbd>Space</kbd><kbd>PageDown</kbd> 또는 클릭', '다음')}
+        ${row('<kbd>←</kbd><kbd>PageUp</kbd><kbd>Backspace</kbd>', '이전')}
+        ${row('숫자 + <kbd>Enter</kbd>', '그 번호 슬라이드로 바로 이동')}
+        ${row('<kbd>Home</kbd> / <kbd>End</kbd>', '처음 / 마지막')}
+        ${row('<kbd>F</kbd>', '전체화면')}
+        ${row('<kbd>G</kbd>', '전체 슬라이드 한눈에 보기')}
+        ${row('<kbd>B</kbd> / <kbd>W</kbd>', '화면 가리기 (검정 / 흰색)')}
+        ${row('<kbd>T</kbd>', '타이머 (시간 숫자를 클릭하면 직접 입력)')}
+        ${row('<kbd>R</kbd>', '랜덤 뽑기')}
+        ${row('<kbd>P</kbd> / <kbd>H</kbd> / <kbd>L</kbd>', '펜 / 형광펜 / 레이저 포인터')}
+        ${row('<kbd>X</kbd>', '판서 지우기')}
+        ${row('<kbd>S</kbd>', '발표자 화면 (모니터 2개일 때)')}
+        ${row('<kbd>A</kbd>', '툴바·진행 막대 완전히 숨기기 / 다시 보이기')}
+        ${row('<kbd>M</kbd>', '타이머·뽑기 효과음 켜기/끄기')}
+        ${row('<kbd>F5</kbd> / <kbd>Shift</kbd>+<kbd>F5</kbd>', '처음부터 / 지금 슬라이드부터 발표')}
+        ${row('<kbd>E</kbd>', '편집 모드')}
+        ${row('<kbd>Esc</kbd>', '도구·창 닫기')}
+        </table></div><div><h3>편집할 때</h3><table>
+        ${row('클릭 · 드래그', '선택 · 옮기기 (가운데에 맞추면 분홍 선)')}
+        ${row('모서리 끌기', '크기 조절 (<kbd>Shift</kbd>: 비율 유지)')}
+        ${row('더블클릭 / <kbd>Enter</kbd>', '글자 고치기 (위젯은 내용 편집)')}
+        ${row('<kbd>Ctrl</kbd>+<kbd>V</kbd>', '이미지·글 붙여넣기 (이미지 칸을 선택하면 교체)')}
+        ${row('이미지 파일 끌어다 놓기', '이미지 추가')}
+        ${row('<kbd>Delete</kbd>', '삭제')}
+        ${row('<kbd>Ctrl</kbd>+<kbd>D</kbd> / <kbd>Ctrl</kbd>+<kbd>C</kbd>·<kbd>V</kbd>', '복제 / 복사·붙여넣기')}
+        ${row('<kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd>', '되돌리기 / 다시 하기')}
+        ${row('방향키', '1px 이동 (<kbd>Shift</kbd>: 10px)')}
+        ${row('<kbd>PageUp</kbd> / <kbd>PageDown</kbd>', '이전 / 다음 슬라이드')}
+        ${row('왼쪽 목록 끌기', '슬라이드 순서 바꾸기')}
+        ${row('등장 · 효과', '클릭할 때 나타나는 순서와 애니메이션')}
+        </table>
+        <h3>저장</h3><div>편집 내용은 <b>이 컴퓨터 브라우저에 자동 저장</b>돼요.<br>다른 컴퓨터로 옮길 때는 <b>HTML로 내보내기</b>를 누르고, 내보낸 파일을 <b>영상 파일 2개와 같은 폴더</b>에 두세요.</div>
+        </div></div>`
+      }));
+    (mode === 'present' ? presentRoot : overlayRoot).appendChild(helpEl);
+  }
+
+  /* ---------- 타이머 ---------- */
+  const Timer = {
+    el: null, disp: null, playBtn: null, dur: 300, remain: 300000, running: false, endAt: 0, done: false, visible: false, big: false, iv: null,
+    build() {
+      const el = h('div', { class: 'timer hidden' });
+      const head = h('div', { class: 'timer-head' }, h('span', { html: ico('timer') + ' 타이머' }),
+        h('span', {}, h('button', { class: 'tlink', text: '크게/작게', onclick: () => this.toggleBig() }), h('button', { class: 'tlink', text: '✕', title: '닫기 (T)', onclick: () => this.hide() })));
+      this.disp = h('div', { class: 'timer-disp', title: '클릭해서 시간 직접 입력', onclick: () => this.editTime() });
+      const r1 = h('div', { class: 'timer-row' });
+      [1, 3, 5, 10].forEach(m => r1.appendChild(h('button', { text: m + '분', onclick: () => this.set(m * 60) })));
+      this.playBtn = h('button', { class: 'primary', onclick: () => (this.running ? this.pause() : this.start()) });
+      const r2 = h('div', { class: 'timer-row' },
+        h('button', { text: '−30초', onclick: () => this.add(-30) }), this.playBtn,
+        h('button', { text: '+30초', onclick: () => this.add(30) }), h('button', { text: '↺ 처음으로', onclick: () => this.reset() }));
+      el.append(head, this.disp, r1, r2);
+      head.addEventListener('pointerdown', ev => {
+        if (ev.target.closest('button') || this.big) return;
+        const r = el.getBoundingClientRect(), ox = ev.clientX - r.left, oy = ev.clientY - r.top;
+        const mm = m => { el.style.left = (m.clientX - ox) + 'px'; el.style.top = (m.clientY - oy) + 'px'; el.style.right = 'auto'; };
+        const mu = () => { window.removeEventListener('pointermove', mm); window.removeEventListener('pointerup', mu); };
+        window.addEventListener('pointermove', mm); window.addEventListener('pointerup', mu);
+      });
+      el.addEventListener('click', ev => ev.stopPropagation());
+      this.el = el; this.paint();
+      return el;
+    },
+    toggle() { this.visible ? this.hide() : this.show(); },
+    show() { this.visible = true; this.el.classList.remove('hidden'); this.paint(); updateChrome(); },
+    hide() { this.visible = false; this.el.classList.add('hidden'); updateChrome(); },
+    toggleBig() { this.big = !this.big; this.el.classList.toggle('big', this.big); },
+    set(sec) { this.dur = Math.max(1, sec); this.remain = this.dur * 1000; this.running = false; this.done = false; this.stopLoop(); this.paint(); syncPresenter(); },
+    start() {
+      if (this.remain <= 0) this.remain = this.dur * 1000;
+      this.endAt = Date.now() + this.remain; this.running = true; this.done = false;
+      this.stopLoop(); this.iv = setInterval(() => this.tick(), 200);
+      this.paint(); syncPresenter();
+    },
+    pause() { this.remain = Math.max(0, this.endAt - Date.now()); this.running = false; this.stopLoop(); this.paint(); syncPresenter(); },
+    reset() { this.running = false; this.done = false; this.remain = this.dur * 1000; this.stopLoop(); this.paint(); syncPresenter(); },
+    add(sec) {
+      if (this.running) this.endAt += sec * 1000; else this.remain = Math.max(0, this.remain + sec * 1000);
+      if (this.done && sec > 0 && !this.running) this.done = false;
+      this.paint(); syncPresenter();
+    },
+    stopLoop() { clearInterval(this.iv); this.iv = null; },
+    tick() {
+      if (!this.running) return;
+      this.remain = this.endAt - Date.now();
+      if (this.remain <= 0) { this.remain = 0; this.running = false; this.done = true; this.stopLoop(); sfx('end'); syncPresenter(); }
+      this.paint();
+    },
+    fmt(ms) { const t = Math.ceil(Math.max(0, ms) / 1000); return Math.floor(t / 60) + ':' + pad2(t % 60); },
+    paint() {
+      if (!this.disp || this.disp.querySelector('input')) return;
+      this.disp.textContent = this.done ? '끝!' : this.fmt(this.remain);
+      this.el.classList.toggle('warn', this.running && this.remain <= 10000);
+      this.el.classList.toggle('done', this.done);
+      this.playBtn.textContent = this.running ? '⏸ 멈춤' : '▶ 시작';
+    },
+    editTime() {
+      if (this.disp.querySelector('input')) return;
+      const inp = h('input', { type: 'text', value: this.fmt(this.dur * 1000) });
+      this.disp.textContent = ''; this.disp.appendChild(inp); inp.focus(); inp.select();
+      const done = (ok) => {
+        if (!inp.isConnected) return;
+        const v = inp.value.trim(); inp.remove();
+        if (ok && v) {
+          let sec = 0;
+          if (v.indexOf(':') >= 0) { const [m, s] = v.split(':'); sec = (parseInt(m, 10) || 0) * 60 + (parseInt(s, 10) || 0); }
+          else sec = Math.round(parseFloat(v) * 60) || 0;
+          if (sec > 0) { this.set(sec); return; }
+        }
+        this.paint();
+      };
+      inp.addEventListener('keydown', ev => { ev.stopPropagation(); if (ev.key === 'Enter') done(true); if (ev.key === 'Escape') done(false); });
+      inp.addEventListener('blur', () => done(true));
+    },
+    state() { return { remain: this.remain, running: this.running, done: this.done, endAt: this.endAt }; },
+    cmd(c) { if (c === 'toggle') { this.show(); this.running ? this.pause() : this.start(); } else if (c === 'reset') this.reset(); }
+  };
+
+  /* ---------- 랜덤 뽑기 ---------- */
+  const Picker = {
+    el: null, disp: null, ta: null, histBox: null, removeChk: null, hist: [], spinning: false,
+    isOpen() { return !!this.el; },
+    items() { return this.ta.value.split('\n').map(s => s.trim()).filter(Boolean); },
+    open() {
+      if (this.el) return;
+      const st = deck.settings || (deck.settings = {});
+      const presets = st.pickerPresets || {};
+      this.disp = h('div', { class: 'pk-disp', text: '?' });
+      this.histBox = h('div', { class: 'pk-hist' });
+      this.ta = h('textarea', { spellcheck: 'false' });
+      this.ta.value = st.pickerList || '1반\n2반\n3반\n4반\n5반';
+      this.ta.addEventListener('input', () => { st.pickerList = this.ta.value; scheduleSave(); });
+      this.removeChk = h('input', { type: 'checkbox' });
+      const pre = h('div', { class: 'pk-presets' });
+      Object.keys(presets).forEach(name => pre.appendChild(h('button', { text: name, onclick: () => { this.ta.value = presets[name]; st.pickerList = this.ta.value; scheduleSave(); } })));
+      const box = h('div', { class: 'picker' },
+        h('div', { class: 'pk-main' }, h('div', { class: 'pk-title', html: ico('dice') + ' 랜덤 뽑기' }), this.disp,
+          h('button', { class: 'pk-btn', text: '뽑기!', onclick: () => this.spin() }), this.histBox),
+        h('div', { class: 'pk-side' }, h('button', { class: 'pk-close', text: '✕ 닫기 (Esc)', onclick: () => this.close() }),
+          h('b', { text: '뽑을 목록 (한 줄에 하나)' }), pre, this.ta,
+          h('label', {}, this.removeChk, ' 뽑힌 건 목록에서 빼기'),
+          h('div', { class: 'muted', style: { fontSize: '13px' }, text: 'Space나 Enter를 눌러도 뽑혀요.' })));
+      this.el = h('div', { class: 'overlay', onclick: ev => { if (ev.target === this.el) this.close(); } }, box);
+      presentRoot.appendChild(this.el);
+      this.renderHist();
+      updateChrome();
+    },
+    close() { if (this.el) { this.el.remove(); this.el = null; } updateChrome(); },
+    renderHist() { this.histBox.innerHTML = ''; this.hist.slice(0, 12).forEach(x => this.histBox.appendChild(h('span', { text: x }))); },
+    spin() {
+      const items = this.items();
+      if (!items.length) { toast('목록이 비어 있어요'); return; }
+      if (this.spinning) return;
+      this.spinning = true;
+      this.disp.classList.remove('win');
+      const final = items[Math.floor(Math.random() * items.length)];
+      const t0 = Date.now(), total = 2300;
+      let delay = 50, last = '';
+      const tick = () => {
+        if (!this.el) { this.spinning = false; return; }
+        if (Date.now() - t0 >= total) {
+          this.disp.textContent = final; void this.disp.offsetWidth; this.disp.classList.add('win'); sfx('win');
+          this.hist.unshift(final); this.renderHist();
+          if (this.removeChk.checked) {
+            const arr = this.ta.value.split('\n'); const i = arr.findIndex(s => s.trim() === final);
+            if (i >= 0) { arr.splice(i, 1); this.ta.value = arr.join('\n'); deck.settings.pickerList = this.ta.value; scheduleSave(); }
+          }
+          this.spinning = false; return;
+        }
+        let pick = items[Math.floor(Math.random() * items.length)];
+        if (items.length > 1) while (pick === last) pick = items[Math.floor(Math.random() * items.length)];
+        last = pick; this.disp.textContent = pick; sfx('tick');
+        delay *= 1.1; setTimeout(tick, delay);
+      };
+      tick();
+    }
+  };
+
+  /* ---------- 발표자 화면 연결 ---------- */
+  function openPresenter() {
+    const url = location.href.split('#')[0].split('?')[0] + '?presenter';
+    const w = window.open(url, 'ai-presenter', 'width=1400,height=860');
+    if (!w) toast('팝업이 막혔어요. 주소창 오른쪽에서 팝업을 허용해 주세요.', 3500);
+    else presWin = w;
+  }
+  function sendPresInit() { if (presWin && !presWin.closed) presWin.postMessage({ type: 'pres-init', deck, media, cur, step, timer: Timer.state() }, '*'); }
+  function syncPresenter() { if (presWin && !presWin.closed) presWin.postMessage({ type: 'pres-state', cur, step, timer: Timer.state() }, '*'); }
+  let presInitT = null;
+  const sendPresInitSoon = () => { clearTimeout(presInitT); presInitT = setTimeout(sendPresInit, 800); };
+  window.addEventListener('message', ev => {
+    const d = ev.data || {};
+    if (isPresenter) return;
+    if (d.type === 'pres-hello') { presWin = ev.source; sendPresInit(); }
+    else if (d.type === 'pres-nav') {
+      if (mode !== 'present') return;
+      if (d.dir === 'next') next(); else if (d.dir === 'prev') prev(); else if (d.dir === 'goto') goSlide(d.index, 0, true);
+    } else if (d.type === 'pres-timer') Timer.cmd(d.cmd);
+  });
+
+  const Presenter = {
+    st: { cur: 0, step: 0, timer: null }, t0: Date.now(),
+    boot() {
+      document.title = '발표자 화면 · AI 프롬프트 특강';
+      document.body.classList.add('presenter');
+      app = qs('#app');
+      this.clock = h('span', { class: 'pv-big' }); this.elapsed = h('span', { class: 'pv-big' });
+      this.tmr = h('span', { class: 'pv-big' }); this.cnt = h('span', { class: 'pv-big' });
+      const top = h('div', { class: 'pv-top' },
+        h('span', { class: 'pv-l', text: '지금' }), this.clock,
+        h('span', { class: 'pv-l', text: '경과' }), this.elapsed,
+        h('button', { class: 'pv-btn', text: '↺', title: '경과 시간 다시 재기', onclick: () => { this.t0 = Date.now(); this.tickClock(); } }),
+        h('span', { class: 'grow' }),
+        h('span', { class: 'pv-l', text: '타이머' }), this.tmr,
+        h('button', { class: 'pv-btn', text: '⏯', title: '타이머 시작/멈춤 (T)', onclick: () => this.send({ type: 'pres-timer', cmd: 'toggle' }) }),
+        h('span', { class: 'pv-l', text: '슬라이드' }), this.cnt,
+        h('button', { class: 'pv-btn', text: '◀ 이전', onclick: () => this.nav('prev') }),
+        h('button', { class: 'pv-btn primary', text: '다음 ▶', onclick: () => this.nav('next') }));
+      this.curBox = h('div', { class: 'pv-stagebox' });
+      this.nextBox = h('div', { class: 'pv-stagebox' });
+      this.nextLbl = h('div', { class: 'pv-label' });
+      this.notes = h('div', { class: 'pv-notes' });
+      const body = h('div', { class: 'pv-body' },
+        h('div', { class: 'pv-col' }, h('div', { class: 'pv-label', text: '지금 화면' }), this.curBox),
+        h('div', { class: 'pv-right' },
+          h('div', { class: 'pv-col' }, this.nextLbl, this.nextBox),
+          h('div', { class: 'pv-col' }, h('div', { class: 'pv-label', text: '발표자 노트' }), this.notes)));
+      app.appendChild(h('div', { class: 'pv' }, top, body));
+      setInterval(() => this.tickClock(), 500); this.tickClock();
+      window.addEventListener('message', ev => {
+        const d = ev.data || {};
+        if (d.type === 'pres-init') { deck = d.deck; media = d.media || {}; Object.assign(this.st, d); this.render(); }
+        else if (d.type === 'pres-state') { Object.assign(this.st, d); this.render(); }
+      });
+      window.addEventListener('resize', () => this.render());
+      window.addEventListener('keydown', ev => this.key(ev));
+      if (!window.opener) { this.curBox.innerHTML = '<div class="pv-msg">발표 화면에서 <b>S</b> 키(또는 🖥️ 버튼)를 눌러 열어 주세요.</div>'; return; }
+      this.send({ type: 'pres-hello' });
+    },
+    send(msg) { try { window.opener && window.opener.postMessage(msg, '*'); } catch (e) { } },
+    nav(dir, index) { this.send({ type: 'pres-nav', dir, index }); },
+    key(ev) {
+      const k = ev.key;
+      if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].indexOf(k) >= 0) { ev.preventDefault(); this.nav('next'); }
+      else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].indexOf(k) >= 0) { ev.preventDefault(); this.nav('prev'); }
+      else if (k === 't' || k === 'T') this.send({ type: 'pres-timer', cmd: 'toggle' });
+    },
+    tickClock() {
+      const d = new Date();
+      this.clock.textContent = pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+      const e = Math.floor((Date.now() - this.t0) / 1000);
+      this.elapsed.textContent = Math.floor(e / 60) + ':' + pad2(e % 60);
+      const t = this.st.timer;
+      if (!t) this.tmr.textContent = '—';
+      else this.tmr.textContent = t.done ? '끝!' : Timer.fmt(t.running ? t.endAt - Date.now() : t.remain);
+    },
+    render() {
+      if (!deck) return;
+      const s = deck.slides[this.st.cur]; if (!s) return;
+      const fitW = box => { const r = box.getBoundingClientRect(); return Math.max(120, Math.floor(Math.min(r.width, r.height * W / H))); };
+      this.curBox.innerHTML = ''; this.curBox.appendChild(makeThumb(s, fitW(this.curBox), this.st.step));
+      let ns = null, nstep = 0, lbl = '마지막 슬라이드예요';
+      if (this.st.step < maxStepOf(s)) { ns = s; nstep = this.st.step + 1; lbl = '다음 클릭 (' + nstep + '/' + maxStepOf(s) + ')'; }
+      else { let i = this.st.cur + 1; while (i < deck.slides.length && deck.slides[i].hidden) i++; if (i < deck.slides.length) { ns = deck.slides[i]; lbl = '다음 슬라이드 · ' + (i + 1) + '번'; } }
+      this.nextLbl.textContent = lbl;
+      this.nextBox.innerHTML = ''; if (ns) this.nextBox.appendChild(makeThumb(ns, fitW(this.nextBox), nstep));
+      this.notes.textContent = s.notes || '(노트 없음)';
+      this.cnt.textContent = (this.st.cur + 1) + ' / ' + deck.slides.length;
+      this.tickClock();
+    }
+  };
+
+  /* ---------- 편집 모드 ---------- */
+  function enterEdit() {
+    if (mode === 'edit') return;
+    mode = 'edit';
+    setTool(null); setBlank(null); Picker.close();
+    if (gridEl) toggleGrid(); if (helpEl) toggleHelp();
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+    presentRoot.classList.add('hidden');
+    editorRoot.classList.remove('hidden');
+    document.body.classList.add('mode-edit');
+    selId = null;
+    renderEditor();
+  }
+  function exitEdit(fromStart) {
+    stopTextEdit(); closePalette();
+    mode = 'present'; selId = null;
+    if (gridEl) toggleGrid(); if (helpEl) toggleHelp();
+    editorRoot.classList.add('hidden');
+    presentRoot.classList.remove('hidden');
+    document.body.classList.remove('mode-edit');
+    if (fromStart) cur = firstVisible();
+    step = 0;
+    renderPresent(true);
+    sendPresInit();
+  }
+
+  function buildEditor() {
+    editorRoot = h('div', { id: 'editor', class: 'hidden' });
+    const T = (label, title, fn, cls) => h('button', { class: 'tb ' + (cls || ''), title, html: label, onclick: fn, onmousedown: ev => ev.preventDefault() });
+    const sep = () => h('span', { class: 'ed-sep' });
+    edSaveLbl = h('span', { class: 'ed-save', text: '✓ 자동 저장됨' });
+    const imgInput = h('input', { type: 'file', accept: 'image/*', class: 'hidden' });
+    imgInput.addEventListener('change', async () => { const f = imgInput.files[0]; imgInput.value = ''; if (f) addOrReplaceImage(await fileToDataURL(f)); });
+    const top = h('div', { class: 'ed-top' },
+      T(ico('play') + ' 발표', '이 슬라이드부터 발표 (Shift+F5)', () => exitEdit(false), 'accent'),
+      T(ico('undo'), '되돌리기 (Ctrl+Z)', undo), T(ico('redo'), '다시 하기 (Ctrl+Y)', redo), sep(),
+      T(ico('plus') + ' 슬라이드', '새 슬라이드 추가', addSlide), T(ico('copy') + ' 복제', '이 슬라이드 복제', dupSlide),
+      T(ico('eyeoff') + ' 숨기기', '발표할 때 건너뛰기 (다시 누르면 보이기)', toggleHidden), T(ico('trash') + ' 삭제', '이 슬라이드 삭제', delSlide), sep(),
+      T(ico('type') + ' 텍스트', '텍스트 상자 추가', () => addText()), T(ico('square') + ' 카드', '테두리 있는 카드 추가', addBox),
+      T(ico('image') + ' 이미지', '이미지 파일 추가 (Ctrl+V로 붙여넣어도 돼요)', () => imgInput.click()), T(ico('video') + ' 영상', '영상 추가', addVideo), sep(),
+      T(ico('layout'), '전체 슬라이드 보기', toggleGrid),
+      h('span', { class: 'grow' }), edSaveLbl,
+      T(ico('download') + ' HTML로 내보내기', '다른 컴퓨터로 옮길 때 (영상과 같은 폴더에 두세요)', exportHTML),
+      T(ico('reset') + ' 처음 상태로', '편집한 내용을 모두 지우고 처음으로', resetAll),
+      T(ico('question'), '도움말', toggleHelp), imgInput);
+    edProps = h('div', { class: 'ed-props' });
+    edSide = h('div', { class: 'ed-side' });
+    edCanvas = h('div', { class: 'ed-canvas' });
+    edNotes = h('textarea', { placeholder: '발표자 노트 (발표자 화면에만 보여요)' });
+    edNotes.addEventListener('input', () => { curSlide().notes = edNotes.value; scheduleSave(); sendPresInitSoon(); });
+    const center = h('div', { class: 'ed-center' }, edCanvas, h('div', { class: 'ed-bottom' }, h('div', { class: 'ed-notes-lbl', text: '노트' }), edNotes));
+    editorRoot.append(top, edProps, h('div', { class: 'ed-main' }, edSide, center));
+    edCanvas.addEventListener('dragover', ev => { if (ev.dataTransfer && Array.from(ev.dataTransfer.types || []).indexOf('Files') >= 0) ev.preventDefault(); });
+    edCanvas.addEventListener('drop', async ev => {
+      const f = ev.dataTransfer && Array.from(ev.dataTransfer.files || []).find(x => /^image\//.test(x.type));
+      if (!f) return;
+      ev.preventDefault();
+      const target = ev.target.closest && ev.target.closest('.el-image');
+      if (target) select(target.dataset.id);
+      else select(null);
+      addOrReplaceImage(await fileToDataURL(f), stagePoint(ev));
+    });
+    edCanvas.addEventListener('pointerdown', ev => { if (ev.target === edCanvas) { stopTextEdit(); select(null); } });
+    return editorRoot;
+  }
+
+  function renderEditor() {
+    if (mode !== 'edit') return;
+    renderSideList();
+    renderEditStage();
+    renderProps();
+    edNotes.value = curSlide().notes || '';
+  }
+
+  function renderSideList() {
+    edSide.innerHTML = '';
+    let dragFrom = -1;
+    deck.slides.forEach((s, i) => {
+      const item = h('div', { class: 'side-item' + (i === cur ? ' active' : '') + (s.hidden ? ' is-hidden' : ''), draggable: 'true' },
+        h('div', { class: 'side-num', text: String(i + 1) }), makeThumb(s, 186));
+      if (s.hidden) item.appendChild(h('div', { class: 'side-hid', text: '숨김' }));
+      item.addEventListener('click', () => { stopTextEdit(); selId = null; cur = i; step = 0; renderEditor(); });
+      item.addEventListener('dragstart', ev => { dragFrom = i; ev.dataTransfer.effectAllowed = 'move'; try { ev.dataTransfer.setData('text/plain', 'slide'); } catch (e) { } });
+      item.addEventListener('dragover', ev => {
+        if (dragFrom < 0) return;
+        ev.preventDefault();
+        const r = item.getBoundingClientRect(), after = ev.clientY > r.top + r.height / 2;
+        item.classList.toggle('drop-after', after); item.classList.toggle('drop-before', !after);
+      });
+      item.addEventListener('dragleave', () => item.classList.remove('drop-after', 'drop-before'));
+      item.addEventListener('drop', ev => {
+        ev.preventDefault();
+        const after = item.classList.contains('drop-after');
+        item.classList.remove('drop-after', 'drop-before');
+        if (dragFrom < 0) return;
+        let to = i + (after ? 1 : 0);
+        if (dragFrom < to) to--;
+        moveSlide(dragFrom, to); dragFrom = -1;
+      });
+      item.addEventListener('dragend', () => { dragFrom = -1; edSide.querySelectorAll('.side-item').forEach(x => x.classList.remove('drop-after', 'drop-before')); });
+      edSide.appendChild(item);
+    });
+    const act = edSide.children[cur]; if (act && act.scrollIntoView) act.scrollIntoView({ block: 'nearest' });
+  }
+  let thumbT = null;
+  function refreshThumbSoon() {
+    clearTimeout(thumbT);
+    thumbT = setTimeout(() => {
+      if (mode !== 'edit') return;
+      const item = edSide.children[cur]; if (!item) return;
+      const old = item.querySelector('.thumb'); if (old) old.replaceWith(makeThumb(curSlide(), 186));
+    }, 350);
+  }
+
+  function renderEditStage() {
+    const { stage, nodes } = makeStage(curSlide(), { mode: 'edit' });
+    editNodes = nodes;
+    nodes.forEach(r => {
+      if (r.widget.update) r.widget.update(r.e.steps || 0, false);
+      if (r.e.step) r.node.appendChild(h('div', { class: 'step-badge', text: String(r.e.step) }));
+      if (r.e.type === 'text' && !(r.e.html || '').replace(/<[^>]*>/g, '').trim()) r.node.classList.add('empty');
+    });
+    selBox = h('div', { class: 'sel-box hidden' });
+    ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].forEach(d => selBox.appendChild(h('div', { class: 'h', 'data-h': d })));
+    stage.appendChild(selBox);
+    edCanvas.innerHTML = '';
+    edCanvas.appendChild(stage);
+    edStage = stage;
+    fitStage(edCanvas, stage);
+    stage.addEventListener('pointerdown', onStagePointerDown);
+    stage.addEventListener('dblclick', onStageDbl);
+    if (selId && !nodes.get(selId)) selId = null;
+    updateSelBox();
+  }
+
+  function updateSelBox() {
+    if (!selBox) return;
+    const e = selId && findEl(selId);
+    if (!e) { selBox.classList.add('hidden'); return; }
+    selBox.classList.remove('hidden');
+    Object.assign(selBox.style, { left: e.x + 'px', top: e.y + 'px', width: e.w + 'px', height: e.h + 'px' });
+  }
+  function positionNode(e) {
+    const r = editNodes.get(e.id); if (!r) return;
+    Object.assign(r.node.style, { left: e.x + 'px', top: e.y + 'px', width: e.w + 'px', height: e.h + 'px' });
+  }
+  function select(id) {
+    if (editingId && id !== editingId) stopTextEdit();
+    selId = id || null;
+    updateSelBox();
+    renderProps();
+  }
+  function stagePoint(ev) {
+    const r = edStage.getBoundingClientRect(), s = r.width / W;
+    return [(ev.clientX - r.left) / s, (ev.clientY - r.top) / s];
+  }
+
+  function onStagePointerDown(ev) {
+    if (ev.button !== 0) return;
+    const handle = ev.target.closest('.h');
+    if (handle && selId) { startResize(ev, handle.dataset.h); return; }
+    const node = ev.target.closest('.el');
+    if (editingId) { if (node && node.dataset.id === editingId) return; stopTextEdit(); }
+    closePalette();
+    if (!node) { select(null); return; }
+    if (node.dataset.id !== selId) select(node.dataset.id);
+    startMove(ev);
+  }
+
+  function showGuides(gx, gy) {
+    edStage.querySelectorAll('.guide').forEach(g => g.remove());
+    if (gx != null) { const g = h('div', { class: 'guide gv' }); g.style.left = gx + 'px'; edStage.appendChild(g); }
+    if (gy != null) { const g = h('div', { class: 'guide gh' }); g.style.top = gy + 'px'; edStage.appendChild(g); }
+  }
+  function startMove(ev) {
+    const e = findEl(selId); if (!e) return;
+    ev.preventDefault();
+    const s = edStage._scale, sx = ev.clientX, sy = ev.clientY, ox = e.x, oy = e.y;
+    let moved = false;
+    const mm = m => {
+      const dx = (m.clientX - sx) / s, dy = (m.clientY - sy) / s;
+      if (!moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+      if (!moved) { pushUndo(); moved = true; }
+      let nx = Math.round(ox + dx), ny = Math.round(oy + dy), gx = null, gy = null;
+      if (Math.abs(nx + e.w / 2 - W / 2) < 14) { nx = Math.round(W / 2 - e.w / 2); gx = W / 2; }
+      if (Math.abs(ny + e.h / 2 - H / 2) < 14) { ny = Math.round(H / 2 - e.h / 2); gy = H / 2; }
+      e.x = nx; e.y = ny; positionNode(e); updateSelBox(); showGuides(gx, gy);
+    };
+    const mu = () => {
+      window.removeEventListener('pointermove', mm); window.removeEventListener('pointerup', mu);
+      showGuides(null, null);
+      if (moved) changed();
+    };
+    window.addEventListener('pointermove', mm); window.addEventListener('pointerup', mu);
+  }
+  function startResize(ev, dir) {
+    ev.preventDefault(); ev.stopPropagation();
+    const e = findEl(selId); if (!e) return;
+    pushUndo();
+    const s = edStage._scale, sx = ev.clientX, sy = ev.clientY, o = { x: e.x, y: e.y, w: e.w, h: e.h }, ratio = o.w / o.h;
+    const mm = m => {
+      const dx = (m.clientX - sx) / s, dy = (m.clientY - sy) / s;
+      let { x, y, w, h: hh } = o;
+      if (dir.indexOf('e') >= 0) w = o.w + dx;
+      if (dir.indexOf('w') >= 0) { w = o.w - dx; x = o.x + dx; }
+      if (dir.indexOf('s') >= 0) hh = o.h + dy;
+      if (dir.indexOf('n') >= 0) { hh = o.h - dy; y = o.y + dy; }
+      if (m.shiftKey && dir.length === 2) {
+        if (w / hh > ratio) w = hh * ratio; else hh = w / ratio;
+        if (dir.indexOf('w') >= 0) x = o.x + o.w - w;
+        if (dir.indexOf('n') >= 0) y = o.y + o.h - hh;
+      }
+      if (w < 30) { if (dir.indexOf('w') >= 0) x -= 30 - w; w = 30; }
+      if (hh < 30) { if (dir.indexOf('n') >= 0) y -= 30 - hh; hh = 30; }
+      e.x = Math.round(x); e.y = Math.round(y); e.w = Math.round(w); e.h = Math.round(hh);
+      positionNode(e); updateSelBox();
+    };
+    const mu = () => { window.removeEventListener('pointermove', mm); window.removeEventListener('pointerup', mu); changed(); };
+    window.addEventListener('pointermove', mm); window.addEventListener('pointerup', mu);
+  }
+
+  function onStageDbl(ev) {
+    const node = ev.target.closest('.el'); if (!node) return;
+    const e = findEl(node.dataset.id); if (!e) return;
+    if (e.type === 'text') startTextEdit(e);
+    else if (Widgets[e.type] && Widgets[e.type].config) openConfig(e);
+    else if (e.type === 'image') qs('#editor input[type=file]').click();
+  }
+
+  /* 글자 편집 */
+  function startTextEdit(e) {
+    const r = editNodes.get(e.id); if (!r || !r.widget.txt) return;
+    if (editingId === e.id) return;
+    select(e.id);
+    editingId = e.id; editTxt = r.widget.txt; editSnap = snapshot();
+    r.node.classList.remove('empty');
+    editTxt.contentEditable = 'true';
+    r.node.classList.add('editing');
+    editTxt.focus();
+    const range = document.createRange(); range.selectNodeContents(editTxt); range.collapse(false);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    savedRange = range.cloneRange();
+    editTxt.addEventListener('blur', onEditBlur);
+    renderProps();
+  }
+  function onEditBlur() { setTimeout(() => { if (editingId && document.activeElement !== editTxt && !paletteEl) stopTextEdit(); }, 0); }
+  function stopTextEdit() {
+    if (!editingId) return;
+    const e = findEl(editingId), txt = editTxt;
+    editingId = null; editTxt = null;
+    if (txt) { txt.contentEditable = 'false'; txt.removeEventListener('blur', onEditBlur); if (txt.parentNode && txt.parentNode.parentNode) txt.parentNode.parentNode.classList.remove('editing'); }
+    if (e && txt) {
+      let html = txt.innerHTML.replace(/(<br\s*\/?>\s*)+$/i, '').trim();
+      if (html !== (e.html || '')) { pushUndo(editSnap); e.html = html; changed(); }
+      if (!html.replace(/<[^>]*>/g, '').trim()) txt.parentNode.parentNode.classList.add('empty');
+    }
+    editSnap = null; savedRange = null;
+    renderProps();
+  }
+  document.addEventListener('selectionchange', () => {
+    if (!editTxt) return;
+    const s = window.getSelection();
+    if (s.rangeCount && editTxt.contains(s.anchorNode)) savedRange = s.getRangeAt(0).cloneRange();
+  });
+  function execCmd(cmd, val) {
+    if (!editTxt) return;
+    editTxt.focus();
+    if (savedRange) { const s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange); }
+    try { document.execCommand('styleWithCSS', false, true); } catch (e) { }
+    document.execCommand(cmd, false, val == null ? null : val);
+  }
+
+  /* 속성 툴바 */
+  function pbtn(label, title, fn, on, cls) {
+    return h('button', { class: 'pbtn' + (on ? ' on' : '') + (cls ? ' ' + cls : ''), title: title || '', html: label, onmousedown: ev => ev.preventDefault(), onclick: fn });
+  }
+  const psep = () => h('span', { class: 'psep' });
+  function renderProps() {
+    if (!edProps) return;
+    edProps.innerHTML = '';
+    const e = selId && findEl(selId);
+    if (!e) {
+      const s = curSlide();
+      edProps.appendChild(h('span', { class: 'plabel', text: '슬라이드 배경' }));
+      Object.keys(BG).forEach(k => edProps.appendChild(h('button', {
+        class: 'bg-sw' + ((s.bg || 'cream') === k ? ' on' : ''), title: BG_NAMES[k], style: { background: BG[k] },
+        onclick: () => { pushUndo(); s.bg = k; changed(); renderEditStage(); renderProps(); }
+      })));
+      edProps.append(psep(), h('span', { class: 'phint', text: '요소를 클릭하면 편집 도구가 나와요 · 더블클릭: 글자 고치기 · Ctrl+V: 이미지 붙여넣기 · 왼쪽 목록을 끌어서 순서 바꾸기' }));
+      return;
+    }
+    const s = e.style || (e.style = {});
+    if (e.type === 'text') {
+      const fsIn = h('input', { class: 'pnum', type: 'number', min: 8, max: 600, value: s.fs || 40, title: '글자 크기' });
+      fsIn.addEventListener('change', () => setStyle('fs', clamp(parseInt(fsIn.value, 10) || 40, 8, 600)));
+      fsIn.addEventListener('keydown', ev => ev.stopPropagation());
+      edProps.append(
+        pbtn('<span style="font-family:\'Nanum Gothic\'">나눔고딕</span>', '본문용 글꼴', () => setStyle('font', ''), s.font !== 'fun'),
+        pbtn('<span style="font-family:Jua">주아</span>', '제목·강조용 글꼴', () => setStyle('font', 'fun'), s.font === 'fun'),
+        psep(),
+        pbtn('가−', '글자 작게', () => setStyle('fs', Math.max(8, (s.fs || 40) - 4))), fsIn,
+        pbtn('가+', '글자 크게', () => setStyle('fs', (s.fs || 40) + 4)),
+        pbtn('<b>B</b>', editingId ? '선택한 글자 굵게' : '전체 굵게', () => editingId ? execCmd('bold') : setStyle('fw', (s.fw || 500) >= 700 ? 500 : 800), !editingId && (s.fw || 500) >= 700),
+        psep());
+      [['left', '⫷ 왼쪽', '왼쪽 정렬'], ['center', '≡ 가운데', '가운데 정렬'], ['right', '오른쪽 ⫸', '오른쪽 정렬']].forEach(a => edProps.appendChild(pbtn(a[1], a[2], () => setStyle('align', a[0]), (s.align || 'left') === a[0])));
+      [['top', '위', '위쪽 맞춤'], ['middle', '중간', '세로 가운데'], ['bottom', '아래', '아래쪽 맞춤']].forEach(a => edProps.appendChild(pbtn(a[1], a[2], () => setStyle('valign', a[0]), (s.valign || 'top') === a[0])));
+      edProps.append(psep(),
+        colorBtn('글자색', s.color || INK, c => editingId ? execCmd('foreColor', c) : setStyle('color', c), false),
+        colorBtn('배경', s.bg || '', c => setStyle('bg', c), true),
+        pbtn('테두리', '카드 테두리·그림자 켜기/끄기', toggleBorder, !!s.border));
+    }
+    if (e.type === 'image') {
+      edProps.append(
+        pbtn('맞춤', '잘리지 않게', () => setProp('fit', 'contain'), (e.fit || 'contain') === 'contain'),
+        pbtn('채우기', '칸을 꽉 채우기', () => setProp('fit', 'cover'), e.fit === 'cover'),
+        pbtn('이미지 바꾸기', '파일에서 고르기 (또는 Ctrl+V)', () => qs('#editor input[type=file]').click()),
+        pbtn('이미지 비우기', '자리만 남기기', () => setProp('src', '')));
+    }
+    if (Widgets[e.type] && Widgets[e.type].config) edProps.appendChild(pbtn('✎ 내용 편집', '이 위젯 내용 바꾸기', () => openConfig(e)));
+    edProps.append(psep(), pbtn('맨 앞으로', '다른 요소 위로', () => zorder(1)), pbtn('맨 뒤로', '다른 요소 아래로', () => zorder(-1)), psep());
+    const stepSel = h('select', { class: 'psel', title: '발표할 때 언제 나타날지' });
+    for (let i = 0; i <= 20; i++) stepSel.appendChild(h('option', { value: String(i), text: i === 0 ? '처음부터 보임' : `클릭 ${i}번째에 등장` }));
+    stepSel.value = String(e.step || 0);
+    stepSel.addEventListener('change', () => setProp('step', parseInt(stepSel.value, 10) || 0));
+    const animSel = h('select', { class: 'psel', title: '나타날 때 효과' });
+    ANIMS.forEach(a => animSel.appendChild(h('option', { value: a[0], text: a[1] })));
+    animSel.value = e.anim || '';
+    animSel.addEventListener('change', () => setProp('anim', animSel.value));
+    edProps.append(h('span', { class: 'plabel', text: '등장' }), stepSel, animSel,
+      pbtn('맨 마지막 클릭에', '다른 요소가 다 나온 다음 클릭에 나타나게', () => {
+        let m = 0; curSlide().elements.forEach(x => { if (x !== e) m = Math.max(m, (x.step || 0) + (x.steps || 0)); });
+        setProp('step', m + 1);
+      }),
+      psep(), pbtn('복제', 'Ctrl+D', duplicateEl), pbtn('🗑 삭제', 'Delete', deleteEl, false, 'danger'));
+  }
+
+  function coalescedUndo(key) {
+    const now = Date.now();
+    if (key !== lastUndoKey || now - lastUndoAt > 900) pushUndo();
+    lastUndoKey = key; lastUndoAt = now;
+  }
+  function setStyle(k, v) {
+    const e = findEl(selId); if (!e) return;
+    if (editingId) stopTextEdit();
+    coalescedUndo(e.id + ':' + k);
+    e.style = e.style || {};
+    if (v === '' || v == null) delete e.style[k]; else e.style[k] = v;
+    changed(); renderEditStage(); renderProps();
+  }
+  function setProp(k, v) {
+    const e = findEl(selId); if (!e) return;
+    pushUndo();
+    if (v === '' || v == null || (k === 'step' && !v)) delete e[k]; else e[k] = v;
+    changed(); renderEditStage(); renderProps();
+  }
+  function toggleBorder() {
+    const e = findEl(selId); if (!e) return;
+    pushUndo();
+    const s = e.style = e.style || {};
+    if (s.border) { delete s.border; delete s.shadow; }
+    else { s.border = `4px solid ${INK}`; s.shadow = `8px 8px 0 ${INK}`; if (s.radius == null) s.radius = 28; if (!s.pad) s.pad = '30px 36px'; if (!s.bg) s.bg = '#FFFFFF'; }
+    changed(); renderEditStage(); renderProps();
+  }
+
+  let paletteEl = null;
+  function closePalette() { if (paletteEl) { paletteEl.remove(); paletteEl = null; } }
+  function colorBtn(label, current, onPick, allowNone) {
+    const sw = h('span', { class: 'swatch' + (current ? '' : ' none') });
+    if (current) sw.style.background = current;
+    const b = pbtn('', label, () => {
+      if (paletteEl) { closePalette(); return; }
+      const r = b.getBoundingClientRect();
+      paletteEl = h('div', { class: 'palette', style: { left: r.left + 'px', top: (r.bottom + 6) + 'px' } });
+      PALETTE.forEach(c => paletteEl.appendChild(h('div', { class: 'sw', title: c, style: { background: c }, onmousedown: ev => ev.preventDefault(), onclick: () => { closePalette(); onPick(c); } })));
+      const custom = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(current) ? current : '#1C2340' });
+      custom.addEventListener('change', () => { const v = custom.value; closePalette(); onPick(v); });
+      const row = h('div', { class: 'row' }, h('span', { text: '직접 고르기' }), custom);
+      if (allowNone) row.appendChild(h('button', { text: '없음', onmousedown: ev => ev.preventDefault(), onclick: () => { closePalette(); onPick(''); } }));
+      paletteEl.appendChild(row);
+      document.body.appendChild(paletteEl);
+    });
+    b.append(sw, document.createTextNode(label));
+    return b;
+  }
+  document.addEventListener('pointerdown', ev => {
+    if (paletteEl && !paletteEl.contains(ev.target) && !ev.target.closest('.pbtn')) closePalette();
+  }, true);
+
+  /* 위젯 내용 편집 */
+  async function openConfig(e) {
+    const c = e.config = e.config || {};
+    if (e.type === 'chat') {
+      const title = h('input', { type: 'text', value: c.title || 'AI 채팅' });
+      const ta = h('textarea');
+      ta.value = (c.messages || []).map(m => (m.who === 'ai' ? 'AI' : '나') + (m.type === 'doc' ? '(사진)' : '') + ': ' + String(m.text).replace(/\n/g, ' / ')).join('\n');
+      const body = h('div', {}, h('label', { text: '채팅창 제목' }), title, h('label', { text: '메시지 (한 줄에 하나, 클릭할 때마다 하나씩 나와요)' }), ta,
+        h('div', { class: 'hint', html: '<b>나:</b> 내 말풍선 · <b>AI:</b> AI 말풍선 · <b>나(사진):</b> 학습지 사진 모양 · 줄바꿈은 <b> / </b>' }));
+      body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = '8px';
+      if (!await modal({ title: '채팅 내용 편집', body, buttons: [{ label: '취소', value: false }, { label: '적용', value: true, cls: 'primary' }] })) return;
+      const msgs = [];
+      ta.value.split('\n').forEach(line => {
+        const m = line.match(/^\s*(나|AI|ai)\s*(\(사진\))?\s*[:：]\s*(.*)$/);
+        if (m && m[3].trim()) msgs.push({ who: /ai/i.test(m[1]) ? 'ai' : 'me', type: m[2] ? 'doc' : undefined, text: m[3].trim().replace(/\s*\/\s*/g, '\n') });
+      });
+      pushUndo(); c.title = title.value; c.messages = msgs.map(m => { if (!m.type) delete m.type; return m; }); e.steps = msgs.length;
+    } else if (e.type === 'autocomplete') {
+      const words = h('textarea'); words.value = (c.words || []).join(' ');
+      const pool = h('input', { type: 'text', value: (c.pool || []).join(' ') });
+      const body = h('div', {}, h('label', { text: '만들어질 문장 (단어 사이 띄어쓰기)' }), words, h('label', { text: '옆에 같이 뜰 추천 단어들' }), pool);
+      body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = '8px';
+      if (!await modal({ title: '자동완성 내용 편집', body, buttons: [{ label: '취소', value: false }, { label: '적용', value: true, cls: 'primary' }] })) return;
+      pushUndo(); c.words = words.value.split(/\s+/).filter(Boolean); c.pool = pool.value.split(/\s+/).filter(Boolean); e.steps = 1;
+    } else if (e.type === 'ingredients') {
+      const rows = (c.items || []).map((it, i) => {
+        const chk = h('input', { type: 'checkbox' }); chk.checked = !!it.open;
+        const ord = h('input', { type: 'number', min: 0, max: 9, value: String((c.unlock || []).indexOf(i) + 1) });
+        return { chk, ord, row: h('div', { class: 'ing-row' }, h('span', { text: (it.icon || '') + ' ' + it.name, style: { width: '140px', fontWeight: '800' } }), chk, h('span', { text: '처음부터 열림' }), h('span', { text: '· 클릭으로 여는 순서', style: { marginLeft: '10px' } }), ord) };
+      });
+      const body = h('div', {}, h('div', { class: 'hint', text: '순서에 1, 2…를 넣으면 발표할 때 그 순서대로 클릭하면 열려요. 0은 열지 않음.' }), rows.map(r => r.row));
+      body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = '8px';
+      if (!await modal({ title: '재료 상태 편집', body, buttons: [{ label: '취소', value: false }, { label: '적용', value: true, cls: 'primary' }] })) return;
+      pushUndo();
+      rows.forEach((r, i) => { if (r.chk.checked) c.items[i].open = true; else delete c.items[i].open; });
+      c.unlock = rows.map((r, i) => ({ i, o: parseInt(r.ord.value, 10) || 0 })).filter(x => x.o > 0).sort((a, b) => a.o - b.o).map(x => x.i);
+      e.steps = c.unlock.length;
+    } else if (e.type === 'video') {
+      const src = h('input', { type: 'text', value: e.src || '' });
+      const label = h('input', { type: 'text', value: e.label || '' });
+      const body = h('div', {}, h('label', { text: '영상 파일 이름 (이 HTML과 같은 폴더)' }), src, h('label', { text: '설명' }), label);
+      body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = '8px';
+      if (!await modal({ title: '영상 설정', body, buttons: [{ label: '취소', value: false }, { label: '적용', value: true, cls: 'primary' }] })) return;
+      pushUndo(); e.src = src.value.trim(); e.label = label.value.trim();
+    } else if (e.type === 'chapter') {
+      const f = {};
+      const mk = (k, label, val) => { f[k] = h('input', { type: 'text', value: val || '' }); return [h('label', { text: label }), f[k]]; };
+      const body = h('div', {}, mk('part', '작은 글씨 (예: PART 1, 미션 1)', c.part), mk('title', '큰 제목', c.title), mk('sub', '설명', c.sub), mk('num', '배경 큰 숫자·글자', c.num));
+      body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = '8px';
+      if (!await modal({ title: '챕터 화면 편집', body, buttons: [{ label: '취소', value: false }, { label: '적용', value: true, cls: 'primary' }] })) return;
+      pushUndo(); ['part', 'title', 'sub', 'num'].forEach(k => { c[k] = f[k].value; });
+    } else if (e.type === 'qr') {
+      const label = h('input', { type: 'text', value: c.label || '' });
+      if (!await modal({ title: 'QR 칸 설정', body: h('div', {}, h('label', { text: '안내 문구' }), label), buttons: [{ label: '취소', value: false }, { label: '적용', value: true, cls: 'primary' }] })) return;
+      pushUndo(); c.label = label.value;
+    } else return;
+    changed(); renderEditStage(); renderProps();
+  }
+
+  /* 요소 추가 · 삭제 */
+  const isDarkBg = () => !!DARK_BG[curSlide().bg];
+  function addEl(e) { pushUndo(); curSlide().elements.push(e); changed(); renderEditStage(); select(e.id); return e; }
+  function addText(html) {
+    return addEl({ id: uid(), type: 'text', x: 560, y: 440, w: 800, h: 200, html: html == null ? '텍스트를 입력하세요' : html, style: { fs: 48, fw: 700, color: isDarkBg() ? '#FFFFFF' : INK, align: 'left', valign: 'top', lh: 1.45 } });
+  }
+  function addBox() {
+    return addEl({ id: uid(), type: 'text', x: 660, y: 340, w: 600, h: 400, html: '카드 내용', style: { fs: 44, fw: 700, color: INK, align: 'center', valign: 'middle', lh: 1.45, bg: '#FFFFFF', border: `4px solid ${INK}`, radius: 28, shadow: `8px 8px 0 ${INK}`, pad: '30px 36px' } });
+  }
+  async function addVideo() {
+    const src = h('input', { type: 'text', value: '영상1_맥북던짐사건.mp4' });
+    const body = h('div', {}, h('label', { text: '영상 파일 이름 (이 HTML과 같은 폴더에 있어야 해요)' }), src);
+    if (!await modal({ title: '영상 추가', body, buttons: [{ label: '취소', value: false }, { label: '추가', value: true, cls: 'primary' }] })) return;
+    addEl({ id: uid(), type: 'video', x: 240, y: 135, w: 1440, h: 810, src: src.value.trim(), label: src.value.trim(), style: { radius: 24 } });
+  }
+  function addOrReplaceImage(dataURL, at) {
+    if (!dataURL) return;
+    const mid = uid('m'); media[mid] = dataURL;
+    const e = selId && findEl(selId);
+    if (e && e.type === 'image') { pushUndo(); e.src = 'media:' + mid; changed(); renderEditStage(); renderProps(); toast('이미지를 바꿨어요'); return; }
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth || 800, hh = img.naturalHeight || 600;
+      const k = Math.min(1, 1100 / w, 700 / hh); w = Math.round(w * k); hh = Math.round(hh * k);
+      let x = Math.round((W - w) / 2), y = Math.round((H - hh) / 2);
+      if (at) { x = Math.round(at[0] - w / 2); y = Math.round(at[1] - hh / 2); }
+      addEl({ id: uid(), type: 'image', x, y, w, h: hh, src: 'media:' + mid, fit: 'contain', style: { radius: 16 } });
+    };
+    img.src = dataURL;
+  }
+  function fileToDataURL(file) {
+    return new Promise(res => {
+      const fr = new FileReader();
+      fr.onload = () => {
+        const url = fr.result;
+        const img = new Image();
+        img.onload = () => {
+          const max = 1920, big = Math.max(img.naturalWidth, img.naturalHeight);
+          if (big <= max && file.size < 700 * 1024) { res(url); return; }
+          const k = Math.min(1, max / big);
+          const cv = document.createElement('canvas');
+          cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+          cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+          let out = '';
+          try { out = cv.toDataURL('image/webp', 0.88); } catch (e) { }
+          if (!out || out.indexOf('data:image/webp') !== 0) out = cv.toDataURL('image/jpeg', 0.88);
+          res(out);
+        };
+        img.onerror = () => res(url);
+        img.src = url;
+      };
+      fr.onerror = () => res('');
+      fr.readAsDataURL(file);
+    });
+  }
+  function duplicateEl() {
+    const e = selId && findEl(selId); if (!e) return;
+    const c = clone(e); c.id = uid(); c.x += 30; c.y += 30;
+    addEl(c);
+  }
+  function deleteEl() {
+    if (!selId) return;
+    pushUndo();
+    const s = curSlide(); s.elements = s.elements.filter(e => e.id !== selId);
+    selId = null; changed(); renderEditStage(); renderProps();
+  }
+  function zorder(dir) {
+    const e = selId && findEl(selId); if (!e) return;
+    const zs = curSlide().elements.map(x => x.z || 0);
+    pushUndo();
+    e.z = dir > 0 ? Math.max.apply(null, zs) + 1 : Math.min.apply(null, zs) - 1;
+    changed(); renderEditStage();
+  }
+  function nudge(key, d) {
+    const e = selId && findEl(selId); if (!e) return;
+    coalescedUndo(e.id + ':nudge');
+    if (key === 'ArrowLeft') e.x -= d; if (key === 'ArrowRight') e.x += d;
+    if (key === 'ArrowUp') e.y -= d; if (key === 'ArrowDown') e.y += d;
+    positionNode(e); updateSelBox(); changed();
+  }
+
+  /* 슬라이드 다루기 */
+  function newIds(s) { s.id = uid('s'); s.elements.forEach(e => { e.id = uid(); }); return s; }
+  function addSlide() {
+    stopTextEdit(); pushUndo();
+    const s = {
+      id: uid('s'), bg: 'cream', notes: '', elements: [
+        { id: uid(), type: 'text', x: 120, y: 80, w: 1680, h: 130, html: '제목을 입력하세요', style: { fs: 84, fw: 400, font: 'fun', color: INK, lh: 1.15 } },
+        { id: uid(), type: 'text', x: 120, y: 260, w: 1680, h: 600, html: '내용을 입력하세요', style: { fs: 44, fw: 700, color: INK, lh: 1.55 } }
+      ]
+    };
+    deck.slides.splice(cur + 1, 0, s); cur++; selId = null; changed(); renderEditor();
+  }
+  function dupSlide() { stopTextEdit(); pushUndo(); const s = newIds(clone(curSlide())); deck.slides.splice(cur + 1, 0, s); cur++; selId = null; changed(); renderEditor(); toast('슬라이드를 복제했어요'); }
+  function delSlide() {
+    if (deck.slides.length <= 1) { toast('마지막 한 장은 지울 수 없어요'); return; }
+    stopTextEdit(); pushUndo();
+    deck.slides.splice(cur, 1); cur = clamp(cur, 0, deck.slides.length - 1); selId = null; changed(); renderEditor();
+    toast('삭제했어요 · Ctrl+Z로 되돌릴 수 있어요');
+  }
+  function toggleHidden() {
+    pushUndo(); const s = curSlide(); s.hidden = !s.hidden; if (!s.hidden) delete s.hidden;
+    changed(); renderSideList(); toast(s.hidden ? '발표할 때 이 슬라이드를 건너뛰어요' : '다시 보이게 했어요');
+  }
+  function moveSlide(from, to) {
+    if (from === to || from < 0) return;
+    pushUndo();
+    const [s] = deck.slides.splice(from, 1);
+    deck.slides.splice(to, 0, s);
+    cur = to; selId = null; changed(); renderEditor();
+  }
+
+  /* 되돌리기 */
+  function snapshot() { return JSON.stringify({ slides: deck.slides, settings: deck.settings }); }
+  function pushUndo(snap) { undoStack.push(snap || snapshot()); if (undoStack.length > 200) undoStack.shift(); redoStack.length = 0; }
+  function restore(str) {
+    const o = JSON.parse(str);
+    deck.slides = o.slides; deck.settings = o.settings;
+    cur = clamp(cur, 0, deck.slides.length - 1);
+    if (selId && !findEl(selId)) selId = null;
+    scheduleSave(); sendPresInitSoon();
+    if (mode === 'edit') renderEditor(); else renderPresent(false);
+  }
+  function undo() { stopTextEdit(); if (!undoStack.length) { toast('되돌릴 게 없어요'); return; } redoStack.push(snapshot()); restore(undoStack.pop()); }
+  function redo() { stopTextEdit(); if (!redoStack.length) { toast('다시 할 게 없어요'); return; } undoStack.push(snapshot()); restore(redoStack.pop()); }
+
+  function changed() { scheduleSave(); refreshThumbSoon(); sendPresInitSoon(); }
+
+  /* ---------- 저장 · 내보내기 ---------- */
+  function setSaveLbl(t) { if (edSaveLbl) edSaveLbl.textContent = t; }
+  async function saveNow() {
+    if (!deck || resetting) return;
+    clearTimeout(saveTimer); saveTimer = null;
+    const ok = await Store.set(saveKey(), { baseRev, deck, media, savedAt: Date.now() });
+    setSaveLbl(ok ? '✓ 자동 저장됨' : '⚠ 자동 저장 안 됨 · 내보내기를 쓰세요');
+  }
+  function scheduleSave() { if (resetting) return; setSaveLbl('저장 중…'); clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 600); }
+  window.addEventListener('beforeunload', () => { if (saveTimer) saveNow(); });
+
+  function exportHTML() {
+    stopTextEdit();
+    const newRev = 'x' + Date.now().toString(36);
+    const d = clone(deck); d.rev = newRev;
+    const used = {};
+    JSON.stringify(d).replace(/media:([A-Za-z0-9]+)/g, (m, id) => { if (media[id]) used[id] = media[id]; return m; });
+    const json = JSON.stringify({ deck: d, media: used }).replace(/</g, '\\u003c');
+    const html = PRISTINE.replace(/(<script id="deck-data"[^>]*>)[\s\S]*?(<\/script>)/, (m, a, b) => a + json + b);
+    const now = new Date();
+    const name = `AI프롬프트특강_슬라이드_${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}-${pad2(now.getHours())}${pad2(now.getMinutes())}.html`;
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    const a = h('a', { href: url, download: name });
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 2000);
+    baseRev = newRev; deck.rev = newRev; saveNow();
+    modal({ title: 'HTML로 내보냈어요', body: `<b>${esc(name)}</b> 파일이 다운로드 폴더에 저장됐어요.<br><br>다른 컴퓨터에서 쓰려면 이 파일을 <b>영상 파일 2개(영상1_맥북던짐사건.mp4, 영상2_전과자.mp4)와 같은 폴더</b>에 넣고 열어 주세요.` });
+  }
+  async function resetAll() {
+    if (!await confirmBox('처음 상태로 되돌릴까요?', '이 컴퓨터에 자동 저장된 편집 내용이 모두 지워지고, 이 파일을 처음 열었을 때 모습으로 돌아가요. 되돌릴 수 없어요.', '모두 지우고 되돌리기', 'danger')) return;
+    resetting = true; clearTimeout(saveTimer);
+    await Store.del(saveKey());
+    location.reload();
+  }
+
+  /* ---------- 키보드 · 붙여넣기 ---------- */
+  function onKey(ev) {
+    if (isPresenter) return;
+    const k = ev.key;
+    if (k === 'F5') {
+      ev.preventDefault();
+      if (modalStack.length) return;
+      if (mode === 'edit') { stopTextEdit(); exitEdit(!ev.shiftKey); }
+      else goSlide(ev.shiftKey ? cur : firstVisible(), 0, true);
+      return;
+    }
+    if (modalStack.length) { if (k === 'Escape') closeTopModal(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && (k === 's' || k === 'S')) { ev.preventDefault(); saveNow(); toast('저장했어요'); return; }
+    if (isTyping(ev.target)) {
+      if (k === 'Escape' && editingId) { ev.preventDefault(); stopTextEdit(); }
+      return;
+    }
+    if (helpEl) { if (k === 'Escape' || k === '?' || k === '/') { ev.preventDefault(); toggleHelp(); } return; }
+    if (gridEl) { if (k === 'Escape' || k === 'g' || k === 'G') { ev.preventDefault(); toggleGrid(); } return; }
+    if (mode === 'edit') { editorKey(ev); return; }
+    presentKey(ev);
+  }
+
+  function presentKey(ev) {
+    const k = ev.key;
+    if (Picker.isOpen()) {
+      if (k === 'Escape') Picker.close();
+      else if (k === ' ' || k === 'Enter') { ev.preventDefault(); Picker.spin(); }
+      return;
+    }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (ev.target && ev.target.tagName === 'VIDEO' && (k === ' ' || k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown')) return;
+    if (/^[0-9]$/.test(k)) { ev.preventDefault(); jumpBuf = (jumpBuf + k).slice(-3); jumpEl.textContent = `슬라이드 ${jumpBuf}번으로 이동 ⏎`; jumpEl.classList.remove('hidden'); return; }
+    if (jumpBuf) {
+      if (k === 'Enter') { ev.preventDefault(); const n = parseInt(jumpBuf, 10); jumpBuf = ''; jumpEl.classList.add('hidden'); if (n >= 1 && n <= deck.slides.length) goSlide(n - 1, 0, true); else toast(`${n}번 슬라이드는 없어요`); return; }
+      if (k === 'Backspace') { ev.preventDefault(); jumpBuf = jumpBuf.slice(0, -1); if (jumpBuf) jumpEl.textContent = `슬라이드 ${jumpBuf}번으로 이동 ⏎`; else jumpEl.classList.add('hidden'); return; }
+      if (k === 'Escape') { jumpBuf = ''; jumpEl.classList.add('hidden'); return; }
+      jumpBuf = ''; jumpEl.classList.add('hidden');
+    }
+    if (blankMode && k !== 'b' && k !== 'B' && k !== 'w' && k !== 'W' && k !== '.' && k !== ',') { setBlank(null); if (k === 'Escape') return; }
+    switch (k) {
+      case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter': case 'n': case 'N':
+        ev.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp': case 'Backspace':
+        ev.preventDefault(); prev(); break;
+      case 'Home': ev.preventDefault(); goSlide(firstVisible(), 0, true); break;
+      case 'End': { ev.preventDefault(); let i = deck.slides.length - 1; while (i > 0 && deck.slides[i].hidden) i--; goSlide(i, 0, true); break; }
+      case 'f': case 'F': toggleFullscreen(); break;
+      case 'g': case 'G': toggleGrid(); break;
+      case 'b': case 'B': case '.': setBlank(blankMode === 'black' ? null : 'black'); break;
+      case 'w': case 'W': case ',': setBlank(blankMode === 'white' ? null : 'white'); break;
+      case 't': case 'T': Timer.toggle(); break;
+      case 'r': case 'R': Picker.open(); break;
+      case 's': case 'S': openPresenter(); break;
+      case 'p': case 'P': setTool(tool === 'pen' ? null : 'pen'); break;
+      case 'h': case 'H': setTool(tool === 'hl' ? null : 'hl'); break;
+      case 'l': case 'L': setTool(tool === 'laser' ? null : 'laser'); break;
+      case 'x': case 'X': clearInk(); break;
+      case 'm': case 'M': toggleSound(); break;
+      case 'e': case 'E': enterEdit(); break;
+      case 'a': case 'A': toggleToolbar(); break;
+      case '?': case '/': toggleHelp(); break;
+      case 'Escape':
+        if (tool) setTool(null);
+        else if (Timer.big) Timer.toggleBig();
+        break;
+    }
+  }
+
+  function editorKey(ev) {
+    const k = ev.key, ctrl = ev.ctrlKey || ev.metaKey;
+    if (ctrl && (k === 'z' || k === 'Z')) { ev.preventDefault(); ev.shiftKey ? redo() : undo(); return; }
+    if (ctrl && (k === 'y' || k === 'Y')) { ev.preventDefault(); redo(); return; }
+    if (ctrl && (k === 'd' || k === 'D')) { ev.preventDefault(); duplicateEl(); return; }
+    if (ctrl) return;
+    if (k === 'Escape') { if (paletteEl) closePalette(); else if (selId) select(null); return; }
+    if ((k === 'Delete' || k === 'Backspace') && selId) { ev.preventDefault(); deleteEl(); return; }
+    if (k.indexOf('Arrow') === 0 && selId) { ev.preventDefault(); nudge(k, ev.shiftKey ? 10 : 1); return; }
+    if (k === 'Enter' && selId) { const e = findEl(selId); if (e && e.type === 'text') { ev.preventDefault(); startTextEdit(e); } else if (e) onStageDbl({ target: editNodes.get(e.id).node }); return; }
+    if (k === 'PageDown') { ev.preventDefault(); if (cur < deck.slides.length - 1) { cur++; selId = null; renderEditor(); } return; }
+    if (k === 'PageUp') { ev.preventDefault(); if (cur > 0) { cur--; selId = null; renderEditor(); } return; }
+    if (k === '?') toggleHelp();
+  }
+
+  document.addEventListener('copy', ev => {
+    if (mode !== 'edit' || editingId || isTyping(ev.target) || !selId) return;
+    const e = findEl(selId); if (!e) return;
+    elClipboard = clone(e);
+    ev.clipboardData.setData('text/plain', '[[slide-element:' + e.id + ']]');
+    ev.preventDefault(); toast('요소를 복사했어요 · 다른 슬라이드에서 Ctrl+V');
+  });
+  document.addEventListener('paste', async ev => {
+    if (isPresenter || mode !== 'edit') return;
+    if (editingId) { ev.preventDefault(); const t = ev.clipboardData.getData('text/plain'); document.execCommand('insertText', false, t); return; }
+    if (isTyping(ev.target)) return;
+    const items = Array.from((ev.clipboardData && ev.clipboardData.items) || []);
+    const imgItem = items.find(i => i.kind === 'file' && /^image\//.test(i.type));
+    if (imgItem) { ev.preventDefault(); const f = imgItem.getAsFile(); addOrReplaceImage(await fileToDataURL(f)); return; }
+    const text = ev.clipboardData.getData('text/plain');
+    if (text && text.indexOf('[[slide-element:') === 0 && elClipboard) {
+      ev.preventDefault(); const c = clone(elClipboard); c.id = uid();
+      if (curSlide().elements.some(x => x.x === c.x && x.y === c.y)) { c.x += 30; c.y += 30; }
+      addEl(c); return;
+    }
+    if (text) { ev.preventDefault(); addText(esc(text).replace(/\n/g, '<br>')); }
+  });
+
+  /* ---------- 시작 ---------- */
+  async function boot() {
+    const emb = JSON.parse(qs('#deck-data').textContent);
+    if (isPresenter) { Presenter.boot(); return; }
+    app = qs('#app');
+    toastBox = h('div', { class: 'toasts' });
+    overlayRoot = h('div', { style: { position: 'fixed', inset: '0', zIndex: '200', pointerEvents: 'none' } });
+    const ovObs = new MutationObserver(() => { overlayRoot.style.pointerEvents = overlayRoot.children.length ? 'auto' : 'none'; });
+    ovObs.observe(overlayRoot, { childList: true });
+    document.body.append(toastBox, overlayRoot);
+
+    await Store.open();
+    deck = emb.deck; media = emb.media || {};
+    const saved = await Store.get('save:' + emb.deck.docId);
+    if (saved && saved.deck) {
+      if (saved.baseRev === emb.deck.rev) { deck = saved.deck; media = saved.media || {}; }
+      else {
+        const choice = await modal({
+          title: '이 컴퓨터에 저장된 편집본이 있어요',
+          body: `<b>${fmtDate(saved.savedAt)}</b>에 자동 저장된 편집본이 있어요.<br>지금 연 파일은 그것과 다른 버전이에요. 어떤 걸로 열까요?<br><br><span class="hint">‘이 파일 내용으로 시작’을 고르면 저장된 편집본은 덮어써져요.</span>`,
+          buttons: [{ label: '이 파일 내용으로 시작', value: 'file' }, { label: '저장된 편집본 이어서', value: 'saved', cls: 'primary' }]
+        });
+        if (choice === 'saved') { deck = saved.deck; media = saved.media || {}; deck.rev = emb.deck.rev; }
+      }
+    }
+    baseRev = emb.deck.rev;
+    deck.settings = deck.settings || emb.deck.settings || {};
+    if (!deck.settings.pickerPresets && emb.deck.settings) deck.settings.pickerPresets = emb.deck.settings.pickerPresets;
+
+    app.append(buildPresent(), buildEditor());
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', () => {
+      if (mode === 'present' && presentStage) fitStage(stageWrap, presentStage);
+      else if (mode === 'edit' && edStage) fitStage(edCanvas, edStage);
+    });
+    document.addEventListener('fullscreenchange', () => { setTimeout(() => { if (mode === 'present' && presentStage) fitStage(stageWrap, presentStage); updateChrome(); }, 60); });
+    goSlide(firstVisible(), 0, true);
+    if (!Store.db) toast('이 브라우저에서는 자동 저장이 안 돼요. 편집했다면 꼭 HTML로 내보내기를 해 주세요.', 5000);
+    else saveNow();
+  }
+
+  boot().catch(err => {
+    console.error(err);
+    document.body.innerHTML = '<pre style="color:#fff;padding:24px;white-space:pre-wrap">슬라이드를 여는 중 문제가 생겼어요.\n\n' + esc(err && err.stack || err) + '</pre>';
+  });
+})();
+
+</script>
+</body>
+</html>
