@@ -1,9 +1,9 @@
-// ===== ENGINE v1.1 =====
+// ===== ENGINE v2.0 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·전체 화면·모션·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '1.1';
+const VERSION = '2.0';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -57,12 +57,12 @@ const store = {
 };
 const REDUCE = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const S = Object.assign({
-  strength: REDUCE ? 'calm' : 'default', speed: 1, pos: 'bottom', quick: false, pageInFull: true,
-  timerMin: 10, color: 0, width: 1, eraserMode: 'stroke', eraserSize: 1, theme: null, view: 'basic', collapsed: false
+  strength: REDUCE ? 'calm' : 'default', speed: 1, caseVertical: false, caseAt: null, caseFolded: false, navArrows: true, pageInFull: true,
+  timerMin: 10, color: 0, width: 1, eraserMode: 'stroke', eraserSize: 1, theme: null, view: 'basic'
 }, (() => {
-  // v1.1부터 빠른 도구는 기본으로 접혀 있다: 예전 설정에 남은 값은 버린다
+  // v2.0부터 툴바 대신 필통·메뉴 서랍을 쓴다: 예전 툴바 설정은 버린다
   const saved = store.get('settings', {}) || {};
-  if (saved._v !== 2) { delete saved.quick; saved._v = 2; }
+  if (saved._v !== 3) { ['quick', 'pos', 'collapsed'].forEach(k => delete saved[k]); saved._v = 3; }
   return saved;
 })());
 const saveSettings = () => store.set('settings', S);
@@ -133,7 +133,9 @@ const P = {
   alM: '<path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/>',
   alB: '<path d="M3 20h18"/><rect x="6" y="4" width="4" height="12" rx="1"/><rect x="14" y="9" width="4" height="7" rx="1"/>',
   disH: '<path d="M4 3v18M20 3v18"/><rect x="9" y="8" width="6" height="8" rx="1"/>',
-  disV: '<path d="M3 4h18M3 20h18"/><rect x="8" y="9" width="8" height="6" rx="1"/>'
+  disV: '<path d="M3 4h18M3 20h18"/><rect x="8" y="9" width="8" height="6" rx="1"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  minimize: '<path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>'
 };
 const icon = n => `<svg class="hz-i" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
 
@@ -144,63 +146,83 @@ const ui = h('div', { id: 'hz-ui' });
 const runtimeStyle = h('style', { id: 'hz-runtime-style', 'data-hz-runtime': '' });
 doc.head.appendChild(runtimeStyle);
 
-const progress = h('div', { class: 'hz-progress hz-chrome' }, h('i'));
 const overlay = h('div', { class: 'hz-overlay' });
 const boardBg = h('div', { class: 'hz-board-bg' });
 const inkC = h('canvas', { class: 'hz-ink' });
 const liveC = h('canvas', { class: 'hz-live' });
 const laserC = h('canvas', { class: 'hz-laser' });
 const fxLayer = h('div', { class: 'hz-fx-layer' });
-const pageno = h('div', { class: 'hz-pageno' });
+const pageTxt = h('b');
+const pageLine = h('span');
+const pageno = h('div', { class: 'hz-page' }, pageTxt, h('i', {}, pageLine));
 const selLayer = h('div', { class: 'hz-sel-layer' });
 const input = h('div', { class: 'hz-input' });
 overlay.append(boardBg, inkC, liveC, fxLayer, pageno, laserC, selLayer, input);
 const ictx = inkC.getContext('2d'), lctx = liveC.getContext('2d'), zctx = laserC.getContext('2d');
 
 const SHORT = {
-  prev: '←', next: '→', hand: 'V', pen: 'P', hl: 'H', eraser: 'E', laser: 'L', color: 'C', undo: 'Ctrl+Z',
-  clear: 'X', clearAll: 'Shift+X', slideMode: 'B', boardMode: 'B', check: '', edit: 'Shift+E', timer: 'T',
-  celebrate: 'G', toc: 'O', full: 'F', settings: '', view: '', pos: '', collapse: ''
+  prev: '←', next: '→', hand: 'V', pen: 'P', hl: 'H', eraser: 'E', laser: 'L', color: 'C', undo: 'Ctrl+Z', redo: 'Ctrl+Shift+Z',
+  clear: 'X', clearAll: 'Shift+X', board: 'B', edit: 'Shift+E', timer: 'T', celebrate: 'G', toc: 'O', full: 'F', help: '?'
 };
+const tip = (cmd, label) => label + (SHORT[cmd] ? ` (${SHORT[cmd]})` : '');
+/* 편집 도구 막대 버튼 (아이콘 + 이름) */
 function btn(cmd, label, ic, extra = '') {
-  const b = h('button', { class: 'hz-btn ' + extra, 'data-cmd': cmd, type: 'button', title: label + (SHORT[cmd] ? ` (${SHORT[cmd]})` : ''), 'aria-label': label });
-  b.innerHTML = (ic === 'swatch' ? '<span class="hz-swatch"></span>' : icon(ic)) + `<span class="hz-lbl">${label}</span>`;
+  const b = h('button', { class: 'hz-btn ' + extra, 'data-cmd': cmd, type: 'button', title: tip(cmd, label), 'aria-label': label });
+  b.innerHTML = icon(ic) + `<span class="hz-lbl">${label}</span>`;
   return b;
 }
 const sep = () => h('span', { class: 'hz-sep' });
+/* 필통 버튼 (아이콘만) */
+function tbtn(cmd, label, ic) {
+  const b = h('button', { class: 'hz-tb', 'data-cmd': cmd, type: 'button', title: tip(cmd, label), 'aria-label': label });
+  b.innerHTML = ic === 'swatch' ? '<span class="hz-swatch"></span>' : icon(ic);
+  return b;
+}
+/* 메뉴 서랍 타일 (아이콘 + 큰 이름) */
+function tile(cmd, label, ic) {
+  const b = h('button', { class: 'hz-tile', 'data-cmd': cmd, type: 'button', title: tip(cmd, label) });
+  b.innerHTML = icon(ic) + `<span class="hz-lbl">${label}</span>`;
+  return b;
+}
 
-const mainBar = h('nav', { class: 'hz-bar hz-main hz-chrome', 'aria-label': '발표 도구' },
-  btn('prev', '이전', 'prev'), btn('next', '다음', 'next'), sep(),
-  btn('hand', '손', 'hand'), btn('pen', '펜', 'pen'), btn('hl', '형광펜', 'hl'), btn('eraser', '지우개', 'eraser'), btn('laser', '레이저', 'laser'), sep(),
-  btn('color', '색', 'swatch'), sep(),
-  btn('undo', '되돌리기', 'undo'), btn('clear', '이 장 지우기', 'trash'), btn('clearAll', '전체 지우기', 'trashAll'), sep(),
-  btn('slideMode', '슬라이드', 'slides'), btn('boardMode', '칠판', 'board'), sep(),
-  btn('view', '기본', 'view'), sep(),
-  btn('check', '점검', 'check'), btn('edit', '편집', 'edit'), btn('timer', '타이머', 'timer'), btn('celebrate', '축하', 'party'),
-  btn('toc', '목차', 'toc'), btn('full', '전체 화면', 'full'), btn('pos', '위치', 'pos'), btn('collapse', '접기', 'collapse'), btn('settings', '설정', 'settings')
-);
-const quickBar = h('nav', { class: 'hz-bar hz-quick hz-chrome', 'aria-label': '빠른 도구' },
-  btn('hand', '손', 'hand'), btn('pen', '펜', 'pen'), btn('hl', '형광펜', 'hl'), btn('eraser', '지우개', 'eraser'), btn('laser', '레이저', 'laser'),
-  btn('undo', '되돌리기', 'undo'), btn('clear', '이 장 지우기', 'trash'), sep(),
-  btn('slideMode', '슬라이드', 'slides'), btn('boardMode', '칠판', 'board'), sep(),
-  btn('prev', '이전', 'prev'), btn('next', '다음', 'next')
-);
-const handleL = h('button', { class: 'hz-handle hz-handle-l hz-chrome', type: 'button', title: '슬라이드 목록', 'data-cmd': 'thumbs', html: icon('next') });
-const handleR = h('button', { class: 'hz-handle hz-handle-r hz-chrome', type: 'button', title: '빠른 도구', 'data-cmd': 'quick', html: icon('prev') });
-const expandBtn = h('button', { class: 'hz-expand hz-chrome', type: 'button', 'data-cmd': 'expand', html: icon('expand') + '<span>도구 펼치기</span>' });
+/* 필통 */
+const caseGrip = h('span', { class: 'hz-grip', title: '끌어서 옮기기 · 두 번 누르면 가로/세로' }, ...Array.from({ length: 6 }, () => h('i')));
+const caseBar = h('div', { class: 'hz-case hz-chrome', role: 'toolbar', 'aria-label': '필통' }, caseGrip,
+  tbtn('hand', '손', 'hand'), tbtn('pen', '펜', 'pen'), tbtn('hl', '형광펜', 'hl'), tbtn('eraser', '지우개', 'eraser'),
+  tbtn('laser', '레이저', 'laser'), tbtn('color', '색·굵기', 'swatch'), tbtn('undo', '되돌리기', 'undo'), tbtn('fold', '필통 접기', 'minimize'));
+const caseMini = h('button', { class: 'hz-case-mini hz-chrome', type: 'button', 'data-cmd': 'unfold', title: '필통 펼치기', 'aria-label': '필통 펼치기' });
+/* 메뉴 버튼·넘김 화살표 */
+const menuBtn = h('button', { class: 'hz-menu-btn hz-chrome', type: 'button', 'data-cmd': 'menu', title: '메뉴 (도구·슬라이드·설정)', 'aria-label': '메뉴' });
+menuBtn.innerHTML = icon('menu') + '<span class="hz-dot"></span>';
+const navPrev = h('button', { class: 'hz-nav hz-nav-l hz-chrome', type: 'button', 'data-cmd': 'prev', title: '이전 (←)', 'aria-label': '이전', html: icon('prev') });
+const navNext = h('button', { class: 'hz-nav hz-nav-r hz-chrome', type: 'button', 'data-cmd': 'next', title: '다음 (→)', 'aria-label': '다음', html: icon('next') });
+/* 메뉴 서랍 */
+const drawer = h('aside', { class: 'hz-drawer', 'aria-label': '메뉴 서랍' });
+const drTabs = h('div', { class: 'hz-dr-tabs', role: 'tablist' });
+const drMenu = h('div', { class: 'hz-dr-body', 'data-tab': 'menu' });
+const drSlides = h('div', { class: 'hz-dr-body', 'data-tab': 'slides' });
+const drClose = h('button', { class: 'hz-x', type: 'button', 'data-cmd': 'closeMenu', title: '닫기 (Esc)', 'aria-label': '닫기', html: icon('x') });
+[['menu', '메뉴'], ['slides', '슬라이드']].forEach(([k, l]) => drTabs.appendChild(h('button', { type: 'button', role: 'tab', 'data-tab': k }, l)));
+drawer.append(h('div', { class: 'hz-dr-head' }, drTabs, drClose), drMenu, drSlides);
+const section = (title, ...tiles) => h('div', { class: 'hz-dr-sec' }, h('h4', {}, title), h('div', { class: 'hz-tiles' }, ...tiles));
+drMenu.append(
+  section('수업', tile('toc', '목차', 'toc'), tile('board', '칠판', 'board'), tile('timer', '타이머', 'timer'),
+    tile('celebrate', '축하', 'party'), tile('view', '발표자 보기', 'view'), tile('full', '전체 화면', 'full')),
+  section('필기', tile('clear', '이 장 지우기', 'trash'), tile('clearAll', '전체 지우기', 'trashAll'), tile('redo', '다시 하기', 'redo')),
+  section('만들기', tile('edit', '편집', 'edit'), tile('check', '점검', 'check'), tile('settings', '설정', 'settings'), tile('help', '단축키', 'help')));
+
 const boardBar = h('div', { class: 'hz-boardbar hz-chrome' });
 const timerEl = h('div', { class: 'hz-timer' });
 const toastEl = h('div', { class: 'hz-toast', role: 'status' });
 const modalWrap = h('div', { class: 'hz-modal-wrap' });
 const colorPop = h('div', { class: 'hz-pop' });
 const emojiPop = h('div', { class: 'hz-pop' });
-const thumbsPanel = h('aside', { class: 'hz-thumbs hz-chrome' });
 const presenterCol = h('div', { class: 'hz-presenter-col hz-chrome' });
 const editBar = h('div', { class: 'hz-editbar' });
 const propsPanel = h('aside', { class: 'hz-props' });
 const confettiC = h('canvas', { class: 'hz-confetti' });
 
-ui.append(progress, overlay, mainBar, quickBar, handleL, handleR, expandBtn, boardBar, timerEl, thumbsPanel,
+ui.append(overlay, navPrev, navNext, caseBar, caseMini, menuBtn, boardBar, timerEl, drawer,
   presenterCol, editBar, propsPanel, colorPop, emojiPop, toastEl, modalWrap, confettiC);
 doc.body.appendChild(ui);
 root.classList.add('hz-on');
@@ -215,6 +237,7 @@ function toast(msg, ms = 1400) {
 /* ------------------------------------------------------------------ */
 /* 배치: 무대를 화면에 맞춘다                                         */
 /* ------------------------------------------------------------------ */
+const DRAWER_W = 340;
 let scale = 1, stageX = 0, stageY = 0;
 function layout() {
   const vw = innerWidth, vh = innerHeight;
@@ -222,47 +245,84 @@ function layout() {
   const editing = root.classList.contains('hz-editing');
   let L = 12, T0 = 12, R = 12, B = 12, pcol = 380;
   if (full) { L = T0 = R = B = 0; }
-  else if (editing) {
-    T0 = 58 + 14; R = 320 + 14;
-    if (root.classList.contains('hz-thumbs-open')) L = 280 + 14;
-  } else {
-    if (!S.collapsed) {
-      const r = mainBar.getBoundingClientRect();
-      if (S.pos === 'bottom') B = r.height + 24; else if (S.pos === 'top') T0 = r.height + 24;
-      else if (S.pos === 'left') L = r.width + 24; else R = r.width + 24;
-      if (S.quick && S.pos !== 'right') R = Math.max(R, quickBar.getBoundingClientRect().width + 24);
-    } else {
-      if (S.pos === 'bottom') B = 46; else if (S.pos === 'top') T0 = 46;
-    }
-    if (root.classList.contains('hz-thumbs-open')) L = Math.max(L, 280 + 14);
-    if (root.classList.contains('hz-presenter')) {
-      const col = pcol = clamp((vw - L - R) * 0.32, 260, 440);
-      presenterCol.style.right = R + 'px';
-      presenterCol.style.top = T0 + 'px';
-      presenterCol.style.bottom = B + 'px';
-      R += col + 16;
-    }
+  else if (editing) { T0 = 60 + 14; R = 320 + 14; L = DRAWER_W + 14; }
+  else if (root.classList.contains('hz-presenter')) {
+    const col = pcol = clamp((vw - L - R) * 0.32, 260, 440);
+    R += col + 16;
   }
   const aw = Math.max(100, vw - L - R), ah = Math.max(100, vh - T0 - B);
   scale = Math.min(aw / W, ah / H);
   stageX = L + (aw - W * scale) / 2; stageY = T0 + (ah - H * scale) / 2;
   runtimeStyle.textContent = `:root{--hz-x:${stageX}px;--hz-y:${stageY}px;--hz-s:${scale};--hz-inv:${1 / scale};--hz-pcol:${pcol}px}`;
   sizeCanvases();
-  placeHandles();
+  placeCase();
   if (typeof renderSelBoxes === 'function') renderSelBoxes();
 }
-/* 가장자리 핸들: 펼치면 패널 옆에 붙고 화살표 방향이 바뀐다 */
-function placeHandles() {
-  const qOpen = S.quick && S.pos !== 'right' && !S.collapsed;
-  handleR.style.right = qOpen ? Math.round(quickBar.getBoundingClientRect().width + 12) + 'px' : '0px';
-  handleR.innerHTML = icon(qOpen ? 'next' : 'prev');
-  handleR.title = qOpen ? '빠른 도구 접기' : '빠른 도구 펼치기';
-  handleR.setAttribute('aria-expanded', String(qOpen));
-  const tOpen = root.classList.contains('hz-thumbs-open');
-  handleL.innerHTML = icon(tOpen ? 'prev' : 'next');
-  handleL.title = tOpen ? '슬라이드 목록 닫기' : '슬라이드 목록 열기';
-  handleL.setAttribute('aria-expanded', String(tOpen));
+/* 필통 자리: 화면 비율로 기억해서 창 크기가 바뀌어도 같은 쪽에 있게 */
+function placeCase() {
+  const vw = innerWidth, vh = innerHeight;
+  const el = S.caseFolded ? caseMini : caseBar;
+  const r = el.getBoundingClientRect();
+  const w = r.width || 60, hh = r.height || 60;
+  let x = 18, y = vh - hh - 18;
+  if (S.caseAt) { x = S.caseAt.x * (vw - w); y = S.caseAt.y * (vh - hh); }
+  x = clamp(x, 6, Math.max(6, vw - w - 6)); y = clamp(y, 6, Math.max(6, vh - hh - 6));
+  [caseBar, caseMini].forEach(e => { e.style.left = Math.round(x) + 'px'; e.style.top = Math.round(y) + 'px'; });
 }
+function applyCase() {
+  root.classList.toggle('hz-case-v', !!S.caseVertical);
+  root.classList.toggle('hz-case-folded', !!S.caseFolded);
+  requestAnimationFrame(placeCase);
+}
+let gripTap = 0;
+caseGrip.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation();
+  const r = caseBar.getBoundingClientRect(), ox = e.clientX - r.left, oy = e.clientY - r.top;
+  let moved = false;
+  try { caseGrip.setPointerCapture(e.pointerId); } catch (err) { /* 무시 */ }
+  const mv = ev => {
+    if (!moved && Math.hypot(ev.clientX - e.clientX, ev.clientY - e.clientY) < 4) return;
+    moved = true;
+    const x = clamp(ev.clientX - ox, 6, innerWidth - r.width - 6), y = clamp(ev.clientY - oy, 6, innerHeight - r.height - 6);
+    [caseBar, caseMini].forEach(el => { el.style.left = x + 'px'; el.style.top = y + 'px'; });
+  };
+  const up = () => {
+    caseGrip.removeEventListener('pointermove', mv); caseGrip.removeEventListener('pointerup', up); caseGrip.removeEventListener('pointercancel', up);
+    if (moved) {
+      const rr = caseBar.getBoundingClientRect();
+      S.caseAt = { x: rr.left / Math.max(1, innerWidth - rr.width), y: rr.top / Math.max(1, innerHeight - rr.height) };
+      saveSettings(); return;
+    }
+    const now = Date.now();
+    if (now - gripTap < 380) { gripTap = 0; toggleCaseDir(); } else gripTap = now;
+  };
+  caseGrip.addEventListener('pointermove', mv); caseGrip.addEventListener('pointerup', up); caseGrip.addEventListener('pointercancel', up);
+});
+function toggleCaseDir() {
+  S.caseVertical = !S.caseVertical; saveSettings(); applyCase(); closePops();
+  toast(S.caseVertical ? '필통: 세로' : '필통: 가로', 900);
+}
+function setCaseFolded(v) { S.caseFolded = v; saveSettings(); closePops(); applyCase(); updateChrome(); }
+
+/* 메뉴 서랍 */
+let drawerTab = 'menu';
+const drawerOpen = () => drawer.classList.contains('hz-open');
+function openDrawer(tab = drawerTab) {
+  drawerTab = tab;
+  drawer.classList.add('hz-open'); root.classList.add('hz-drawer-open');
+  $$('button', drTabs).forEach(b => b.classList.toggle('hz-sel', b.dataset.tab === tab));
+  [drMenu, drSlides].forEach(b => b.classList.toggle('hz-sel', b.dataset.tab === tab));
+  closePops();
+  if (tab === 'slides' && typeof renderThumbs === 'function') renderThumbs();
+  layout();
+}
+function closeDrawer(force = false) {
+  if (!drawerOpen() || (root.classList.contains('hz-editing') && !force)) return;
+  drawer.classList.remove('hz-open'); root.classList.remove('hz-drawer-open');
+  layout();
+}
+drTabs.addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) openDrawer(b.dataset.tab); });
+
 function toStage(e) { return { x: (e.clientX - stageX) / scale, y: (e.clientY - stageY) / scale }; }
 function stageRect(el) {
   const r = el.getBoundingClientRect();
@@ -1475,7 +1535,7 @@ function toggleTimer() {
 /* ------------------------------------------------------------------ */
 /* 전체 화면                                                           */
 /* ------------------------------------------------------------------ */
-let realFS = false, revealT = 0, touchRevealT = 0, cursorT = 0, suppressClick = false;
+let realFS = false, revealT = 0, touchRevealT = 0, cursorT = 0, moveT = 0, suppressClick = false;
 const fsEl = () => doc.fullscreenElement || doc.webkitFullscreenElement;
 async function toggleFull(force) {
   const on = typeof force === 'boolean' ? force : !root.classList.contains('hz-full');
@@ -1487,7 +1547,7 @@ async function toggleFull(force) {
       const req = root.requestFullscreen || root.webkitRequestFullscreen;
       if (req && !fsEl()) { await req.call(root); realFS = true; }
     } catch (e) { realFS = false; }
-    toast('전체 화면 · 아래 가장자리에 마우스를 대면 도구가 나와요', 2200);
+    toast('전체 화면 · 화면 가장자리에 마우스를 대면 필통과 메뉴가 나와요', 2400);
   } else {
     root.classList.remove('hz-full', 'hz-reveal', 'hz-nocursor');
     if (fsEl()) { try { await (doc.exitFullscreen || doc.webkitExitFullscreen).call(doc); } catch (e) { /* 무시 */ } }
@@ -1505,20 +1565,22 @@ function pokeCursor() {
   root.classList.remove('hz-nocursor'); clearTimeout(cursorT);
   if (root.classList.contains('hz-full')) cursorT = setTimeout(() => root.classList.add('hz-nocursor'), 2000);
 }
-function nearEdge(x, y, d) {
-  if (S.pos === 'top') return y <= d;
-  if (S.pos === 'left') return x <= d;
-  if (S.pos === 'right') return x >= innerWidth - d;
-  return y >= innerHeight - d;
+/* 마우스를 움직이면 넘김 화살표가 잠깐 보인다 */
+function pokeMove() {
+  root.classList.add('hz-moving'); clearTimeout(moveT);
+  moveT = setTimeout(() => root.classList.remove('hz-moving'), 2000);
 }
+const CHROME_SEL = '.hz-case,.hz-case-mini,.hz-menu-btn,.hz-drawer,.hz-pop,.hz-boardbar';
+function nearEdge(x, y, d) { return x <= d || y <= d || x >= innerWidth - d || y >= innerHeight - d; }
 function reveal(on) {
+  if (!on && drawerOpen()) return; // 서랍을 연 동안은 그대로 둔다
   root.classList.toggle('hz-reveal', on);
   if (!on) closePops();
 }
 window.addEventListener('mousemove', e => {
-  pokeCursor();
+  pokeCursor(); pokeMove();
   if (!root.classList.contains('hz-full') || pdown) return;
-  const over = e.target instanceof Element && e.target.closest('.hz-main,.hz-pop,.hz-boardbar');
+  const over = e.target instanceof Element && e.target.closest(CHROME_SEL);
   if (nearEdge(e.clientX, e.clientY, 16) || (over && root.classList.contains('hz-reveal'))) {
     reveal(true); clearTimeout(revealT); revealT = 0;
   } else if (root.classList.contains('hz-reveal') && !revealT) {
@@ -1535,7 +1597,7 @@ function edgeTap(e) {
 }
 window.addEventListener('pointerdown', e => {
   if (!root.classList.contains('hz-full')) return;
-  if (e.target instanceof Element && e.target.closest('.hz-main,.hz-pop')) {
+  if (e.target instanceof Element && e.target.closest(CHROME_SEL)) {
     if (e.pointerType !== 'mouse') { clearTimeout(touchRevealT); touchRevealT = setTimeout(() => reveal(false), 3000); }
     return;
   }
@@ -1550,10 +1612,16 @@ function closePops() { [colorPop, emojiPop].forEach(p => p.classList.remove('hz-
 function placePop(pop, anchor) {
   pop.classList.add('hz-show');
   const a = anchor.getBoundingClientRect(), r = pop.getBoundingClientRect();
-  let x = a.left + a.width / 2 - r.width / 2, y;
-  if (S.pos === 'top' || a.top < innerHeight / 2) y = a.bottom + 10; else y = a.top - r.height - 10;
-  if (anchor.closest('.hz-quick') || S.pos === 'right') { x = a.left - r.width - 10; y = a.top + a.height / 2 - r.height / 2; }
-  if (S.pos === 'left' && anchor.closest('.hz-main')) { x = a.right + 10; y = a.top + a.height / 2 - r.height / 2; }
+  let x, y;
+  if (anchor.closest('.hz-case') && S.caseVertical) {
+    // 세로 필통: 공간이 넓은 쪽 옆에
+    x = a.right + 12 + r.width < innerWidth ? a.right + 12 : a.left - r.width - 12;
+    y = a.top + a.height / 2 - r.height / 2;
+  } else {
+    // 위쪽에 자리가 있으면 위, 없으면 아래
+    x = a.left + a.width / 2 - r.width / 2;
+    y = a.top - r.height - 12 >= 8 ? a.top - r.height - 12 : a.bottom + 12;
+  }
   pop.style.left = clamp(x, 8, innerWidth - r.width - 8) + 'px';
   pop.style.top = clamp(y, 8, innerHeight - r.height - 8) + 'px';
 }
@@ -1610,6 +1678,8 @@ function openHelp() {
   const rows = (list) => h('table', {}, list.map(([k, v]) => h('tr', {}, h('td', { html: k }), h('td', {}, v))));
   const K = s => s.split(' ').map(x => `<kbd>${x}</kbd>`).join(' ');
   openModal('단축키', [
+    h('h3', {}, '화면'),
+    rows([['메뉴 버튼 (왼쪽 위)', '모든 기능 · 슬라이드 목록 · 설정'], ['필통 손잡이', '끌어서 옮기기 · 두 번 누르면 가로/세로'], ['필통 끝 버튼', '필통 접기 (동그란 버튼을 누르면 펼침)'], ['화면 양옆 화살표', '이전 / 다음 (마우스를 움직이면 보여요)']]),
     h('h3', {}, '발표'),
     rows([[K('→ Space PageDown'), '다음 (단계 → 슬라이드)'], [K('← PageUp'), '이전'], [K('Home End'), '처음 / 끝'], ['숫자 + ' + K('Enter'), '번호로 이동'],
       [K('O'), '목차'], [K('F'), '전체 화면'], [K('B'), '슬라이드 ↔ 칠판'], [K('T'), '타이머'], [K('G'), '축하 효과'], [K('R'), '모션 다시 보기'], [K('?'), '이 도움말']]),
@@ -1633,9 +1703,11 @@ function openSettings() {
     segRow('모션 강도', '끄기: 바로 최종 상태 · 차분: 짧은 페이드만 · 화려: 배경·축하 효과 크게', [['off', '끄기'], ['calm', '차분'], ['default', '기본'], ['rich', '화려']], S.strength,
       v => { S.strength = v; saveSettings(); applyStrength(); go(cur, { force: true, final: true, instant: true }); }),
     segRow('모션 속도', '', [[1.4, '느리게'], [1, '보통'], [0.7, '빠르게']], S.speed, v => { S.speed = v; saveSettings(); }),
-    segRow('툴바 위치', '', [['bottom', '아래'], ['top', '위'], ['left', '왼쪽'], ['right', '오른쪽']], S.pos, v => { S.pos = v; saveSettings(); applyPos(); }),
-    segRow('빠른 도구 (오른쪽)', '', [[true, '보이기'], [false, '숨기기']], S.quick, v => { S.quick = v; saveSettings(); applyPos(); }),
-    segRow('전체 화면 페이지 번호', '', [[true, '보이기'], [false, '숨기기']], S.pageInFull, v => { S.pageInFull = v; saveSettings(); root.classList.toggle('hz-nopage', !v); }),
+    segRow('필통 방향', '손잡이를 두 번 눌러도 바뀌어요', [[false, '가로'], [true, '세로']], !!S.caseVertical, v => { S.caseVertical = v; saveSettings(); applyCase(); }),
+    h('div', { class: 'hz-setting' }, h('div', {}, '필통 위치', h('small', {}, '손잡이를 끌어 옮길 수 있어요')),
+      h('button', { class: 'hz-b', type: 'button', onclick: () => { S.caseAt = null; S.caseFolded = false; saveSettings(); applyCase(); toast('필통을 처음 위치로 옮겼어요'); } }, '처음 위치로')),
+    segRow('넘김 화살표', '마우스를 움직이면 화면 양옆에 나와요', [[true, '보이기'], [false, '숨기기']], S.navArrows !== false, v => { S.navArrows = v; saveSettings(); applyNav(); }),
+    segRow('전체 화면 페이지 꼬리표', '', [[true, '보이기'], [false, '숨기기']], S.pageInFull, v => { S.pageInFull = v; saveSettings(); root.classList.toggle('hz-nopage', !v); }),
     segRow('카운트다운 기본 시간', '', [[5, '5분'], [10, '10분'], [15, '15분'], [30, '30분'], [50, '50분']], S.timerMin, v => { S.timerMin = v; saveSettings(); renderTimer(); })
   ];
   if (THEMES.length > 1) rows.splice(1, 0, segRow('테마', '덱 디자인이 제공하는 테마', [[null, '기본']].concat(THEMES.map(t => [t, { dark: '다크', light: '라이트' }[t] || t])), S.theme, v => { S.theme = v; saveSettings(); applyTheme(); }));
@@ -1646,27 +1718,15 @@ function openSettings() {
 }
 function applyStrength() { ['off', 'calm', 'default', 'rich'].forEach(s => root.classList.toggle('hz-m-' + s, S.strength === s)); }
 function applyTheme() { if (S.theme) root.setAttribute('data-theme', S.theme); else if (ORIG_THEME == null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', ORIG_THEME); }
-function applyPos() {
-  ['bottom', 'top', 'left', 'right'].forEach(p => root.classList.toggle('hz-pos-' + p, S.pos === p));
-  root.classList.toggle('hz-quick-off', !S.quick);
-  root.classList.toggle('hz-collapsed', !!S.collapsed);
-  requestAnimationFrame(layout);
-}
-function cyclePos() {
-  const order = ['bottom', 'right', 'top', 'left'];
-  S.pos = order[(order.indexOf(S.pos) + 1) % 4]; saveSettings(); applyPos();
-  toast('툴바 위치: ' + { bottom: '아래', right: '오른쪽', top: '위', left: '왼쪽' }[S.pos]);
-}
-function setCollapsed(v) { S.collapsed = v; saveSettings(); applyPos(); }
+function applyNav() { root.classList.toggle('hz-nonav', S.navArrows === false); }
 
 /* ------------------------------------------------------------------ */
 /* 썸네일 패널                                                         */
 /* ------------------------------------------------------------------ */
 const thumbsList = h('div', { class: 'hz-thumbs-list' });
 const thumbsTools = h('div', { class: 'hz-thumbs-tools' });
-thumbsPanel.append(h('div', { class: 'hz-thumbs-head' }, h('span', {}, '슬라이드'), mbtn('x', '', () => toggleThumbs(false), '닫기')), thumbsTools, thumbsList);
-const thumbsOpen = () => root.classList.contains('hz-thumbs-open');
-function toggleThumbs(on = !thumbsOpen()) { root.classList.toggle('hz-thumbs-open', on); if (on) renderThumbs(); layout(); }
+drSlides.append(thumbsTools, thumbsList);
+const thumbsOpen = () => drawerOpen() && drawerTab === 'slides';
 function miniOf(slide) {
   const mini = h('div', { class: 'hz-mini' });
   const c = slide.cloneNode(true);
@@ -1681,7 +1741,7 @@ function renderThumbs() {
   slides.forEach((s, i) => {
     const t = h('div', { class: 'hz-thumb' + (i === cur ? ' hz-cur' : '') + (s.hasAttribute('data-hidden') ? ' hz-hid' : ''), 'data-i': i, draggable: editing ? 'true' : null });
     t.append(h('div', { class: 'hz-thumb-frame' }, miniOf(s)), h('div', { class: 'hz-thumb-label' }, `${i + 1}. ${s.dataset.title || '(제목 없음)'}`));
-    t.addEventListener('click', () => go(i, { dir: i >= cur ? 1 : -1, instant: editing }));
+    t.addEventListener('click', () => { go(i, { dir: i >= cur ? 1 : -1, instant: editing }); if (!editing) closeDrawer(); });
     if (editing) {
       t.addEventListener('dragstart', e => { dragFrom = i; t.classList.add('hz-dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(i)); } catch (err) { /* 무시 */ } });
       t.addEventListener('dragend', () => { dragFrom = -1; $$('.hz-thumb', thumbsList).forEach(x => x.classList.remove('hz-dragging', 'hz-drop-before', 'hz-drop-after')); });
@@ -1740,25 +1800,28 @@ function renderPresenter() {
 /* 툴바 상태                                                           */
 /* ------------------------------------------------------------------ */
 let checkCount = 0;
+const TOOL_ICON = { hand: 'hand', pen: 'pen', hl: 'hl', eraser: 'eraser', laser: 'laser' };
 function updateChrome() {
   const v = visible(), vi = Math.max(0, v.indexOf(slides[cur]));
-  pageno.textContent = boardMode ? `칠판 ${boardIdx + 1} / ${boards.length}` : (editing ? `${cur + 1} / ${slides.length}` : `${vi + 1} / ${v.length}`);
-  $('i', progress).style.width = (v.length > 1 ? (vi / (v.length - 1)) * 100 : 100) + '%';
+  pageTxt.textContent = boardMode ? `칠판 ${boardIdx + 1} / ${boards.length}` : (editing ? `${cur + 1} / ${slides.length}` : `${vi + 1} / ${v.length}`);
+  pageLine.style.width = (boardMode ? 100 : v.length > 1 ? ((vi + 1) / v.length) * 100 : 100) + '%';
   const full = root.classList.contains('hz-full');
-  $$('.hz-btn[data-cmd]', ui).forEach(b => {
+  $$('[data-cmd]', ui).forEach(b => {
     const c = b.dataset.cmd;
-    const on = c === tool || (c === 'slideMode' && !boardMode) || (c === 'boardMode' && boardMode) || (c === 'view' && S.view === 'presenter') ||
+    const on = c === tool || (c === 'board' && boardMode) || (c === 'view' && S.view === 'presenter') ||
       (c === 'timer' && TM.shown) || (c === 'full' && full) || (c === 'edit' && editing);
     b.classList.toggle('hz-pressed', on);
   });
-  $$('.hz-btn[data-cmd="view"] .hz-lbl', ui).forEach(l => { l.textContent = S.view === 'presenter' ? '발표자' : '기본'; });
-  $$('.hz-btn[data-cmd="eraser"]', ui).forEach(b => { b.title = '지우개 (E) · ' + (S.eraserMode === 'part' ? '부분 지우개' : '획 지우개'); });
-  $$('.hz-btn[data-cmd="full"] .hz-lbl', ui).forEach(l => { l.textContent = full ? '전체 화면 끝' : '전체 화면'; });
-  $$('.hz-swatch', ui).forEach(s => { s.style.background = COLORS[S.color]; });
-  $$('.hz-btn[data-cmd="check"]', ui).forEach(b => {
-    b.classList.toggle('hz-warn', checkCount > 0); b.classList.toggle('hz-ok', checkCount === 0);
-    $('.hz-lbl', b).textContent = checkCount > 0 ? `점검 ${checkCount}` : '점검';
+  $$('[data-cmd="eraser"]', ui).forEach(b => { b.title = '지우개 (E) · ' + (S.eraserMode === 'part' ? '부분 지우개' : '획 지우개') + ' · 한 번 더 누르면 방식 바꾸기'; });
+  $$('[data-cmd="full"] .hz-lbl', ui).forEach(l => { l.textContent = full ? '전체 화면 끝' : '전체 화면'; });
+  $$('.hz-swatch', ui).forEach(sw => { sw.style.background = COLORS[S.color]; });
+  caseMini.innerHTML = icon(TOOL_ICON[tool] || 'pen');
+  $$('[data-cmd="check"]', ui).forEach(b => {
+    b.classList.toggle('hz-warn', checkCount > 0);
+    const l = $('.hz-lbl', b); if (l) l.textContent = checkCount > 0 ? `점검 ${checkCount}` : '점검';
   });
+  menuBtn.classList.toggle('hz-has-issue', checkCount > 0);
+  menuBtn.title = checkCount > 0 ? `메뉴 · 점검할 문제 ${checkCount}개` : '메뉴 (도구·슬라이드·설정)';
 }
 
 /* ------------------------------------------------------------------ */
@@ -2451,7 +2514,8 @@ function toggleEdit(on = !editing) {
     setTool('hand');
     slides.forEach(cleanupSlide);
     editing = true;
-    root.classList.add('hz-editing', 'hz-thumbs-open');
+    root.classList.add('hz-editing');
+    openDrawer('slides');
     slides.forEach(s => s.classList.remove('hz-active', 'hz-leaving', 'hz-top'));
     if (slides[cur]) slides[cur].classList.add('hz-active');
     buildEditBar(); selectEls([]); renderThumbs(); layout(); renderInk(); updateChrome();
@@ -2459,7 +2523,8 @@ function toggleEdit(on = !editing) {
   } else {
     stopTextEdit(); stopPreview(); selectEls([]);
     editing = false;
-    root.classList.remove('hz-editing', 'hz-thumbs-open');
+    root.classList.remove('hz-editing');
+    closeDrawer(true);
     selLayer.innerHTML = ''; propsPanel.innerHTML = '';
     scan(); layout();
     go(cur, { force: true, final: true, instant: true });
@@ -2559,11 +2624,11 @@ const CMD = {
   hand: () => setTool('hand'), pen: () => setTool('pen'), hl: () => setTool('hl'), laser: () => setTool('laser'),
   eraser: () => (tool === 'eraser' ? toggleEraserMode() : setTool('eraser')),
   color: b => { if (colorPop.classList.contains('hz-show')) return closePops(); closePops(); renderColorPop(); placePop(colorPop, b); },
-  undo: () => (editing ? editUndo() : inkUndoAct()), clear: clearSurface, clearAll: clearAllInk,
-  slideMode: () => setBoard(false), boardMode: () => setBoard(true), view: toggleView, check: openCheck, edit: () => toggleEdit(),
-  timer: toggleTimer, celebrate: () => celebrate('confetti', true), toc: openToc, full: () => toggleFull(), pos: cyclePos,
-  collapse: () => setCollapsed(true), expand: () => setCollapsed(false), settings: openSettings, thumbs: () => toggleThumbs(),
-  quick: () => { S.quick = !S.quick; saveSettings(); applyPos(); },
+  undo: () => (editing ? editUndo() : inkUndoAct()), redo: () => (editing ? editRedo() : inkRedoAct()),
+  clear: clearSurface, clearAll: clearAllInk, board: () => setBoard(!boardMode), view: toggleView, check: openCheck, edit: () => toggleEdit(),
+  timer: toggleTimer, celebrate: () => celebrate('confetti', true), toc: openToc, full: () => toggleFull(), settings: openSettings, help: openHelp,
+  menu: () => (drawerOpen() ? closeDrawer() : openDrawer('menu')), closeMenu: () => closeDrawer(),
+  fold: () => setCaseFolded(true), unfold: () => setCaseFolded(false),
   'e-text': () => insertBox(SHAPES.text, true), 'e-rect': () => insertBox(SHAPES.rect), 'e-circle': () => insertBox(SHAPES.circle),
   'e-arrow': () => insertBox(SHAPES.arrow), 'e-line': () => insertBox(SHAPES.line), 'e-image': () => pickImage(f => insertImageFile(f)),
   'e-emoji': b => openEmoji(b), 'e-dup': duplicateSel, 'e-del': deleteSel, 'e-front': () => zorder('front'), 'e-back': () => zorder('back'),
@@ -2573,8 +2638,18 @@ ui.addEventListener('click', e => {
   const b = e.target instanceof Element && e.target.closest('[data-cmd]');
   if (!b || !ui.contains(b)) return;
   const f = CMD[b.dataset.cmd];
-  if (f) { e.stopPropagation(); f(b); }
+  if (!f) return;
+  e.stopPropagation();
+  if (b.classList.contains('hz-tile') && !editing) closeDrawer(); // 타일을 고르면 서랍은 닫는다
+  f(b);
 });
+/* 서랍 밖을 누르면 서랍만 닫고, 슬라이드는 넘기지 않는다 */
+window.addEventListener('pointerdown', e => {
+  if (!drawerOpen() || editing || !(e.target instanceof Element)) return;
+  if (e.target.closest('.hz-drawer,.hz-menu-btn,.hz-modal-wrap,.hz-pop,.hz-case,.hz-case-mini,.hz-timer,.hz-boardbar')) return;
+  closeDrawer(); suppressClick = true;
+  e.stopPropagation(); e.preventDefault();
+}, true);
 doc.addEventListener('pointerdown', e => {
   if (!(e.target instanceof Element) || e.target.closest('.hz-pop,[data-cmd="color"],[data-cmd="e-emoji"],.hz-thumbs-tools')) return;
   closePops();
@@ -2686,6 +2761,7 @@ window.addEventListener('keydown', e => {
   }
   if (modalOpen()) { if (k === 'Escape') { e.preventDefault(); closeModal(false); } return; }
   if (k === 'Escape' && (colorPop.classList.contains('hz-show') || emojiPop.classList.contains('hz-show'))) { closePops(); return; }
+  if (k === 'Escape' && drawerOpen() && !editing) { e.preventDefault(); closeDrawer(); return; }
   if (editing) { editKey(e); return; }
   if (e.isComposing) return;
   if (mod && c === 'KeyZ') { e.preventDefault(); if (e.shiftKey) inkRedoAct(); else inkUndoAct(); return; }
@@ -2738,7 +2814,7 @@ window.addEventListener('keydown', e => {
 /* 시작                                                                */
 /* ------------------------------------------------------------------ */
 scan();
-applyStrength(); applyTheme(); applyPos();
+applyStrength(); applyTheme(); applyCase(); applyNav();
 root.classList.toggle('hz-presenter', S.view === 'presenter');
 setTool('hand'); renderBoardBar(); buildTimer(); renderColorPop(); buildEditBar();
 layout();
