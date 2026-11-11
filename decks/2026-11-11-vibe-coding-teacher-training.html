@@ -615,7 +615,8 @@ html.hz-previewing .hz-sel-layer { display: none; }
 <style id="hz-deck-design">
 /* ===== DECK DESIGN ===== */
 /* 선생님용 안내 페이지와 같은 모양: 밝은 회청 바탕 + 남색 글자 + 파랑 강조 + 노란 형광펜.
-   빔프로젝터에서 흐려지지 않게 밝은 테마 하나만 쓰고, 본문은 36px 이상으로 쓴다. */
+   빔프로젝터에서 흐려지지 않게 밝은 테마 하나만 쓰고, 본문은 36px 이상으로 쓴다.
+   한글이 들어가는 글자에는 고정폭(mono) 글꼴을 쓰지 않는다(한글 글자가 없어 깨져 보인다). */
 :root {
   --bg: #f2f4f7; --surface: #ffffff; --fg: #172235; --muted: #4f5a6e; --line: #d3d9e3;
   --accent: #2550c8; --accent-ink: #ffffff; --accent-soft: #e5ebfa; --accent-2: #ffd84a;
@@ -638,13 +639,12 @@ body { font-family: var(--font); color: var(--fg); }
 .ic { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
 
 /* 글자 */
-.eye { font-family: var(--mono); font-size: 30px; font-weight: 600; color: var(--accent); letter-spacing: .04em; }
+.eye { font-size: 32px; font-weight: 700; color: var(--accent); letter-spacing: .01em; }
 .h2 { font-family: var(--display); font-size: 80px; font-weight: 400; line-height: 1.2; letter-spacing: -.01em; }
 .title { font-family: var(--display); font-size: 132px; font-weight: 400; line-height: 1.1; letter-spacing: -.015em; }
 .title em, .h2 em { font-style: normal; color: var(--accent); }
 .lead { font-size: 40px; line-height: 1.55; color: var(--muted); }
 .tag { display: inline-block; padding: 10px 28px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); font-size: 32px; font-weight: 700; }
-.tag.dark { background: var(--fg); }
 .note { font-size: 36px; color: var(--muted); }
 .note b { color: var(--fg); }
 
@@ -675,7 +675,7 @@ body { font-family: var(--font); color: var(--fg); }
 }
 .lane-b .steps li::before { background: #e6e9ef; color: var(--fg); }
 .addr { display: flex; align-items: center; gap: 18px; padding: 18px 22px; border-radius: 18px; background: #f4f6fa; border: 2px solid var(--line); }
-.addr .url { flex: 1; font-family: var(--mono); font-size: 30px; color: var(--muted); background: var(--surface); border: 2px solid var(--line); border-radius: 99px; padding: 8px 22px; }
+.addr .url { flex: 1; min-width: 0; white-space: nowrap; font-family: var(--mono); font-size: 28px; color: var(--muted); background: var(--surface); border: 2px solid var(--line); border-radius: 99px; padding: 8px 18px; }
 .addr .go { font-size: 30px; font-weight: 700; padding: 10px 22px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
 .lane-b .addr .go { background: var(--fg); }
 
@@ -691,7 +691,10 @@ body { font-family: var(--font); color: var(--fg); }
 /* 섹션 시작 (chapter 위젯 다듬기) */
 .slide [data-widget="chapter"] { background-color: var(--accent); color: #fff; }
 .slide [data-widget="chapter"]::before { font-family: var(--display); font-weight: 400; opacity: .14; }
-.slide [data-widget="chapter"]::after { font-family: var(--mono); font-weight: 600; color: var(--accent); }
+.slide [data-widget="chapter"]::after {
+  font-family: var(--font); font-size: 32px; font-weight: 700; letter-spacing: .03em; padding: 10px 30px;
+  background: rgba(255, 255, 255, .14); color: #fff; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .6);
+}
 .slide [data-widget="chapter"] > h2 { font-family: var(--display); font-weight: 400; font-size: 140px; }
 .slide [data-widget="chapter"] > p { font-size: 48px; }
 
@@ -738,7 +741,6 @@ body { font-family: var(--font); color: var(--fg); }
 .svc.row .k { font-family: var(--display); font-size: 52px; display: flex; align-items: center; gap: 18px; }
 .svc.row .k svg { width: 64px; height: 64px; color: var(--accent); flex: none; }
 .svc.row .v { text-align: center; font-size: 40px; font-weight: 700; }
-.svc.row .v.none { color: #8b93a3; font-weight: 500; font-size: 34px; }
 
 /* 뒤집기 카드 */
 .flip-card > .front, .flip-card > .back {
@@ -746,7 +748,7 @@ body { font-family: var(--font); color: var(--fg); }
   padding: 44px; border-radius: 30px; text-align: center; box-shadow: var(--shadow);
 }
 .flip-card > .front { background: var(--surface); border: 3px solid var(--line); }
-.flip-card > .front .no { font-family: var(--mono); font-size: 30px; font-weight: 600; color: var(--accent); }
+.flip-card > .front .no { font-size: 32px; font-weight: 700; color: var(--accent); }
 .flip-card > .front p { font-size: 42px; font-weight: 700; line-height: 1.4; }
 .flip-card > .back { background: var(--accent); color: #fff; }
 .flip-card > .back b { font-family: var(--display); font-weight: 400; font-size: 72px; line-height: 1.1; }
@@ -824,28 +826,28 @@ body { font-family: var(--font); color: var(--fg); }
 .pairs i { height: 96px; border-radius: 14px; background: var(--accent); display: grid; place-items: center; color: #fff; font: 400 30px/1.15 var(--display); font-style: normal; text-align: center; padding: 6px; }
 .pairs i.o { background: var(--accent-soft); color: var(--accent); }
 .pairs i.ok { background: var(--ok-soft); color: var(--ok); }
-.qshow { width: 560px; display: grid; gap: 14px; }
-.qshow .q { font-family: var(--display); font-size: 44px; text-align: center; padding: 12px; border-radius: 16px; background: var(--fg); color: #fff; }
-.qshow .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.qshow .opts i { font-style: normal; font-size: 32px; font-weight: 700; padding: 14px; border-radius: 14px; text-align: center; background: var(--accent-soft); color: var(--accent); }
-.qshow .opts i.ok { background: var(--ok-soft); color: var(--ok); }
-.qshow .score { display: flex; justify-content: space-between; font-size: 32px; font-weight: 700; }
-.qshow .score b { font-family: var(--display); font-weight: 400; font-size: 46px; color: var(--accent); margin-left: 8px; }
-.letter { position: absolute; top: -22px; left: 36px; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-2); color: var(--fg); font: 400 50px/1 var(--display); box-shadow: var(--shadow); z-index: 2; }
+.escape { width: 600px; height: 250px; }
+.escape .lk { fill: var(--fg); }
+.escape .lk.open { fill: var(--ok); }
+.escape .sh { fill: none; stroke: var(--fg); stroke-width: 9; stroke-linecap: round; }
+.escape .sh.open { stroke: var(--ok); }
+.escape text { font-family: var(--display); }
 
 /* 4단계 카드 */
-.g4 { display: flex; flex-direction: column; gap: 14px; padding: 36px 32px; }
-.g4 .n { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font: 400 46px/1 var(--display); }
+.g4 { display: flex; flex-direction: column; gap: 12px; padding: 34px 32px; }
+.g4 .n { flex: none; width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font: 400 46px/1 var(--display); }
 .g4 svg { width: 96px; height: 96px; color: var(--accent); align-self: flex-end; margin-top: -86px; }
 .g4 h3 { font-family: var(--display); font-weight: 400; font-size: 50px; line-height: 1.2; }
 .g4 p { font-size: 34px; line-height: 1.4; color: var(--muted); }
 .g4 p b { color: var(--fg); }
+.g4 .en { display: inline-block; margin-top: 4px; padding: 2px 14px; border-radius: 10px; background: var(--mark); color: var(--fg); font-size: 30px; font-weight: 700; }
+.folder { font-family: var(--mono); font-weight: 600; color: var(--fg); }
 .app-mock { display: flex; gap: 0; padding: 0; overflow: hidden; }
 .app-mock .side { width: 32%; background: #f4f6fa; border-right: 2px solid var(--line); padding: 22px 18px; display: flex; flex-direction: column; gap: 12px; }
 .app-mock .side i { font-style: normal; font-size: 28px; font-weight: 700; padding: 8px 14px; border-radius: 12px; color: var(--muted); }
 .app-mock .side i.on { background: var(--accent); color: #fff; }
-.app-mock .main { flex: 1; padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; }
-.app-mock .box { height: 74px; border-radius: 18px; border: 2px solid var(--line); background: #fff; font-size: 28px; color: #8b93a3; display: flex; align-items: center; padding: 0 20px; }
+.app-mock .main { flex: 1; padding: 22px; display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; }
+.app-mock .box { height: 70px; border-radius: 18px; border: 2px solid var(--line); background: #fff; font-size: 28px; color: #8b93a3; display: flex; align-items: center; padding: 0 20px; }
 .app-mock .chips { display: flex; gap: 12px; }
 .app-mock .chips i { font-style: normal; font-size: 28px; font-weight: 700; padding: 6px 18px; border-radius: 99px; border: 2px solid var(--line); color: var(--muted); background: #fff; }
 .app-mock .chips i.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 5px var(--accent-2); }
@@ -869,13 +871,17 @@ body { font-family: var(--font); color: var(--fg); }
 .quiz .opt.hz-correct { border-color: var(--ok); background: var(--ok-soft); }
 .quiz .opt.hz-wrong { border-color: #c2412d; background: var(--warn-soft); }
 
-/* 마무리 */
-.end-list li { position: relative; padding-left: 70px; font-size: 44px; line-height: 1.4; margin-bottom: 30px; }
-.end-list li::before { content: ""; position: absolute; left: 0; top: 12px; width: 40px; height: 40px; border-radius: 50%; background: var(--accent-2); box-shadow: inset 0 0 0 8px var(--accent); }
-.kit { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; background: var(--accent); color: #fff; border-radius: 36px; box-shadow: var(--shadow); padding: 40px; }
-.kit svg { width: 150px; height: 150px; }
-.kit h3 { font-family: var(--display); font-weight: 400; font-size: 64px; line-height: 1.15; }
-.kit p { font-size: 36px; line-height: 1.45; opacity: .95; }
+/* 엔딩: 오늘 해낸 것을 숫자로 보여 주고 자신감을 준다 */
+.slide.finale { background: linear-gradient(135deg, #18348f 0%, #2550c8 55%, #3b6ee8 100%); color: #fff; }
+.fin-eye { font-size: 38px; font-weight: 700; color: rgba(255, 255, 255, .88); letter-spacing: .01em; }
+.stat { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 34px; background: rgba(255, 255, 255, .12); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .34), 0 20px 50px rgba(6, 16, 50, .25); }
+.stat .n { font-family: var(--display); font-size: 160px; line-height: 1; color: #fff; }
+.stat .n small { font-size: 64px; margin-left: 10px; color: var(--accent-2); }
+.stat .l { font-size: 40px; font-weight: 700; color: rgba(255, 255, 255, .92); }
+.fin-title { font-family: var(--display); font-weight: 400; font-size: 120px; line-height: 1.15; color: #fff; }
+.fin-title em { font-style: normal; color: var(--accent-2); }
+.fin-line { font-size: 46px; font-weight: 500; line-height: 1.5; color: #fff; }
+.fin-line mark { background: var(--accent-2); color: var(--fg); }
 </style>
 </head>
 <body>
@@ -920,12 +926,12 @@ body { font-family: var(--font); color: var(--fg); }
     </section>
   </template>
 
-  <!-- ===================== 도입 ===================== -->
-  <section class="slide plain" data-id="cover" data-title="표지" data-transition="circle" data-ambient="particles">
+  <!-- ===================== 시작 ===================== -->
+  <section class="slide plain" data-id="cover" data-title="표지" data-transition="circle" data-ambient="gradient">
     <p style="left:160px;top:236px;width:900px" data-anim="pop"><span class="tag">선생님 연수 · 바이브코딩 첫걸음</span></p>
     <h1 class="title" style="left:160px;top:336px;width:1000px" data-anim="split-words" data-delay="200">말로 주문하면<br><em>수업 도구</em>가<br>나와요</h1>
     <p class="lead" style="left:160px;top:790px;width:960px" data-anim="fade-up" data-delay="1000">코드를 몰라도 괜찮아요.<br>오늘 60분 동안 슬라이드와 게임을 직접 만들어요.</p>
-    <p class="say" style="left:1200px;top:200px;width:560px" data-anim="pop" data-delay="600">“우리 반 짝 맞추기 게임 만들어 줘”</p>
+    <p class="say" style="left:1200px;top:200px;width:560px" data-anim="pop" data-delay="600">“수업용 짝 맞추기 게임 만들어 줘”</p>
     <div class="arrow" style="left:1430px;top:410px;width:100px;height:130px" data-anim="draw" data-delay="1150">
       <svg viewBox="0 0 100 130" width="100" height="130" aria-hidden="true"><path d="M50 8 V112"/><path d="M18 82 L50 116 L82 82"/></svg>
     </div>
@@ -933,13 +939,13 @@ body { font-family: var(--font); color: var(--fg); }
       <div class="bar"><i></i><i></i><i></i><span>짝 맞추기</span></div>
       <div class="cards6"><i>?</i><i class="open">증발</i><i>?</i><i>?</i><i>?</i><i class="open">기체로</i></div>
     </div>
-    <aside class="notes">[0분] 인사. “오늘은 코드를 한 줄도 몰라도, 말로 주문해서 수업 도구를 만드는 날이에요.” 오른쪽 그림처럼 말 한마디로 게임이 나온다는 것만 짚고 바로 다음 장(설치)으로 넘어가요.</aside>
+    <aside class="notes">[0분] 인사. “오늘은 코드를 한 줄도 몰라도, 말로 주문해서 수업 도구를 만드는 날이에요.” 오른쪽 그림처럼 말 한마디로 게임이 나온다는 것만 짚고 바로 설치로 넘어가요.</aside>
   </section>
 
   <section class="slide" data-id="install" data-title="지금 설치 시작" data-transition="slide">
-    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">시작 전에 · 3분</p>
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">시작하기 전에 · 3분</p>
     <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">지금 설치 버튼부터 눌러 두세요</h2>
-    <p class="lead" style="left:160px;top:256px;width:1600px" data-anim="fade-up" data-delay="500">설치는 몇 분 걸려요. 설명을 듣는 동안 끝나요.</p>
+    <p class="lead" style="left:160px;top:256px;width:1600px" data-anim="fade-up" data-delay="500">설치는 몇 분 걸려요. 다음 장을 보는 동안 끝나요.</p>
     <div class="card lane lane-a" style="left:160px;top:370px;width:780px;height:560px" data-anim="slide-right" data-step="1">
       <p class="lane-tag">Claude 쓰는 분</p>
       <ol class="steps">
@@ -953,12 +959,12 @@ body { font-family: var(--font); color: var(--fg); }
       <p class="lane-tag">ChatGPT 쓰는 분</p>
       <ol class="steps">
         <li>시작 메뉴에서 <b>Microsoft Store</b></li>
-        <li><b>Codex</b> 검색 → <b>받기</b></li>
-        <li>Codex 앱을 열고 <b>ChatGPT 계정</b>으로 로그인</li>
+        <li><b>ChatGPT</b> 검색 → <b>받기</b></li>
+        <li>ChatGPT 앱을 열고 <b>로그인</b></li>
       </ol>
-      <div class="addr"><span class="url">Codex</span><span class="go">받기</span></div>
+      <div class="addr"><span class="url">ChatGPT</span><span class="go">받기</span></div>
     </div>
-    <aside class="notes">[0~3분] 두 계정을 다 가진 분은 하나만 골라요. Claude 앱 하나에 대화·Cowork·Code가 모두 들어 있어요. ChatGPT 쓰는 분은 슬라이드 실습은 ChatGPT 웹(chatgpt.com)에서, 게임 실습은 Codex 앱에서 해요. 학교 노트북에서 설치가 막히면(관리자 권한) 옆 사람과 같이 해요. 아래 회색 그림은 간단히 그린 것이라 실제 화면과 조금 다를 수 있어요(스크린샷을 받으면 바꿔 넣기).</aside>
+    <aside class="notes">[0~3분] 두 계정이 다 있으면 하나만 골라요. 두 회사 모두 앱 하나에 대화·맡기기·만들기가 다 들어 있어요(Claude: 대화·Cowork·Code, ChatGPT: Chat·Work·Codex). ChatGPT 앱은 2026년 7월부터 Codex가 들어간 통합 앱이에요. 예전 앱이 깔려 있으면 아이콘이 둘 보일 수 있는데, ‘ChatGPT Classic’이 아니라 ‘ChatGPT’를 써요. 학교 노트북에서 설치가 막히면(관리자 권한) 옆 사람과 같이 해요. 아래 회색 그림은 간단히 그린 것이라 실제 화면과 조금 다를 수 있어요.</aside>
   </section>
 
   <section class="slide" data-id="today" data-title="오늘 가져갈 것" data-transition="push">
@@ -986,22 +992,90 @@ body { font-family: var(--font); color: var(--fg); }
           <path d="M370 78 l10 10 l20 -20 M270 172 l10 10 l20 -20" fill="none" stroke="#1b7446" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <h3>우리 반 게임</h3>
-      <p>짝 맞추기 또는 모둠 퀴즈쇼</p>
+      <h3>내 수업 게임</h3>
+      <p>짝 맞추기 또는 방탈출 퀴즈</p>
     </div>
     <ol class="timeline" style="left:160px;top:868px;width:1600px" data-anim="stagger" data-step="3">
-      <li>알기 <b>10분</b></li><li>슬라이드 <b>20분</b></li><li>게임 <b>20분</b></li><li>마무리 <b>5분</b></li>
+      <li>맡겨 두기 <b>10분</b></li><li>알기 <b>15분</b></li><li>게임 <b>25분</b></li><li>마무리 <b>10분</b></li>
     </ol>
-    <aside class="notes">[3분] 오늘 끝나면 손에 남는 것 두 가지. 둘 다 내 교과, 내 단원으로 만들어요. 시간표는 대략이에요.</aside>
+    <aside class="notes">[3분] 오늘 끝나면 손에 남는 것 두 가지. 순서가 특이해요: 슬라이드는 AI가 만드는 데 몇 분 걸리니까 먼저 맡겨 두고, 기다리는 동안 바이브코딩을 알아봐요.</aside>
   </section>
 
-  <!-- ===================== PART 1 알기 ===================== -->
-  <section class="slide plain" data-id="part1" data-title="PART 1 바이브코딩이 뭐예요?" data-transition="wipe">
-    <div data-widget="chapter" data-part="PART 1 · 알기" data-num="1" style="left:0;top:0;width:1920px;height:1080px">
-      <h2>바이브코딩이 뭐예요?</h2>
-      <p>어렵지 않아요. AS 기사님만 떠올리면 돼요.</p>
+  <!-- ===================== PART 1 맡겨 두기 ===================== -->
+  <section class="slide plain" data-id="part1" data-title="PART 1 슬라이드부터 맡겨 두기" data-transition="wipe">
+    <div data-widget="chapter" data-part="PART 1 · 맡겨 두기" data-num="1" style="left:0;top:0;width:1920px;height:1080px">
+      <h2>슬라이드부터 맡겨 두기</h2>
+      <p>만드는 데 몇 분 걸려요. 지금 시켜 두고 기다리는 동안 배워요.</p>
     </div>
-    <aside class="notes">[4분] PART 1은 8분 정도. 용어보다 그림으로 이해하는 시간이에요.</aside>
+    <aside class="notes">[4분] PART 1은 설명 3분, 실습 7분. 오늘은 구성안을 오래 고치지 말고 바로 “만들어 줘”까지 가는 게 목표예요.</aside>
+  </section>
+
+  <section class="slide" data-id="demo" data-title="완성본 먼저 보기" data-transition="zoom">
+    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">이런 슬라이드가 나와요</h2>
+    <div class="demo" style="left:160px;top:250px;width:1040px;height:585px" data-anim="blur-in" data-interact="zoom">
+      <span class="d-tag">중학교 역사 · 조선의 성립과 발전</span>
+      <p class="d-title">세종, <em>백성을 위한</em><br>글자를 만들다</p>
+      <p class="d-lead">훈민정음은 왜, 어떻게 만들어졌을까?</p>
+      <div class="d-jamo"><b>ㄱ</b><span>ㄴ</span><span>ㅁ</span><span>ㅅ</span><span>ㅇ</span></div>
+    </div>
+    <div class="thumbs4" style="left:160px;top:875px;width:1040px" data-anim="stagger" data-step="1">
+      <div><span class="t-h">만든 까닭 · 연표</span><span class="t-line"></span><span class="t-dot" style="top:36%"></span><span class="t-dot o" style="top:76%"></span><span class="t-yr" style="top:33%">1443</span><span class="t-yr" style="top:72%">1446</span></div>
+      <div><span class="t-h">확인 문제</span><span class="t-opt" style="top:30%"></span><span class="t-opt ok" style="top:52%"></span><span class="t-opt" style="top:74%"></span></div>
+      <div><span class="t-h">뒤집기 · 가리개</span><span class="t-flip">ㄱ</span><span class="t-cov"></span></div>
+      <div><span class="t-h">마무리</span><span class="t-big">오늘 배운 것</span><span class="t-conf" style="left:60%;top:30%;background:#e4572e"></span><span class="t-conf" style="left:74%;top:50%;background:#2f6fec"></span><span class="t-conf" style="left:84%;top:24%;background:#f6c344"></span><span class="t-conf" style="left:66%;top:70%;background:#1f9d55"></span></div>
+    </div>
+    <ul class="has" style="left:1290px;top:270px;width:470px">
+      <li data-anim="fade-left" data-step="2">말하는 순서대로 하나씩 나타나요</li>
+      <li data-anim="fade-left" data-step="3">퀴즈·카드를 눌러서 풀어요</li>
+      <li data-anim="fade-left" data-step="4">펜으로 바로 필기해요</li>
+      <li data-anim="fade-left" data-step="5">글자는 두 번 눌러 고쳐요</li>
+    </ul>
+    <p class="tip" style="left:1290px;top:850px;width:470px" data-anim="pop" data-step="6">여러분 교과서로도 곧 이렇게 나와요</p>
+    <aside class="notes">틀 파일에 든 중학교 역사 ‘훈민정음’ 예시예요. 큰 화면을 누르면 확대돼요. 지금은 그림으로만 짧게 보고(1분), 실제 파일을 열어 보는 시연은 PART 2 끝 ‘받은 파일 쓰는 법’에서 해요.</aside>
+  </section>
+
+  <section class="slide" data-id="slide-steps" data-title="따라 하기: 세 번이면 끝" data-transition="slide">
+    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">따라 하기: 세 번이면 끝</h2>
+    <ol class="big-steps" style="left:160px;top:270px;width:740px">
+      <li data-anim="fade-right" data-step="1"><span class="n">1</span><h3>파일 2개 올리기</h3><p>교과서 PDF(단원 쪽만)와 틀 파일</p></li>
+      <li data-anim="fade-right" data-step="2"><span class="n">2</span><h3>1단계 글 붙여 넣기</h3><p><mark>노란 곳</mark>만 우리 반에 맞게 바꿔요</p></li>
+      <li data-anim="fade-right" data-step="4"><span class="n">3</span><h3>“만들어 줘”</h3><p>구성안을 보고 2단계 글을 붙여 넣어요</p></li>
+    </ol>
+    <p class="tip" style="left:160px;top:830px;width:740px" data-anim="fade-up" data-delay="900"><b>Claude</b>는 설정에서 ‘코드 실행 및 파일 생성’을 켜 두세요.</p>
+    <div class="sm" data-widget="chat" data-title="AI와 대화" style="left:960px;top:236px;width:800px;height:790px" data-anim="fade-left" data-delay="300">
+      <p data-from="me" data-kind="doc" data-step="1">교과서-3단원.pdf<br>slide-template.html</p>
+      <p data-from="me" data-step="2">첨부한 PDF는 <mark>[중2 역사]</mark> <mark>[3단원]</mark>이에요. 구성안만 보여 주세요 …</p>
+      <p data-from="ai" data-step="3">구성안이에요. 표지 → 학습 목표 → … 디자인은 1안·2안 중 골라 주세요.</p>
+      <p data-from="me" data-step="4">좋아요. <mark>2안</mark>으로 만들어 줘.</p>
+      <p data-from="ai" data-kind="doc" data-step="5">history-3-1.html 완성!</p>
+    </div>
+    <aside class="notes">글은 키트에서 복사 버튼으로 가져와요. 1: 새 대화에 파일 2개 올리기. 2: 1단계 글(구성안 받기) 붙여 넣기. 노란 [ ] 부분만 바꿔요. 슬라이드 수는 [6~8장]으로. 3: AI가 구성안을 보여 줘요. 4: 오늘은 고치지 말고 바로 2단계 글(“만들어 줘”). 5: 몇 분 뒤 HTML 파일이 나와요. ChatGPT는 앱의 대화(Chat)에서 똑같이 해요.</aside>
+  </section>
+
+  <section class="slide" data-id="practice1" data-title="실습 ① 슬라이드 맡겨 두기" data-transition="cover">
+    <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ① · 7분</span></p>
+    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 교과서로 슬라이드 맡겨 두기</h2>
+    <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
+      <li>교과서 PDF 준비<small>수업할 단원 쪽만</small></li>
+      <li>키트에서 틀 파일 내려받기</li>
+      <li>1단계 글 붙여 넣고 노란 곳 바꾸기<small>슬라이드 수는 [6~8장]</small></li>
+      <li>구성안이 나오면 2단계 글로 “만들어 줘”</li>
+      <li>AI가 만드는 동안 앞을 봐 주세요!</li>
+    </ul>
+    <div class="clock" style="left:1340px;top:280px;width:420px;height:420px" data-anim="progress-ring" data-delay="400">
+      <svg viewBox="0 0 420 420" width="420" height="420" aria-label="7분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">7</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
+    </div>
+    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">구성안은 오늘 고치지 말고 바로 “만들어 줘”</p>
+    <aside class="notes">[7~14분] T를 눌러 타이머(7분)를 켜요. 모두 “만들어 줘”까지 보냈는지 확인하고 PART 2로 넘어가요. 자주 막히는 곳: Claude는 ‘코드 실행 및 파일 생성’ 설정, PDF가 너무 큼(단원 쪽만 자르기).</aside>
+  </section>
+
+  <!-- ===================== PART 2 기다리는 동안 ===================== -->
+  <section class="slide plain" data-id="part2" data-title="PART 2 바이브코딩이 뭐예요?" data-transition="wipe">
+    <div data-widget="chapter" data-part="PART 2 · 기다리는 동안" data-num="2" style="left:0;top:0;width:1920px;height:1080px">
+      <h2>바이브코딩이 뭐예요?</h2>
+      <p>AI가 만드는 동안, AS 기사님으로 알아봐요.</p>
+    </div>
+    <aside class="notes">[14분] PART 2는 15분. 용어보다 그림으로 이해하는 시간이에요. 끝날 무렵 슬라이드 파일이 나와 있을 거예요.</aside>
   </section>
 
   <section class="slide" data-id="what" data-title="바이브코딩 = 말로 주문하기" data-transition="slide">
@@ -1032,7 +1106,7 @@ body { font-family: var(--font); color: var(--fg); }
     </div>
     <p class="loop-label" style="left:620px;top:768px;width:680px" data-anim="pop" data-step="4" data-delay="700"><span>마음에 안 들면? 또 말해요</span></p>
     <p class="key-line" style="left:160px;top:900px;width:1600px" data-anim="fade-up" data-step="5">우리가 할 일은 <span data-emphasis="highlight">설명하고, 써 보고, 고쳐 달라고 하기</span></p>
-    <aside class="notes">‘바이브코딩’은 코드를 직접 짜지 않고, 원하는 것을 말로 설명해서 AI가 프로그램을 만들게 하는 방식이에요. 1~3: 말하기 → AI가 만들기 → 써 보기. 4: 마음에 안 들면 다시 말하기(이게 핵심 반복). 5: 우리 일은 설명·확인·요청.</aside>
+    <aside class="notes">‘바이브코딩’은 코드를 직접 짜지 않고, 원하는 것을 말로 설명해서 AI가 프로그램을 만들게 하는 방식이에요. 방금 슬라이드를 맡긴 것도 바이브코딩이에요. 1~3: 말하기 → AI가 만들기 → 써 보기. 4: 마음에 안 들면 다시 말하기(이게 핵심 반복). 5: 우리 일은 설명·확인·요청.</aside>
   </section>
 
   <section class="slide" data-id="example" data-title="말 한마디로 이런 게 나와요" data-transition="slide">
@@ -1064,7 +1138,7 @@ body { font-family: var(--font); color: var(--fg); }
       <svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M12 58 L60 18 L108 58"/><path class="ic" d="M24 48 V104 H96 V48"/><path class="ic" d="M50 104 V76 H70 V104"/></svg>
       <p class="kind">방문 수리</p>
       <p class="desc">집에 와서 직접 고쳐요.<br>열어 준 방(폴더)에만 들어가요.</p>
-      <p class="tool">맡기기<span>Claude Cowork</span></p>
+      <p class="tool">맡기기<span>Claude Cowork<br>ChatGPT Work</span></p>
     </div>
     <div class="card as" style="left:1260px;top:270px;width:500px;height:740px" data-anim="pop" data-step="3">
       <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ic" cx="60" cy="60" r="24"/><circle class="ic" cx="60" cy="60" r="8"/><path class="ic" d="M60 14 V28 M60 92 V106 M14 60 H28 M92 60 H106 M27 27 L37 37 M83 83 L93 93 M27 93 L37 83 M83 37 L93 27"/></svg>
@@ -1072,9 +1146,9 @@ body { font-family: var(--font); color: var(--fg); }
       <p class="desc">원하는 기계를 새로 만들어 줘요. 써 보고 또 고쳐 달라고 해요.</p>
       <p class="tool">만들기<span>Claude Code · Codex</span></p>
     </div>
-    <p style="left:480px;top:236px;width:220px" data-anim="pop" data-step="4"><span class="badge">PART 2</span></p>
-    <p style="left:1580px;top:236px;width:220px" data-anim="pop" data-step="4" data-delay="200"><span class="badge">PART 3</span></p>
-    <aside class="notes">핵심 비유. 1 전화 상담(대화): 증상을 말하면 방법을 알려 줘요. 손은 내가 움직여요. 2 방문 수리(맡기기, Cowork): 기사님이 우리 집에 와서 직접 고쳐요. 단, 내가 문을 열어 준 방(연결한 폴더)에만 들어가요. 3 맞춤 제작(만들기, Code·Codex): 세상에 없는 우리 반 전용 기계를 새로 만들어 줘요. 4 오늘 PART 2는 대화로 슬라이드를, PART 3은 맞춤 제작으로 게임을 만들어요. 참고: Claude 앱에서는 대화와 Cowork가 같은 입력창으로 합쳐지는 중이라, 계정에 따라 ‘Cowork’ 버튼이 보이거나 안 보일 수 있어요.</aside>
+    <p style="left:440px;top:236px;width:260px" data-anim="pop" data-step="4"><span class="badge">방금 한 것</span></p>
+    <p style="left:1540px;top:236px;width:260px" data-anim="pop" data-step="4" data-delay="200"><span class="badge">이따 할 것</span></p>
+    <aside class="notes">핵심 비유. 1 전화 상담(대화): 증상을 말하면 방법을 알려 줘요. 손은 내가 움직여요. 2 방문 수리(맡기기, Claude Cowork·ChatGPT Work): 기사님이 우리 집에 와서 직접 고쳐요. 단, 내가 문을 열어 준 방(연결한 폴더)에만 들어가요. 3 맞춤 제작(만들기, Code·Codex): 세상에 없는 내 수업 전용 기계를 새로 만들어 줘요. 4 방금 슬라이드를 맡긴 건 대화창이었고, 이따 PART 3에서는 맞춤 제작으로 게임을 만들어요. 참고: Claude는 대화와 Cowork가 같은 입력창으로 합쳐지는 중이라 계정에 따라 ‘Cowork’ 버튼이 보이거나 안 보일 수 있어요. ChatGPT는 앱에서 Chat/Work를 골라요.</aside>
   </section>
 
   <section class="slide" data-id="centers" data-title="서비스센터만 달라요" data-transition="slide">
@@ -1086,14 +1160,14 @@ body { font-family: var(--font); color: var(--fg); }
     </div>
     <div class="svc row" style="left:160px;top:560px;width:1600px;height:150px" data-anim="fade-right" data-step="2">
       <p class="k"><svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M12 58 L60 18 L108 58"/><path class="ic" d="M24 48 V104 H96 V48"/></svg>방문 수리</p>
-      <p class="v">Cowork</p><p class="v none">오늘은 안 써요</p>
+      <p class="v">Cowork</p><p class="v">Work</p>
     </div>
     <div class="svc row" style="left:160px;top:740px;width:1600px;height:150px" data-anim="fade-right" data-step="3">
-      <p class="k"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ic" cx="60" cy="60" r="26"/><circle class="ic" cx="60" cy="60" r="8"/></svg>맞춤 제작</p>
+      <p class="k"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ic" cx="60" cy="60" r="24"/><circle class="ic" cx="60" cy="60" r="8"/><path class="ic" d="M60 16 V28 M60 92 V104 M16 60 H28 M92 60 H104"/></svg>맞춤 제작</p>
       <p class="v">Claude Code</p><p class="v">Codex</p>
     </div>
-    <p class="note" style="left:160px;top:930px;width:1600px" data-anim="fade-up" data-step="4"><b>Claude</b>는 앱 하나에 모두 들어 있고, <b>ChatGPT</b>는 Codex 앱을 따로 깔아요.</p>
-    <aside class="notes">회사(서비스센터)만 다르고 기사님이 하는 일은 같아요. 계정이 있는 쪽을 쓰면 돼요. ChatGPT에도 맡기기 비슷한 기능(에이전트)이 있지만 오늘은 다루지 않아요.</aside>
+    <p class="note" style="left:160px;top:930px;width:1600px" data-anim="fade-up" data-step="4">두 회사 모두 <b>앱 하나</b>에 다 들어 있어요. 계정이 있는 쪽을 쓰면 돼요.</p>
+    <aside class="notes">회사(서비스센터)만 다르고 기사님이 하는 일은 같아요. Claude 앱: 대화·Cowork는 입력창에서, Code는 왼쪽 Code 탭. ChatGPT 앱: 메뉴에서 ChatGPT/Codex를 고르고, ChatGPT 안에서 Chat/Work를 바꿔요(Work는 2026년 7월에 나온 기능).</aside>
   </section>
 
   <section class="slide" data-id="which" data-title="이럴 땐 어떤 기사님?" data-transition="flip">
@@ -1105,68 +1179,17 @@ body { font-family: var(--font); color: var(--fg); }
     </div>
     <div class="flip-card" style="left:710px;top:330px;width:500px;height:620px" data-interact="flip" data-anim="flip-in" data-delay="450">
       <div class="front"><span class="no">상황 2</span><p>폴더 속 사진 100장<br>이름을 날짜순으로<br>바꾸고 싶어요</p></div>
-      <div class="back"><b>방문 수리</b><p>폴더를 열어 주고<br>Cowork에 맡겨요</p></div>
+      <div class="back"><b>방문 수리</b><p>폴더를 열어 주고<br>Cowork나 Work에<br>맡겨요</p></div>
     </div>
     <div class="flip-card" style="left:1260px;top:330px;width:500px;height:620px" data-interact="flip" data-anim="flip-in" data-delay="650">
-      <div class="front"><span class="no">상황 3</span><p>우리 반<br>단어 게임을<br>만들고 싶어요</p></div>
+      <div class="front"><span class="no">상황 3</span><p>내 수업에 쓸<br>단어 게임을<br>만들고 싶어요</p></div>
       <div class="back"><b>맞춤 제작</b><p>Code나 Codex에<br>주문해요</p></div>
     </div>
-    <aside class="notes">참여 활동. 카드마다 손을 들거나 말로 답하게 한 뒤 눌러서 뒤집어요. 정답은 1 전화 상담(대화), 2 방문 수리(Cowork), 3 맞춤 제작(Code·Codex).</aside>
-  </section>
-
-  <!-- ===================== PART 2 슬라이드 ===================== -->
-  <section class="slide plain" data-id="part2" data-title="PART 2 움직이는 수업 슬라이드" data-transition="wipe">
-    <div data-widget="chapter" data-part="PART 2 · 슬라이드" data-num="2" style="left:0;top:0;width:1920px;height:1080px">
-      <h2>움직이는 수업 슬라이드</h2>
-      <p>글 두 번만 붙여 넣으면 끝나요.</p>
-    </div>
-    <aside class="notes">[11분] PART 2는 설명 5분, 실습 15분.</aside>
-  </section>
-
-  <section class="slide" data-id="demo" data-title="완성본 먼저 보기" data-transition="zoom">
-    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">먼저 완성본을 볼까요?</h2>
-    <div class="demo" style="left:160px;top:250px;width:1040px;height:585px" data-anim="blur-in" data-interact="zoom">
-      <span class="d-tag">중학교 역사 · 조선의 성립과 발전</span>
-      <p class="d-title">세종, <em>백성을 위한</em><br>글자를 만들다</p>
-      <p class="d-lead">훈민정음은 왜, 어떻게 만들어졌을까?</p>
-      <div class="d-jamo"><b>ㄱ</b><span>ㄴ</span><span>ㅁ</span><span>ㅅ</span><span>ㅇ</span></div>
-    </div>
-    <div class="thumbs4" style="left:160px;top:875px;width:1040px" data-anim="stagger" data-step="1">
-      <div><span class="t-h">만든 까닭 · 연표</span><span class="t-line"></span><span class="t-dot" style="top:36%"></span><span class="t-dot o" style="top:76%"></span><span class="t-yr" style="top:33%">1443</span><span class="t-yr" style="top:72%">1446</span></div>
-      <div><span class="t-h">확인 문제</span><span class="t-opt" style="top:30%"></span><span class="t-opt ok" style="top:52%"></span><span class="t-opt" style="top:74%"></span></div>
-      <div><span class="t-h">뒤집기 · 가리개</span><span class="t-flip">ㄱ</span><span class="t-cov"></span></div>
-      <div><span class="t-h">마무리</span><span class="t-big">오늘 배운 것</span><span class="t-conf" style="left:60%;top:30%;background:#e4572e"></span><span class="t-conf" style="left:74%;top:50%;background:#2f6fec"></span><span class="t-conf" style="left:84%;top:24%;background:#f6c344"></span><span class="t-conf" style="left:66%;top:70%;background:#1f9d55"></span></div>
-    </div>
-    <ul class="has" style="left:1290px;top:270px;width:470px">
-      <li data-anim="fade-left" data-step="2">말하는 순서대로 하나씩 나타나요</li>
-      <li data-anim="fade-left" data-step="3">퀴즈·카드를 눌러서 풀어요</li>
-      <li data-anim="fade-left" data-step="4">펜으로 바로 필기해요</li>
-      <li data-anim="fade-left" data-step="5">글자는 두 번 눌러 고쳐요</li>
-    </ul>
-    <p class="tip" style="left:1290px;top:850px;width:470px" data-anim="pop" data-step="6">지금 직접 열어서 보여 드릴게요</p>
-    <aside class="notes">큰 화면을 누르면 확대돼요. 1: 나머지 4장 미리보기. 2~5: 이 파일에 들어 있는 기능. 6: 여기서 키트의 틀 파일(slide-template.html)을 크롬으로 열어 시연해요. 시연 순서 → 넘기기(→) / 2장 연표 그려지기 / 3장 퀴즈 눌러 보기(정답 색종이) / 4장 카드 뒤집기 / P 펜으로 한 줄 긋기 / Shift+E로 글자 하나 고쳐 보기. 3분 안에 끝내고 돌아와요.</aside>
-  </section>
-
-  <section class="slide" data-id="slide-steps" data-title="따라 하기: 세 번이면 끝" data-transition="slide">
-    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">따라 하기: 세 번이면 끝</h2>
-    <ol class="big-steps" style="left:160px;top:270px;width:740px">
-      <li data-anim="fade-right" data-step="1"><span class="n">1</span><h3>파일 2개 올리기</h3><p>교과서 PDF(단원 쪽만)와 틀 파일</p></li>
-      <li data-anim="fade-right" data-step="2"><span class="n">2</span><h3>1단계 글 붙여 넣기</h3><p><mark>노란 곳</mark>만 우리 반에 맞게 바꿔요</p></li>
-      <li data-anim="fade-right" data-step="4"><span class="n">3</span><h3>“만들어 줘”</h3><p>구성안을 보고 2단계 글을 붙여 넣어요</p></li>
-    </ol>
-    <p class="tip" style="left:160px;top:830px;width:740px" data-anim="fade-up" data-delay="900"><b>Claude</b>는 설정에서 ‘코드 실행 및 파일 생성’을 켜 두세요.</p>
-    <div class="sm" data-widget="chat" data-title="AI와 대화" style="left:960px;top:236px;width:800px;height:790px" data-anim="fade-left" data-delay="300">
-      <p data-from="me" data-kind="doc" data-step="1">교과서-3단원.pdf<br>slide-template.html</p>
-      <p data-from="me" data-step="2">첨부한 PDF는 <mark>[중2 역사]</mark> <mark>[3단원]</mark>이에요. 구성안만 보여 주세요 …</p>
-      <p data-from="ai" data-step="3">구성안이에요. 표지 → 학습 목표 → … 디자인은 1안·2안 중 골라 주세요.</p>
-      <p data-from="me" data-step="4">좋아요. <mark>2안</mark>으로 만들어 줘.</p>
-      <p data-from="ai" data-kind="doc" data-step="5">history-3-1.html 완성!</p>
-    </div>
-    <aside class="notes">글은 키트에서 복사 버튼으로 가져와요. 1: 새 대화에 파일 2개 올리기. 2: 1단계 글(구성안 받기) 붙여 넣기. 노란 [ ] 부분만 바꿔요. 슬라이드 수는 실습 시간에 맞게 [6~8장]으로. 3: AI가 구성안을 보여 줘요. 4: 마음에 들면 2단계 글(“만들어 줘”). 5: HTML 파일을 내려받아요. ChatGPT도 같은 방법이에요(파일 올리기 + 코드 실행이 되는 환경).</aside>
+    <aside class="notes">참여 활동. 카드마다 손을 들거나 말로 답하게 한 뒤 눌러서 뒤집어요. 정답은 1 전화 상담(대화), 2 방문 수리(Cowork·Work), 3 맞춤 제작(Code·Codex).</aside>
   </section>
 
   <section class="slide" data-id="use-file" data-title="받은 파일 쓰는 법" data-transition="fade">
-    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">기다리는 동안: 받은 파일은 이렇게 써요</h2>
+    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">다 됐나요? 받은 파일은 이렇게 써요</h2>
     <div class="screen" style="left:160px;top:260px;width:1080px;height:640px" data-anim="scale-in">
       <div class="in">
         <span class="s-h">세종은 왜 새 글자를 만들었을까?</span>
@@ -1187,33 +1210,33 @@ body { font-family: var(--font); color: var(--fg); }
       <li data-anim="fade-left" data-step="4"><kbd>F</kbd>전체 화면</li>
     </ul>
     <p class="tip" style="left:160px;top:912px;width:1600px" data-anim="fade-up" data-step="5">움직임이 많다고 느끼면 메뉴 → 설정 → 모션 강도를 ‘보통’으로 낮춰요.</p>
-    <aside class="notes">AI가 파일을 만드는 데 몇 분 걸려요. 그 사이에 쓰는 법을 알려 줘요. 1: 화면을 누르거나 → 키로 넘겨요. 2: 왼쪽 아래 필통(P 펜, H 형광펜, L 레이저). 3: 왼쪽 위 메뉴에 점검(글자 넘침 찾기)·편집(Shift+E, 글자는 두 번 눌러 고치기)·설정. 4: F 전체 화면. 5: 모션 강도 조절. 크롬이나 엣지로 열어요.</aside>
+    <aside class="notes">[25분 무렵] 여기서 키트의 틀 파일(slide-template.html) 또는 먼저 완성된 선생님의 파일을 크롬으로 열어 직접 시연해요. 시연 순서: → 넘기기 / 퀴즈 눌러 보기(정답 색종이) / 카드 뒤집기 / P 펜으로 한 줄 / 메뉴 → 점검 / Shift+E 편집에서 글자 두 번 눌러 고치기. 크롬이나 엣지로 열어요(미리보기 앱은 기능이 안 돼요).</aside>
   </section>
 
-  <section class="slide" data-id="practice1" data-title="실습 ① 내 교과서로 슬라이드" data-transition="cover">
-    <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ① · 15분</span></p>
-    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 교과서로 슬라이드 만들기</h2>
+  <section class="slide" data-id="practice2" data-title="실습 ② 내 슬라이드 열어 보기" data-transition="cover">
+    <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ② · 5분</span></p>
+    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 슬라이드 열어 보기</h2>
     <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
-      <li>교과서 PDF 준비<small>수업할 단원 쪽만</small></li>
-      <li>키트에서 틀 파일 내려받기</li>
-      <li>1단계 글 붙여 넣고 노란 곳 바꾸기<small>슬라이드 수는 [6~8장]</small></li>
-      <li>구성안 보고 2단계 글로 “만들어 줘”</li>
-      <li>받은 파일 더블클릭해서 열기</li>
+      <li>받은 파일 내려받기</li>
+      <li>크롬이나 엣지로 열기<small>더블클릭이 안 되면 브라우저 창에 끌어다 놓기</small></li>
+      <li>→ 키로 넘겨 보고, F로 전체 화면</li>
+      <li>메뉴 → 점검 눌러 보기</li>
+      <li>고칠 곳은 같은 대화에 “3번 장 고쳐 줘”</li>
     </ul>
     <div class="clock" style="left:1340px;top:280px;width:420px;height:420px" data-anim="progress-ring" data-delay="400">
-      <svg viewBox="0 0 420 420" width="420" height="420" aria-label="15분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">15</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
+      <svg viewBox="0 0 420 420" width="420" height="420" aria-label="5분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">5</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
     </div>
-    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">막히면 손을 들어 주세요. 빨리 끝나면 “퀴즈 하나 더 넣어 줘”</p>
-    <aside class="notes">[15~32분] T를 눌러 타이머(카운트다운 15분)를 켜요. 돌아다니며 막힌 곳을 도와요. 자주 막히는 곳: Claude는 ‘코드 실행 및 파일 생성’ 설정, PDF가 너무 큼(단원 쪽만 자르기), 받은 파일을 미리보기로 열면 기능이 안 됨(크롬·엣지로 열기).</aside>
+    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">아직 안 나왔어도 괜찮아요. 게임 만드는 동안 마저 나와요.</p>
+    <aside class="notes">[25~30분] T로 타이머 5분. 먼저 된 분의 슬라이드를 한두 개 빔프로젝터로 띄워 보여 주면 분위기가 살아나요.</aside>
   </section>
 
-  <!-- ===================== PART 3 게임 ===================== -->
-  <section class="slide plain" data-id="part3" data-title="PART 3 우리 반 게임 만들기" data-transition="wipe">
-    <div data-widget="chapter" data-part="PART 3 · 게임" data-num="3" style="left:0;top:0;width:1920px;height:1080px">
-      <h2>우리 반 게임 만들기</h2>
+  <!-- ===================== PART 3 내 수업 게임 ===================== -->
+  <section class="slide plain" data-id="part3" data-title="PART 3 내 수업 게임 만들기" data-transition="wipe">
+    <div data-widget="chapter" data-part="PART 3 · 내 수업 게임" data-num="3" style="left:0;top:0;width:1920px;height:1080px">
+      <h2>내 수업 게임 만들기</h2>
       <p>이번에는 맞춤 제작 기사님이에요.</p>
     </div>
-    <aside class="notes">[33분] PART 3은 설명 5분, 실습 15분.</aside>
+    <aside class="notes">[30분] PART 3은 설명 5분, 실습 15분, 자랑하기 5분.</aside>
   </section>
 
   <section class="slide" data-id="pick-game" data-title="게임 고르기" data-transition="flip">
@@ -1232,86 +1255,88 @@ body { font-family: var(--font); color: var(--fg); }
     <div class="flip-card" style="left:980px;top:330px;width:780px;height:660px" data-interact="flip" data-anim="slide-left" data-delay="500">
       <div class="front">
         <div class="game-front">
-          <span class="gname">B · 모둠 퀴즈쇼</span>
-          <div class="qshow">
-            <p class="q">물이 수증기가 되는 것은?</p>
-            <div class="opts"><i>응고</i><i class="ok">증발</i><i>융해</i><i>액화</i></div>
-            <div class="score"><span>1모둠<b>30</b></span><span>2모둠<b>20</b></span></div>
-          </div>
-          <span class="gsub">문제가 크게 · 정답 공개 · 모둠 점수</span>
+          <span class="gname">B · 방탈출 퀴즈</span>
+          <svg class="escape" viewBox="0 0 600 250" width="600" height="250" aria-label="문 하나와 자물쇠 세 개, 첫 자물쇠가 열림">
+            <rect x="20" y="8" width="170" height="236" rx="12" fill="#e5ebfa" stroke="#2550c8" stroke-width="6"/>
+            <rect x="40" y="28" width="130" height="216" rx="6" fill="#2550c8"/>
+            <circle cx="148" cy="140" r="9" fill="#ffd84a"/>
+            <g transform="translate(290 120)"><path class="sh open" d="M-20 4 V-22 a20 20 0 0 1 40 0 V-34"/><rect class="lk open" x="-32" y="0" width="64" height="54" rx="10"/><text x="0" y="40" text-anchor="middle" font-size="34" fill="#fff">1</text></g>
+            <g transform="translate(400 120)"><path class="sh" d="M-20 4 V-22 a20 20 0 0 1 40 0 V4"/><rect class="lk" x="-32" y="0" width="64" height="54" rx="10"/><text x="0" y="40" text-anchor="middle" font-size="34" fill="#fff">2</text></g>
+            <g transform="translate(510 120)"><path class="sh" d="M-20 4 V-22 a20 20 0 0 1 40 0 V4"/><rect class="lk" x="-32" y="0" width="64" height="54" rx="10"/><text x="0" y="40" text-anchor="middle" font-size="34" fill="#fff">3</text></g>
+            <text x="400" y="230" text-anchor="middle" font-size="34" fill="#172235">문제를 풀면 하나씩 열려요</text>
+          </svg>
+          <span class="gsub">문제 3개 · 자물쇠 열기 · 문 탈출</span>
         </div>
       </div>
-      <div class="back"><b>모둠 퀴즈쇼</b><p>문제가 크게 뜨고,<br>정답을 공개하면<br>모둠 점수가 올라가요.<br><br>다음 시간 복습에 바로!</p></div>
+      <div class="back"><b>방탈출 퀴즈</b><p>문제를 맞힐 때마다<br>자물쇠가 하나씩 열리고,<br>다 풀면 문이 열려요.<br><br>단원 마무리 복습에 딱!</p></div>
     </div>
-    <aside class="notes">게임 예시는 과학 ‘물질의 상태 변화’지만, 실습에서는 각자 PART 2에서 고른 단원으로 만들어요. 문제·용어도 AI가 단원에서 골라 줘요(직접 준비하지 않아도 돼요).</aside>
+    <aside class="notes">게임 예시는 과학 ‘물질의 상태 변화’지만, 실습에서는 각자 PART 1에서 고른 단원으로 만들어요. 문제·용어도 AI가 단원에서 골라 줘요(직접 준비하지 않아도 돼요). 방탈출은 조금 더 신기해 보이지만 만드는 시간이 조금 더 걸려요.</aside>
   </section>
 
   <section class="slide" data-id="game-steps" data-title="게임 만들기 네 단계" data-transition="push">
     <h2 class="h2" style="left:160px;top:100px;width:1600px" data-anim="split-words">게임 만들기도 네 단계예요</h2>
-    <div class="card g4" style="left:160px;top:224px;width:380px;height:380px" data-anim="fade-up" data-step="1">
+    <div class="card g4" style="left:160px;top:216px;width:380px;height:400px" data-anim="fade-up" data-step="1">
       <span class="n">1</span>
       <svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M14 34 a8 8 0 0 1 8 -8 h26 l12 12 h38 a8 8 0 0 1 8 8 v48 a8 8 0 0 1 -8 8 H22 a8 8 0 0 1 -8 -8 z"/><path class="ic" d="M60 60 V84 M48 72 H72"/></svg>
       <h3>새 폴더</h3>
-      <p>바탕화면에 <b>‘내 게임’</b> 폴더 만들기</p>
+      <p>바탕화면에 <span class="folder">vibecoding</span> 폴더</p>
+      <p><span class="en">이름은 영어로!</span></p>
     </div>
-    <div class="card g4" style="left:567px;top:224px;width:380px;height:380px" data-anim="fade-up" data-step="2">
+    <div class="card g4" style="left:567px;top:216px;width:380px;height:400px" data-anim="fade-up" data-step="2">
       <span class="n">2</span>
       <svg viewBox="0 0 120 120" aria-hidden="true"><rect class="ic" x="12" y="20" width="96" height="80" rx="12"/><path class="ic" d="M40 20 V100"/><path class="ic" d="M56 72 L72 56 M60 54 h14 v14"/></svg>
       <h3>폴더 연결</h3>
       <p>앱에서 <b>폴더 열기</b>로 그 폴더 고르기</p>
     </div>
-    <div class="card g4" style="left:974px;top:224px;width:380px;height:380px" data-anim="fade-up" data-step="3">
+    <div class="card g4" style="left:974px;top:216px;width:380px;height:400px" data-anim="fade-up" data-step="3">
       <span class="n">3</span>
       <svg viewBox="0 0 120 120" aria-hidden="true"><rect class="ic" x="26" y="16" width="68" height="88" rx="10"/><path class="ic" d="M44 16 V10 H76 V16 M42 48 H78 M42 64 H78 M42 80 H64"/></svg>
       <h3>글 붙여 넣기</h3>
       <p>물어보면 <b>‘허용’</b> 누르기</p>
     </div>
-    <div class="card g4" style="left:1381px;top:224px;width:380px;height:380px" data-anim="pop" data-step="4">
+    <div class="card g4" style="left:1381px;top:216px;width:380px;height:400px" data-anim="pop" data-step="4">
       <span class="n">4</span>
       <svg viewBox="0 0 120 120" aria-hidden="true"><rect class="ic" x="14" y="22" width="92" height="76" rx="12"/><path class="ic" d="M50 44 L76 60 L50 76 Z"/></svg>
       <h3>더블클릭!</h3>
       <p>폴더에 생긴 파일을 열면 게임 시작</p>
     </div>
-    <div class="card app-mock" style="left:160px;top:636px;width:780px;height:250px" data-anim="fade-up" data-step="5">
-      <div class="side"><i>새 대화</i><i class="on">Code</i><i>설정</i></div>
-      <div class="main"><div class="box">게임을 주문하는 글…</div><div class="chips"><i>Local</i><i class="on">폴더: 내 게임</i></div></div>
+    <p class="tip" style="left:160px;top:640px;width:1600px" data-anim="fade-up" data-step="1" data-delay="400"><b>왜 영어 이름?</b> AI와 프로그램은 영어 폴더 이름을 더 잘 읽어서 오류가 줄어요.</p>
+    <div class="card app-mock" style="left:160px;top:764px;width:780px;height:200px" data-anim="fade-up" data-step="5">
+      <div class="side"><i>새 대화</i><i class="on">Code</i></div>
+      <div class="main"><div class="box">게임을 주문하는 글…</div><div class="chips"><i>Local</i><i class="on">폴더: vibecoding</i></div></div>
     </div>
-    <p class="mock-cap" style="left:160px;top:900px;width:780px" data-anim="fade-up" data-step="5"><b>Claude</b>: 왼쪽 <b>Code</b> 탭 → 입력창 아래 폴더 고르기</p>
-    <div class="card app-mock" style="left:980px;top:636px;width:780px;height:250px" data-anim="fade-up" data-step="6">
-      <div class="side"><i>새 작업</i><i class="on">Codex</i><i>설정</i></div>
-      <div class="main"><div class="box">게임을 주문하는 글…</div><div class="chips"><i class="on">폴더: 내 게임</i></div></div>
-    </div>
-    <p class="mock-cap" style="left:980px;top:900px;width:780px" data-anim="fade-up" data-step="6"><b>ChatGPT</b>: Codex 앱에서 폴더 고르기</p>
-    <aside class="notes">1 폴더 만들기 → 2 앱에서 폴더 연결 → 3 글 붙여 넣기, AI가 파일을 만들어도 되냐고 물으면 ‘허용’ → 4 폴더 속 HTML 파일 더블클릭. 아래 두 그림은 간단히 그린 것이라 실제 화면과 다를 수 있어요(스크린샷으로 바꿀 자리). 만약 Code 탭이 Git 설치를 요구하면: Claude 입력창에서 폴더를 연결하고(맡기기·Cowork) 같은 글을 보내도 게임 파일이 만들어져요.</aside>
+    <p class="mock-cap" style="left:980px;top:790px;width:780px" data-anim="fade-left" data-step="5"><b>Claude</b>: 왼쪽 <b>Code</b> 탭 → 입력창 아래에서 폴더 고르기</p>
+    <p class="mock-cap" style="left:980px;top:880px;width:780px" data-anim="fade-left" data-step="6"><b>ChatGPT</b>: 앱 메뉴에서 <b>Codex</b> → 폴더 고르기</p>
+    <aside class="notes">1 바탕화면에 vibecoding 폴더(영어 이름: AI와 프로그램이 한글 경로를 잘못 읽을 때가 있어요) → 2 앱에서 폴더 연결 → 3 글 붙여 넣기, AI가 파일을 만들어도 되냐고 물으면 ‘허용’ → 4 폴더 속 HTML 파일 더블클릭. 아래 그림은 간단히 그린 것이라 실제 화면과 다를 수 있어요. 만약 Code 탭이 Git 설치를 요구하면: Claude 입력창에서 폴더를 연결하고(맡기기·Cowork) 같은 글을 보내도 게임 파일이 만들어져요.</aside>
   </section>
 
   <section class="slide" data-id="game-prompt" data-title="붙여 넣고, 한마디 더" data-transition="slide">
     <h2 class="h2" style="left:160px;top:100px;width:1600px" data-anim="split-words">붙여 넣고, <em>한마디씩</em> 더 하면 내 게임</h2>
     <div class="prompt" style="left:160px;top:250px;width:860px;height:640px" data-anim="fade-right" data-delay="300">
       <p class="ph">A · 짝 맞추기 글 <span>따로 보내 드려요</span></p>
-      <p>‘내 게임’ 폴더에 수업용 게임을 만들어 주세요.</p>
+      <p>‘vibecoding’ 폴더에 수업용 게임을 만들어 주세요.</p>
       <p>· 게임: 카드를 뒤집어 짝을 맞추는 게임(16장, 8쌍)</p>
       <p>· 내용: <mark>[중2 과학 ‘물질의 상태 변화’]</mark>에서 용어와 뜻 8쌍을 골라 주세요</p>
       <p>· 빔프로젝터용: 글자는 크게, 2모둠 점수판</p>
       <p>· 다 맞히면 축하 효과</p>
       <p>· 파일 하나로, 더블클릭하면 열리게</p>
     </div>
-    <p class="tip" style="left:160px;top:920px;width:860px" data-anim="fade-up" data-delay="1000"><b>B · 퀴즈쇼</b>는 ‘게임’ 줄만 바뀌어요.</p>
+    <p class="tip" style="left:160px;top:920px;width:860px" data-anim="fade-up" data-delay="1000"><b>B · 방탈출</b>은 ‘게임’ 줄만 바뀌어요.</p>
     <div data-widget="chat" data-title="한마디 더" style="left:1060px;top:250px;width:700px;height:740px" data-anim="fade-left" data-delay="600">
       <p data-from="me" data-step="1">다 맞히면 색종이 터뜨려 줘</p>
       <p data-from="ai" data-step="2">넣었어요! 다시 열어 보세요.</p>
       <p data-from="me" data-step="3">학교 색인 초록으로 바꿔 줘</p>
       <p data-from="ai" data-step="4">바꿨어요. 버튼도 키웠어요.</p>
     </div>
-    <aside class="notes">게임 글(A·B)은 키트에 없어서, 실습 전에 메신저 등으로 따로 보내 둬요. 노란 곳만 내 단원으로. B 퀴즈쇼는 ‘게임’ 줄이 “문제가 하나씩 크게 뜨고, 정답을 공개하면 모둠 점수가 올라가는 퀴즈쇼(문제 8개, 4지선다)”로 바뀌어요. 오른쪽처럼 한마디씩 고쳐 달라고 할 때 ‘내가 만들었다’는 느낌이 가장 커요.</aside>
+    <aside class="notes">게임 글(A·B)은 키트에 없어서, 실습 전에 메신저 등으로 따로 보내 둬요. 노란 곳만 내 단원으로. B 방탈출은 ‘게임’ 줄이 “문제 3개를 풀 때마다 자물쇠가 하나씩 열리고, 다 풀면 문이 열리는 방탈출 퀴즈”로 바뀌어요. 오른쪽처럼 한마디씩 고쳐 달라고 할 때 ‘내가 만들었다’는 느낌이 가장 커요.</aside>
   </section>
 
-  <section class="slide" data-id="practice2" data-title="실습 ② 우리 반 게임" data-transition="cover">
-    <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ② · 15분</span></p>
-    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">우리 반 게임 만들기</h2>
+  <section class="slide" data-id="practice3" data-title="실습 ③ 내 수업 게임" data-transition="cover">
+    <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ③ · 15분</span></p>
+    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 수업 게임 만들기</h2>
     <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
-      <li>바탕화면에 ‘내 게임’ 폴더 만들기</li>
-      <li>앱에서 폴더 연결하기<small>Claude는 Code 탭, ChatGPT는 Codex 앱</small></li>
+      <li>바탕화면에 ‘vibecoding’ 폴더 만들기</li>
+      <li>앱에서 폴더 연결하기<small>Claude는 Code 탭, ChatGPT는 앱 메뉴의 Codex</small></li>
       <li>따로 받은 A 또는 B 글 붙여 넣기<small>노란 곳 = 내 단원</small></li>
       <li>물어보면 ‘허용’, 다 되면 파일 더블클릭</li>
       <li>한마디 더: 색, 효과, 문제 수</li>
@@ -1320,7 +1345,7 @@ body { font-family: var(--font); color: var(--fg); }
       <svg viewBox="0 0 420 420" width="420" height="420" aria-label="15분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">15</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
     </div>
     <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">다 되면 손을 들어 주세요. 같이 한 판 해 봐요!</p>
-    <aside class="notes">[38~53분] T로 타이머 15분. 끝나기 3분 전에 두세 분의 게임을 빔프로젝터로 띄워 다 같이 한 판 해요(자랑하기).</aside>
+    <aside class="notes">[35~50분] T로 타이머 15분. 끝나기 3분 전에 두세 분의 게임을 빔프로젝터로 띄워 다 같이 한 판 해요(자랑하기).</aside>
   </section>
 
   <!-- ===================== 마무리 ===================== -->
@@ -1331,22 +1356,17 @@ body { font-family: var(--font); color: var(--fg); }
       <div class="opt" data-option><b>2</b>내가 열어 준 폴더의 파일을 정리해 줘요</div>
       <div class="opt" data-option data-correct><b>3</b>게임 같은 프로그램을 새로 만들어 줘요</div>
     </div>
-    <aside class="notes">정답 3(맞춤 제작 = Code·Codex). 1은 전화 상담(대화), 2는 방문 수리(Cowork).</aside>
+    <aside class="notes">정답 3(맞춤 제작 = Code·Codex). 1은 전화 상담(대화), 2는 방문 수리(Cowork·Work).</aside>
   </section>
 
-  <section class="slide plain" data-id="end" data-title="마무리" data-transition="wipe" data-ambient="gradient" data-celebrate="confetti">
-    <h2 class="title" style="left:160px;top:150px;width:1600px" data-anim="split-chars">내일 수업에 써 보세요</h2>
-    <ul class="end-list" style="left:160px;top:400px;width:1000px" data-anim="stagger" data-delay="700">
-      <li>코드는 AI가, 설명은 내가</li>
-      <li>마음에 안 들면 한마디 더</li>
-      <li>다른 단원, 다른 게임도 같은 방법으로</li>
-    </ul>
-    <div class="kit" style="left:1240px;top:380px;width:520px;height:560px" data-anim="pop" data-delay="1300" data-ambient="float">
-      <svg viewBox="0 0 120 120" aria-hidden="true"><rect class="ic" x="18" y="34" width="84" height="66" rx="10"/><path class="ic" d="M42 34 V24 a6 6 0 0 1 6 -6 h24 a6 6 0 0 1 6 6 V34 M18 60 H102 M54 60 V70 H66 V60"/></svg>
-      <h3>키트는 따로<br>나눠 드려요</h3>
-      <p>안내 · 틀 파일 · 슬라이드 글<br>파일 하나에 다 있어요</p>
-    </div>
-    <aside class="notes">[55~60분] 키트 파일(textbook-slides-guide.html)을 나눠 줘요. 게임 글은 따로 보낸 것을 다시 안내해요. 질문 받기. 오늘 만든 슬라이드와 게임을 다음 수업에 한 번 써 보기를 권해요.</aside>
+  <section class="slide plain finale" data-id="finale" data-title="엔딩: 이제 여러분도 만들 수 있어요" data-transition="circle" data-ambient="gradient" data-celebrate="confetti">
+    <p class="fin-eye" style="left:160px;top:150px;width:1600px" data-anim="fade-down">오늘 60분, 여러분이 해낸 것</p>
+    <div class="stat" style="left:160px;top:240px;width:500px;height:320px" data-anim="pop" data-delay="300"><p class="n">0<small>줄</small></p><p class="l">직접 쓴 코드</p></div>
+    <div class="stat" style="left:710px;top:240px;width:500px;height:320px" data-anim="count-up" data-delay="800"><p class="n">2<small>개</small></p><p class="l">만든 수업 도구</p></div>
+    <div class="stat" style="left:1260px;top:240px;width:500px;height:320px" data-anim="count-up" data-delay="1300"><p class="n">60<small>분</small></p><p class="l">걸린 시간</p></div>
+    <h2 class="fin-title" style="left:160px;top:640px;width:1600px" data-anim="split-chars" data-delay="2000" data-ambient="sparkle">이제, 여러분도 <em>만들 수 있어요</em></h2>
+    <p class="fin-line" style="left:160px;top:830px;width:1600px" data-anim="fade-up" data-delay="3000">필요한 게 생기면 <mark>말로 주문하세요.</mark> 코드는 AI가 씁니다.</p>
+    <aside class="notes">[55~60분] 숫자가 하나씩 올라가고, 마지막에 색종이가 터져요. “오늘 코드는 한 줄도 안 썼는데 수업 도구를 두 개 만들었어요. 다음에 필요한 게 생기면 오늘처럼 말로 주문해 보세요.” 키트 파일(textbook-slides-guide.html)과 게임 글을 다시 안내하고 질문을 받아요.</aside>
   </section>
 
 </main>
