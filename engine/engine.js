@@ -559,7 +559,15 @@ function enter(el, name, extra = 0) {
     end = delay + dur;
   }
   if (el.dataset.emphasis && el.dataset.emphasisStep == null) later(end + 60, () => emphasize(el));
+  // 안쪽 요소의 강조(단계 없음)는 이 요소가 나타난 직후에
+  $$('[data-emphasis]', el).forEach(d => {
+    if (d.dataset.emphasisStep == null && !isEntrance(d) && entranceAncestor(d) === el) later(end + 60, () => emphasize(d));
+  });
   return end;
+}
+function entranceAncestor(el) {
+  for (let p = el.parentElement; p && !p.classList.contains('slide'); p = p.parentElement) if (isEntrance(p)) return p;
+  return null;
 }
 
 /* 강조 */
@@ -852,7 +860,7 @@ function armInteractions(slide) {
     el.classList.remove('hz-flipped');
     if (t === 'quiz') $$('[data-option]', el).forEach(o => o.classList.remove('hz-correct', 'hz-wrong'));
     if (t === 'reveal') { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }
-    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off') { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, '👆 ' + HINT[t])); }
+    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off') { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
   });
 }
 const dropHint = el => $$(':scope > .hz-hint', el).forEach(n => n.remove());
@@ -1053,7 +1061,7 @@ function playAuto(slide) {
       return;
     }
     if (isEntrance(el)) { if (!hasStep(el) && !staggerChildAuto(el)) end = Math.max(end, enter(el)); }
-    else if (el.dataset.emphasis && el.dataset.emphasisStep == null) {
+    else if (el.dataset.emphasis && el.dataset.emphasisStep == null && !entranceAncestor(el)) {
       const d = T(num(el.dataset.delay)) + 300;
       later(d, () => emphasize(el)); end = Math.max(end, d + 900);
     }
@@ -1081,7 +1089,7 @@ function revertStep(slide, s) {
       el.getAnimations({ subtree: true }).forEach(a => { if (!isCssAnim(a)) a.cancel(); });
       [...tweens].forEach(t => { if (el.contains(t.el)) t.cancel(); });
       $$('[data-hz-runtime]', el).forEach(n => { if (!n.matches('.hz-cover,.hz-hint')) n.remove(); });
-      unwrapIn(el); restoreCounts(el); removeEmphasis(el);
+      unwrapIn(el); restoreCounts(el); removeEmphasis(el); $$('[data-emphasis]', el).forEach(removeEmphasis);
       if (el.dataset.anim === 'stagger') [...el.children].forEach(c => { if (!hasStep(c) && !c.hasAttribute('data-hz-runtime')) c.classList.add('hz-pre'); });
       else el.classList.add('hz-pre');
     }
@@ -1416,7 +1424,7 @@ const fmtMs = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Strin
 function tmText() {
   if (TM.mode === 'up') return fmtMs(tmNow());
   const left = S.timerMin * 60000 - tmNow();
-  if (left <= 0 && TM.run && !TM.warned) { TM.warned = true; toast('⏰ 시간이 다 됐어요', 2500); }
+  if (left <= 0 && TM.run && !TM.warned) { TM.warned = true; toast('시간이 다 됐어요', 2500); }
   return fmtMs(left);
 }
 function renderTimer() {
@@ -1778,7 +1786,7 @@ async function save() {
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
   savedOk(`수정본을 다운로드했어요 (${name})`);
 }
-function savedOk(msg) { dirty = false; store.del('draft'); toast('💾 ' + msg, 2400); }
+function savedOk(msg) { dirty = false; store.del('draft'); toast(msg, 2400); }
 const saveDraft = debounce(() => {
   if (!dirty) return;
   if (!store.set('draft', { html: cleanDeckHTML(), at: Date.now() }) && !draftWarned) { draftWarned = true; toast('임시 저장 공간이 부족해요. Ctrl+S로 파일을 저장해 주세요', 3200); }
@@ -2448,17 +2456,22 @@ function toggleEdit(on = !editing) {
 let checkIssues = [];
 function runCheck() {
   const issues = [], dominant = [];
+  // 모션 도중 상태에 흔들리지 않도록, 깨끗한 복제본을 화면 밖에서 잰다
+  const meas = h('div', { class: 'hz-mini', style: 'position:fixed;left:-40000px;top:0;visibility:hidden' });
+  ui.appendChild(meas);
   slides.forEach((s, i) => {
-    const shown = s.classList.contains('hz-active') || s.classList.contains('hz-leaving');
-    if (!shown) s.classList.add('hz-measure');
-    const boxes = boxesOf(s);
+    meas.innerHTML = '';
+    const c = cleanTree(s.cloneNode(true));
+    meas.appendChild(c);
+    const boxes = boxesOf(s), cboxes = boxesOf(c);
     if (!s.dataset.title) issues.push({ i, msg: '제목(data-title)이 없어요' });
     if (!boxes.length) issues.push({ i, msg: '빈 슬라이드예요' });
-    boxes.forEach(b => {
+    cboxes.forEach((b, k) => {
+      const orig = boxes[k] || null;
       if (b.hasAttribute('data-check-ignore')) return;
       const r = boxRect(b);
-      if (r.x < -2 || r.y < -2 || r.x + r.w > W + 2 || r.y + r.h > H + 2) issues.push({ i, el: b, msg: '요소가 무대 밖으로 벗어났어요' });
-      if (b instanceof HTMLElement && !/^(IMG|svg)$/i.test(b.tagName) && (b.scrollHeight > b.clientHeight + 3 || b.scrollWidth > b.clientWidth + 3)) issues.push({ i, el: b, msg: '글자가 상자 밖으로 넘쳐요' });
+      if (r.x < -2 || r.y < -2 || r.x + r.w > W + 2 || r.y + r.h > H + 2) issues.push({ i, el: orig, msg: '요소가 무대 밖으로 벗어났어요' });
+      if (b instanceof HTMLElement && !/^(IMG|svg)$/i.test(b.tagName) && (b.scrollHeight > b.clientHeight + 3 || b.scrollWidth > b.clientWidth + 3)) issues.push({ i, el: orig, msg: '글자가 상자 밖으로 넘쳐요' });
     });
     $$('img', s).forEach(img => {
       if (!img.hasAttribute('alt')) issues.push({ i, el: img, msg: '이미지에 대체 텍스트(alt)가 없어요' });
@@ -2485,8 +2498,8 @@ function runCheck() {
     motionEls(s).forEach(el => { if (el.dataset.anim) cnt[el.dataset.anim] = (cnt[el.dataset.anim] || 0) + 1; });
     let dom = null, best = 0; for (const k in cnt) if (cnt[k] > best) { best = cnt[k]; dom = k; }
     dominant.push(dom);
-    if (!shown) s.classList.remove('hz-measure');
   });
+  meas.remove();
   let run = 1;
   for (let i = 1; i < dominant.length; i++) {
     if (dominant[i] && dominant[i] === dominant[i - 1]) { run++; if (run === 4) issues.push({ i, msg: `같은 등장 효과(${dominant[i]})가 4장 연속이에요` }); }
@@ -2501,7 +2514,7 @@ const runCheckSoon = debounce(runCheck, 700);
 function openCheck() {
   runCheck();
   const body = [];
-  if (!checkIssues.length) body.push(h('p', {}, '문제가 없어요. 👍'));
+  if (!checkIssues.length) body.push(h('p', {}, '문제가 없어요.'));
   else {
     const ul = h('ul', { class: 'hz-list' });
     checkIssues.forEach(it => ul.appendChild(h('li', {
