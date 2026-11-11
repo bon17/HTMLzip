@@ -12,8 +12,9 @@
 - 파일이 없으면 그 슬라이드에 "영상 파일을 찾을 수 없어요" 안내가 보여요.
 - 다른 컴퓨터로 옮길 때는 `index.html`과 `assets` 폴더를 **폴더째** 옮겨요.
 
-## 그림은 여기에 넣지 않아요
+## 그림
 
-그림은 원칙(docs/PRINCIPLES.md §6.1)대로 `index.html` 안에 넣어요. 지금은 그림 자리에 선 아이콘이 들어가 있고,
-각 자리에는 `data-art="s08-hallucination"`처럼 들어갈 그림 이름이 적혀 있어요.
+그림은 원칙(docs/PRINCIPLES.md §6.1)대로 완성할 때 `index.html` 안에 넣어요(용량을 줄여서).
+지금은 그림 자리마다 `<img src="assets/s08-hallucination.png" data-placeholder="…">`가 있어서, 파일이 없으면 점선 상자에 설명이 보여요.
+미리 보고 싶으면 그림 파일을 이 `assets` 폴더에 같은 이름으로 넣어도 바로 보여요.
 그림 목록과 만드는 프롬프트는 `wip/ai-prompt-class/docs/이미지_프롬프트.md`에 있어요.
