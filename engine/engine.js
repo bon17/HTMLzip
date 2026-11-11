@@ -1,9 +1,9 @@
-// ===== ENGINE v2.1 =====
+// ===== ENGINE v2.2 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·전체 화면·모션·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.1';
+const VERSION = '2.2';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -57,12 +57,14 @@ const store = {
 };
 const REDUCE = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const S = Object.assign({
-  strength: REDUCE ? 'calm' : 'default', speed: 1, caseVertical: false, caseAt: null, caseFolded: false, navArrows: true, pageInFull: true,
+  strength: REDUCE ? 'calm' : 'rich', speed: 1, caseVertical: false, caseAt: null, caseFolded: false, navArrows: true, pageInFull: true,
   timerMin: 10, color: 0, width: 1, eraserMode: 'stroke', eraserSize: 1, theme: null, view: 'basic'
 }, (() => {
   // v2.0부터 툴바 대신 필통·메뉴 서랍을 쓴다: 예전 툴바 설정은 버린다
   const saved = store.get('settings', {}) || {};
-  if (saved._v !== 3) { ['quick', 'pos', 'collapsed'].forEach(k => delete saved[k]); saved._v = 3; }
+  if (saved._v !== 3 && saved._v !== 4) { ['quick', 'pos', 'collapsed'].forEach(k => delete saved[k]); }
+  // v2.2부터 모션 강도 기본값은 '화려'다: 예전 기본값('default')으로 저장된 설정도 옮긴다
+  if (saved._v !== 4) { if (saved.strength === 'default') saved.strength = 'rich'; saved._v = 4; }
   return saved;
 })());
 const saveSettings = () => store.set('settings', S);
@@ -238,14 +240,18 @@ function toast(msg, ms = 1400) {
 /* 배치: 무대를 화면에 맞춘다                                         */
 /* ------------------------------------------------------------------ */
 const DRAWER_W = 340;
+// 태블릿처럼 폭이 좁은 화면에서는 편집 화면을 촘촘하게 쓴다 (서랍·속성 패널을 줄이고 도구 막대는 아이콘만)
+const COMPACT_W = 1400, DRAWER_W_C = 236, PROPS_W = 320, PROPS_W_C = 272;
 let scale = 1, stageX = 0, stageY = 0;
 function layout() {
   const vw = innerWidth, vh = innerHeight;
+  const compact = vw < COMPACT_W;
+  root.classList.toggle('hz-compact', compact);
   const full = root.classList.contains('hz-full');
   const editing = root.classList.contains('hz-editing');
   let L = 12, T0 = 12, R = 12, B = 12, pcol = 380;
   if (full) { L = T0 = R = B = 0; }
-  else if (editing) { T0 = 60 + 14; R = 320 + 14; L = DRAWER_W + 14; }
+  else if (editing) { T0 = 60 + 14; R = (compact ? PROPS_W_C : PROPS_W) + 14; L = (compact ? DRAWER_W_C : DRAWER_W) + 14; }
   else if (root.classList.contains('hz-presenter')) {
     const col = pcol = clamp((vw - L - R) * 0.32, 260, 440);
     R += col + 16;
@@ -1700,7 +1706,7 @@ function segRow(label, sub, options, value, onPick) {
 }
 function openSettings() {
   const rows = [
-    segRow('모션 강도', '끄기: 바로 최종 상태 · 차분: 짧은 페이드만 · 화려: 배경·축하 효과 크게', [['off', '끄기'], ['calm', '차분'], ['default', '기본'], ['rich', '화려']], S.strength,
+    segRow('모션 강도', '화려(기본값): 배경·축하 효과 크게 · 보통: 덜 화려하게 · 차분: 짧은 페이드만 · 끄기: 바로 최종 상태', [['off', '끄기'], ['calm', '차분'], ['default', '보통'], ['rich', '화려']], S.strength,
       v => { S.strength = v; saveSettings(); applyStrength(); go(cur, { force: true, final: true, instant: true }); }),
     segRow('모션 속도', '', [[1.4, '느리게'], [1, '보통'], [0.7, '빠르게']], S.speed, v => { S.speed = v; saveSettings(); }),
     segRow('필통 방향', '손잡이를 두 번 눌러도 바뀌어요', [[false, '가로'], [true, '세로']], !!S.caseVertical, v => { S.caseVertical = v; saveSettings(); applyCase(); }),
@@ -1743,6 +1749,10 @@ function renderThumbs() {
     t.append(h('div', { class: 'hz-thumb-frame' }, miniOf(s)), h('div', { class: 'hz-thumb-label' }, `${i + 1}. ${s.dataset.title || '(제목 없음)'}`));
     t.addEventListener('click', () => { go(i, { dir: i >= cur ? 1 : -1, instant: editing }); if (!editing) closeDrawer(); });
     if (editing) {
+      const grip = h('span', { class: 'hz-thumb-grip', title: '끌어서 순서 바꾸기' }, ...Array.from({ length: 6 }, () => h('i')));
+      grip.addEventListener('pointerdown', e => thumbGripDrag(e, i, t, grip));
+      grip.addEventListener('click', e => e.stopPropagation());
+      t.appendChild(grip);
       t.addEventListener('dragstart', e => { dragFrom = i; t.classList.add('hz-dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(i)); } catch (err) { /* 무시 */ } });
       t.addEventListener('dragend', () => { dragFrom = -1; $$('.hz-thumb', thumbsList).forEach(x => x.classList.remove('hz-dragging', 'hz-drop-before', 'hz-drop-after')); });
       t.addEventListener('dragover', e => {
@@ -1762,6 +1772,34 @@ function renderThumbs() {
     thumbsList.appendChild(t);
   });
   const c = $('.hz-cur', thumbsList); if (c) c.scrollIntoView({ block: 'nearest' });
+}
+/* 손잡이로 썸네일 끌기 (터치·펜. 마우스는 썸네일 자체를 끌어도 된다) */
+function thumbGripDrag(e, from, t, grip) {
+  if (e.pointerType === 'mouse') return;
+  e.preventDefault(); e.stopPropagation();
+  try { grip.setPointerCapture(e.pointerId); } catch (err) { /* 무시 */ }
+  t.classList.add('hz-dragging');
+  let target = null, before = true;
+  const clear = () => $$('.hz-thumb', thumbsList).forEach(x => x.classList.remove('hz-drop-before', 'hz-drop-after'));
+  const mark = y => {
+    const ts = $$('.hz-thumb', thumbsList); clear(); target = null;
+    for (const x of ts) { const r = x.getBoundingClientRect(); if (y >= r.top - 7 && y <= r.bottom + 7) { target = x; before = y < r.top + r.height / 2; break; } }
+    if (!target && ts.length) {
+      const f = ts[0].getBoundingClientRect(), l = ts[ts.length - 1].getBoundingClientRect();
+      if (y < f.top) { target = ts[0]; before = true; } else if (y > l.bottom) { target = ts[ts.length - 1]; before = false; }
+    }
+    if (target) target.classList.add(before ? 'hz-drop-before' : 'hz-drop-after');
+    const lr = drSlides.getBoundingClientRect();
+    if (y < lr.top + 50) drSlides.scrollTop -= 14; else if (y > lr.bottom - 50) drSlides.scrollTop += 14;
+  };
+  const move = ev => { if (ev.pointerId === e.pointerId) { ev.preventDefault(); mark(ev.clientY); } };
+  const end = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', end); grip.removeEventListener('pointercancel', end);
+    t.classList.remove('hz-dragging'); clear();
+    if (ev.type === 'pointerup' && target) { const to = +target.dataset.i; if (to !== from) moveSlideTo(from, to, before); }
+  };
+  grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', end); grip.addEventListener('pointercancel', end);
 }
 function syncThumbs() {
   if (!thumbsOpen()) return;
@@ -2041,12 +2079,14 @@ function selectInner(box, t) {
   if (innerSel && innerSel !== el && innerSel.contains(el)) c = el;
   selectEls([box], c);
 }
+let editTap = null, lastEditTap = null;
 function editPointerDown(e) {
   if (e.button !== 0 || previewing) return;
   if (editingText) { if (editingText.contains(e.target)) return; stopTextEdit(); }
   const slide = slides[cur];
   if (!slide || !slide.contains(e.target)) return;
   const box = boxOf(e.target);
+  editTap = e.pointerType !== 'mouse' && box ? { box, x: e.clientX, y: e.clientY, t: Date.now(), id: e.pointerId } : null;
   e.preventDefault();
   if (!box) { startMarquee(e, e.shiftKey); return; }
   if (e.ctrlKey || e.metaKey) { selectInner(box, e.target); return; }
@@ -2549,7 +2589,7 @@ function buildSlide(body) {
     h('h5', {}, '덱 전체'), F('기본 전환', dtr),
     h('h5', {}, '슬라이드 관리'),
     h('div', { class: 'hz-row' }, mbtn('plus', '새 슬라이드', () => addSlide()), mbtn('layout', '레이아웃', e => openLayoutMenu(e.currentTarget)), mbtn('copy', '복제', duplicateSlide), mbtn('trash', '삭제', deleteSlide)),
-    hint('요소를 클릭하면 스타일·모션 탭이 열려요. 왼쪽 썸네일을 끌어서 순서를 바꿀 수 있어요 (Alt+↑/↓).'));
+    hint('요소를 누르면 스타일·모션 탭이 열려요. 왼쪽 썸네일(손잡이)을 끌어서 순서를 바꿀 수 있어요 (Alt+↑/↓).'));
 }
 
 /* 편집 모드 켜고 끄기 */
@@ -2567,7 +2607,7 @@ function toggleEdit(on = !editing) {
     slides.forEach(s => s.classList.remove('hz-active', 'hz-leaving', 'hz-top'));
     if (slides[cur]) slides[cur].classList.add('hz-active');
     buildEditBar(); selectEls([]); renderThumbs(); layout(); renderInk(); updateChrome();
-    toast('편집 모드 · 클릭: 선택 · 더블클릭: 글자 고치기 · Esc: 끝내기', 2800);
+    toast(matchMedia('(hover: none)').matches ? '편집 모드 · 탭: 선택 · 두 번 탭: 글자 고치기 · 끝낼 때는 ‘편집 끝’' : '편집 모드 · 클릭: 선택 · 더블클릭: 글자 고치기 · Esc: 끝내기', 2800);
   } else {
     stopTextEdit(); stopPreview(); selectEls([]);
     editing = false;
@@ -2603,6 +2643,15 @@ function runCheck() {
       const r = boxRect(b);
       if (r.x < -2 || r.y < -2 || r.x + r.w > W + 2 || r.y + r.h > H + 2) issues.push({ i, el: orig, msg: '요소가 무대 밖으로 벗어났어요' });
       if (b instanceof HTMLElement && !/^(IMG|svg)$/i.test(b.tagName) && (b.scrollHeight > b.clientHeight + 3 || b.scrollWidth > b.clientWidth + 3)) issues.push({ i, el: orig, msg: '글자가 상자 밖으로 넘쳐요' });
+    });
+    // 태블릿에서 손가락으로 누르기 어려운 작은 상호작용 요소 (무대 기준 90px)
+    $$('[data-option], [data-interact="flip"], [data-interact="reveal"], [data-interact="zoom"]', c).forEach(el => {
+      if (el.closest('[data-check-ignore]')) return;
+      if (el.offsetHeight < 90 || el.offsetWidth < 90) {
+        const path = []; let n = el; while (n && n !== c) { path.unshift([...n.parentElement.children].indexOf(n)); n = n.parentElement; }
+        let o = s; path.forEach(k => { o = o && o.children[k]; });
+        issues.push({ i, el: o || null, msg: `누르는 요소가 작아요 (${el.offsetWidth}×${el.offsetHeight}px, 태블릿에서는 90px 이상 권장)` });
+      }
     });
     $$('img', s).forEach(img => {
       if (!img.hasAttribute('alt')) issues.push({ i, el: img, msg: '이미지에 대체 텍스트(alt)가 없어요' });
@@ -2683,15 +2732,36 @@ const CMD = {
   'e-emoji': b => openEmoji(b), 'e-dup': duplicateSel, 'e-del': deleteSel, 'e-front': () => zorder('front'), 'e-back': () => zorder('back'),
   'e-undo': editUndo, 'e-redo': editRedo, 'e-preview': previewSlide, 'e-save': save, 'e-done': () => toggleEdit(false)
 };
-ui.addEventListener('click', e => {
-  const b = e.target instanceof Element && e.target.closest('[data-cmd]');
-  if (!b || !ui.contains(b)) return;
+function runCmd(b) {
   const f = CMD[b.dataset.cmd];
-  if (!f) return;
-  e.stopPropagation();
+  if (!f) return false;
   if (b.classList.contains('hz-tile') && !editing) closeDrawer(); // 타일을 고르면 서랍은 닫는다
   f(b);
+  return true;
+}
+ui.addEventListener('click', e => {
+  const b = e.target instanceof Element && e.target.closest('[data-cmd]');
+  if (!b || !ui.contains(b) || !CMD[b.dataset.cmd]) return;
+  e.stopPropagation();
+  if (tapDone && tapDone.b === b && Date.now() - tapDone.t < 800) { tapDone = null; return; } // 손을 뗄 때 이미 실행함
+  runCmd(b);
 });
+/* 터치·펜으로 버튼을 누르면 click을 기다리지 않고 손을 떼는 순간 실행한다.
+   (손가락으로 민 직후의 탭은 브라우저가 click을 보내지 않는 경우가 있다) */
+let tapBtn = null, tapDone = null;
+ui.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse') { tapBtn = null; return; }
+  const b = e.target instanceof Element && e.target.closest('[data-cmd]');
+  tapBtn = b && ui.contains(b) && CMD[b.dataset.cmd] ? { b, x: e.clientX, y: e.clientY, id: e.pointerId } : null;
+}, true);
+ui.addEventListener('pointerup', e => {
+  const t = tapBtn; tapBtn = null;
+  if (!t || e.pointerId !== t.id || Math.hypot(e.clientX - t.x, e.clientY - t.y) > 14) return;
+  const b = e.target instanceof Element && e.target.closest('[data-cmd]');
+  if (b !== t.b) return;
+  tapDone = { b, t: Date.now() };
+  runCmd(b);
+}, true);
 /* 서랍 밖을 누르면 서랍만 닫고, 슬라이드는 넘기지 않는다 */
 window.addEventListener('pointerdown', e => {
   if (!drawerOpen() || editing || !(e.target instanceof Element)) return;
@@ -2724,10 +2794,23 @@ window.addEventListener('pointerup', e => {
     next();
   }
 });
+window.addEventListener('pointerup', e => {
+  const t = editTap; editTap = null;
+  if (!editing || previewing || !t || e.pointerId !== t.id) return;
+  if (Math.hypot(e.clientX - t.x, e.clientY - t.y) > 12 || Date.now() - t.t > 450) { lastEditTap = null; return; }
+  const l = lastEditTap;
+  if (l && l.box === t.box && Date.now() - l.t < 450 && Math.hypot(e.clientX - l.x, e.clientY - l.y) < 40) {
+    lastEditTap = null;
+    if (t.box.tagName === 'IMG') replaceImage(t.box); else startTextEdit(t.box, e);
+    return;
+  }
+  lastEditTap = { box: t.box, x: e.clientX, y: e.clientY, t: Date.now() };
+});
 deck.addEventListener('dblclick', e => {
   if (!editing || previewing) return;
   const box = boxOf(e.target); if (!box) return;
   e.preventDefault();
+  if (editingText === box) return; // 두 번 탭으로 이미 시작함
   if (box.tagName === 'IMG') { replaceImage(box); return; }
   startTextEdit(box, e);
 });
