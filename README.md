@@ -15,7 +15,8 @@
 
 | 폴더 | 내용 | 상태 |
 |---|---|---|
-| [decks/2026-12-24-ai-prompt-class/](decks/2026-12-24-ai-prompt-class/index.html) | 중2 프롬프트 특강 “AI 잘 쓰면, 나도 잘 된다!” (영상 때문에 폴더형) | 도입부 17장 완성 · 챕터·채팅·자동완성·잠금 카드 위젯, 뽑기 목록 · 그림은 자리표시, 영상은 `assets/`에 따로 |
+| [decks/2026-11-11-vibe-coding-teacher-training.html](decks/2026-11-11-vibe-coding-teacher-training.html) | 교사 연수 “바이브코딩 첫걸음: 말로 만드는 수업 도구” | 엔진 v2.3 고정 |
+| [decks/2026-12-24-ai-prompt-class/](decks/2026-12-24-ai-prompt-class/index.html) | 중2 프롬프트 특강 “AI 잘 쓰면, 나도 잘 된다!” (영상 때문에 폴더형) | 도입부 17장 완성 · 엔진 v2.4(이 덱에만) · 챕터·채팅·자동완성·잠금 카드 위젯, 뽑기 목록 · 그림 일부 넣음(남은 7곳은 자리표시), 영상은 `assets/`에 따로 |
 
 두 덱은 디자인이 전혀 다르지만 필통·메뉴·필기·편집 기능은 똑같이 동작합니다.
 
@@ -65,7 +66,7 @@ wip/                    원칙이 생기기 전의 작업본 (옮기는 중)
 node tools/sync-engine.mjs
 ```
 
-덱이 최신 엔진인지 확인만 하려면 `--check`를 붙입니다. 엔진 구역에 `data-engine-lock`을 붙인 덱은 지금 엔진 그대로 두고 건너뜁니다(시범 덱 2개는 v2.2로 고정).
+덱이 최신 엔진인지 확인만 하려면 `--check`를 붙입니다. 엔진 구역에 `data-engine-lock`을 붙인 덱은 지금 엔진 그대로 두고 건너뜁니다(시범 덱 2개와 교사 연수 덱은 v2.3으로 고정).
 
 ```bash
 node tools/sync-engine.mjs --check

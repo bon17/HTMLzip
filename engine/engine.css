@@ -1,4 +1,4 @@
-/* ===== ENGINE v2.3 ===== */
+/* ===== ENGINE v2.4 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -107,134 +107,151 @@ html.hz-m-off [data-interact="flip"] > * { transition: none; }
 }
 .hz-hint {
   position: absolute; right: -14px; top: -18px; z-index: 7; padding: 6px 14px; border-radius: 99px;
-  background: #111; color: #fff; font: 700 20px/1.2 var(--hz-font); pointer-events: none;
+  background: #111; color: #fff; font-size: 28px; font-weight: 700; line-height: 1.2; pointer-events: none;
   animation: hz-bob 1.6s ease-in-out infinite;
 }
 html.hz-m-off [data-spot], html.hz-m-calm [data-spot],
 html.hz-m-off .hz-hint, html.hz-m-calm .hz-hint, html.hz-m-off .hz-caret { animation: none; }
 
 /* ---------- 수업 위젯 (§4.6) ----------
-   기본 모양은 덱 변수(--bg, --fg, --accent, --accent-2)를 따른다.
-   덱 디자인은 hz-w- 클래스를 덮어써 다듬을 수 있다(엔진 스타일 중 이것만 예외). */
-.hz-wg, .hz-wg *, .hz-wg *::before, .hz-wg *::after { box-sizing: border-box; }
-html.hz-on .hz-w-pre { visibility: hidden; }
-.hz-wi { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -.14em; }
+   기본 모양은 덱 변수(--bg, --fg, --accent, --accent-2, 있으면 --surface)를 따른다.
+   모두 :where()로 감싸 특이도를 0으로 두었다. 덱 디자인에서 자유롭게 덮어쓴다.
+   모양은 CSS만으로 그려서 저장 파일·썸네일·인쇄에도 그대로 보이고, 엔진은 움직임만 더한다.
+   썸네일·점검(엔진 UI 안)과 무대에서 크기가 같도록 위젯 안쪽은 border-box로 고정한다. */
+[data-widget], [data-widget] *, [data-widget]::before, [data-widget]::after, [data-widget] *::before, [data-widget] *::after { box-sizing: border-box; }
 
-/* 채팅 */
-.hz-w-chat {
-  display: flex; flex-direction: column; overflow: hidden; border-radius: 36px;
-  background: #fff; color: var(--fg, #1f2a44); border: 4px solid var(--fg, #1f2a44); font-size: 38px; line-height: 1.45;
+/* chat: AI 채팅 화면 모형. 말풍선(<p data-from="me|ai">)이 단계마다 나온다 */
+:where([data-widget="chat"]) {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
+  padding: 2.7em 1em 3.5em; overflow: hidden;
+  background: var(--surface, #fff); color: var(--fg, #111); border-radius: 1em;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg, #111) 12%, transparent), 0 .5em 1.4em rgba(0, 0, 0, .12);
+  line-height: 1.45;
 }
-.hz-w-chat > .hz-w-head {
-  flex: none; display: flex; align-items: center; gap: 12px; padding: 20px 28px; font-size: .84em; font-weight: 800;
-  border-bottom: 3px solid color-mix(in srgb, var(--fg, #1f2a44) 10%, transparent);
+:where([data-widget="chat"])::before {
+  content: "AI 채팅"; position: absolute; left: 0; right: 0; top: 0; height: 2.6em; padding: 0 1em 0 2.4em;
+  display: flex; align-items: center; font-size: .78em; font-weight: 700;
+  border-bottom: 2px solid color-mix(in srgb, var(--fg, #111) 10%, transparent);
+  background: radial-gradient(circle at 1.3em 50%, var(--accent, #3b6cf6) .34em, transparent .36em);
 }
-.hz-w-live { width: 16px; height: 16px; border-radius: 50%; background: #22c55e; flex: none; }
-.hz-w-chat > .hz-w-body {
-  flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 22px; padding: 26px 28px;
-  background: color-mix(in srgb, var(--fg, #1f2a44) 4%, #fff);
+:where([data-widget="chat"][data-title])::before { content: attr(data-title); }
+:where([data-widget="chat"])::after {
+  content: "메시지를 입력하세요"; position: absolute; left: 1em; right: 1em; bottom: 1em; height: 2.6em;
+  display: flex; align-items: center; padding: 0 3.4em 0 1.2em; border-radius: 1.3em; font-size: .78em;
+  color: color-mix(in srgb, var(--fg, #111) 50%, transparent);
+  background:
+    radial-gradient(circle at calc(100% - 1.3em) 50%, var(--accent, #3b6cf6) .9em, transparent .93em),
+    color-mix(in srgb, var(--fg, #111) 5%, var(--surface, #fff));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--fg, #111) 10%, transparent);
 }
-.hz-w-msg { position: relative; max-width: 80%; padding: 16px 26px; border-radius: 28px; }
-/* 여백은 덱의 p { margin: 0 } 같은 규칙에 지지 않도록 조금 더 구체적으로 */
-.hz-w-body > .hz-w-msg { margin: 0; }
-.hz-w-body > .hz-w-ai { margin-left: 80px; }
-.hz-w-body > .hz-w-doc { margin-bottom: 50px; }
-.hz-w-me { align-self: flex-end; background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff); border-bottom-right-radius: 8px; }
-.hz-w-ai {
-  align-self: flex-start; margin-left: 80px; background: #fff; color: var(--fg, #1f2a44);
-  border: 3px solid color-mix(in srgb, var(--fg, #1f2a44) 14%, transparent); border-bottom-left-radius: 8px;
+:where([data-widget="chat"]) > :where([data-from]) {
+  position: relative; max-width: 84%; margin: 0; padding: .45em .8em; border-radius: .9em;
+  overflow-wrap: anywhere; word-break: keep-all; transition: color .25s;
 }
-.hz-w-ai::before, .hz-w-dots::before {
-  content: ""; position: absolute; left: -80px; bottom: -3px; width: 62px; height: 62px; border-radius: 50%; visibility: inherit;
-  background: var(--accent-2, #8a5cff) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3.5l1.9 5.3 5.3 1.9-5.3 1.9L12 17.9l-1.9-5.3-5.3-1.9 5.3-1.9z' fill='white'/%3E%3C/svg%3E") center / 58% no-repeat;
+:where([data-widget="chat"]) > :where([data-from="me"]) {
+  align-self: flex-end; background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff); border-bottom-right-radius: .25em;
 }
-.hz-w-doc, .hz-w-doc.hz-w-me {
-  width: 290px; min-height: 320px; padding: 24px 22px; margin-bottom: 50px; border-radius: 14px; rotate: -3deg;
-  background: #fff; color: var(--fg, #1f2a44); border: 3px solid var(--fg, #1f2a44); box-shadow: 6px 6px 0 color-mix(in srgb, var(--fg, #1f2a44) 25%, transparent);
-  font-size: 32px; font-weight: 800; line-height: 1.3;
+:where([data-widget="chat"]) > :where([data-from="ai"]) {
+  background: color-mix(in srgb, var(--fg, #111) 7%, var(--surface, #fff)); border-bottom-left-radius: .25em;
 }
-.hz-w-lines { display: block; margin-top: 14px; }
-.hz-w-lines i { display: block; height: 10px; margin: 15px 0; border-radius: 5px; background: color-mix(in srgb, var(--fg, #1f2a44) 13%, transparent); }
-.hz-w-lines i:nth-child(2) { width: 85%; } .hz-w-lines i:nth-child(4) { width: 70%; }
-.hz-w-cap { position: absolute; right: 0; bottom: -50px; display: flex; align-items: center; gap: 8px; font-size: 27px; font-weight: 700; rotate: 3deg; color: var(--fg, #1f2a44); }
-.hz-w-dots {
-  position: absolute; left: 0; bottom: 0; visibility: visible; display: flex; gap: 10px; padding: 24px 28px;
-  border-radius: 28px 28px 28px 8px; background: #fff; border: 3px solid color-mix(in srgb, var(--fg, #1f2a44) 14%, transparent);
+/* 프로필 자리: 덱의 흔한 초기화(.slide p { margin: 0 })에 지지 않도록 이것만 특이도를 둔다 */
+[data-widget="chat"] > [data-from="ai"] { margin-left: 1.8em; }
+:where([data-widget="chat"]) > :where([data-from="ai"])::before {
+  content: "AI"; position: absolute; left: -3.3em; bottom: 0; width: 2.6em; height: 2.6em; border-radius: 50%;
+  display: grid; place-items: center; font-size: .52em; font-weight: 800; line-height: 1;
+  background: var(--fg, #111); color: var(--bg, #fff);
 }
-.hz-w-dots i { width: 14px; height: 14px; border-radius: 50%; background: color-mix(in srgb, var(--fg, #1f2a44) 50%, transparent); animation: hz-dot 1s ease-in-out infinite; }
-.hz-w-dots i:nth-child(2) { animation-delay: .15s; } .hz-w-dots i:nth-child(3) { animation-delay: .3s; }
-.hz-w-chat > .hz-w-input {
-  flex: none; margin: 0 22px 22px; padding: 14px 26px; border-radius: 99px; display: flex; justify-content: space-between; align-items: center;
-  background: color-mix(in srgb, var(--fg, #1f2a44) 6%, #fff); color: color-mix(in srgb, var(--fg, #1f2a44) 75%, #fff); font-size: 30px; font-weight: 700;
+/* 파일·사진을 보낸 말풍선: 앞에 문서 아이콘 */
+:where([data-widget="chat"]) > :where([data-kind="doc"]) { padding-left: 2.2em; font-weight: 600; }
+:where([data-widget="chat"]) > :where([data-kind="doc"])::after {
+  content: ""; position: absolute; left: .75em; top: .58em; width: 1em; height: 1.2em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M3 1.5h9.5L18 7v15.5H3z'/%3E%3Cpath d='M12.5 1.5V7H18M6.5 12.5h8M6.5 17h8'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M3 1.5h9.5L18 7v15.5H3z'/%3E%3Cpath d='M12.5 1.5V7H18M6.5 12.5h8M6.5 17h8'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.hz-w-input .hz-wi { color: var(--accent, #3b6cf6); }
+/* AI 답: '입력 중' 점이 잠깐 보인 뒤 글이 나타난다 */
+:where([data-widget="chat"]) > .hz-typing { color: transparent !important; min-width: 3.4em; }
+:where([data-widget="chat"]) > .hz-typing > :not(.hz-dots), :where([data-widget="chat"]) > .hz-typing::after { visibility: hidden; }
+.hz-dots { position: absolute; left: .8em; top: .45em; height: 1.45em; display: flex; align-items: center; gap: .26em; }
+.hz-dots > i { width: .36em; height: .36em; border-radius: 50%; background: var(--fg, #111); animation: hz-dot 1s ease-in-out infinite; }
+.hz-dots > i:nth-child(2) { animation-delay: .15s; }
+.hz-dots > i:nth-child(3) { animation-delay: .3s; }
+@keyframes hz-dot { 0%, 60%, 100% { transform: none; opacity: .3; } 30% { transform: translateY(-.25em); opacity: .85; } }
 
-/* 자동완성 */
-.hz-w-autocomplete {
+/* chapter: 섹션 시작 화면. data-num(큰 번호), data-part(꼬리표), 안에 제목과 부제 */
+:where([data-widget="chapter"]) {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 30px;
+  padding: 0 160px; overflow: hidden; isolation: isolate;
+  background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff);
+  background-image:
+    radial-gradient(circle at 86% 18%, transparent 70px, color-mix(in srgb, var(--accent-ink, #fff) 30%, transparent) 72px 84px, transparent 86px),
+    radial-gradient(circle at 95% 64%, color-mix(in srgb, var(--accent-2, #ffd34d) 85%, transparent) 0 22px, transparent 24px);
+}
+:where([data-widget="chapter"])::before {
+  content: attr(data-num); position: absolute; right: 70px; bottom: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  font-size: 760px; font-weight: 900; line-height: .82; letter-spacing: -.05em; opacity: .16;
+}
+:where([data-widget="chapter"])::after {
+  content: attr(data-part); order: -1; padding: 10px 30px; border-radius: 99px;
+  background: var(--accent-ink, #fff); color: var(--accent, #3b6cf6); font-size: 34px; font-weight: 800; letter-spacing: .06em;
+}
+:where([data-widget="chapter"]:not([data-part]))::after { display: none; }
+:where([data-widget="chapter"]) > :where(h1, h2) { margin: 0; font-size: 132px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+:where([data-widget="chapter"]) > :where(p) { margin: 0; font-size: 46px; line-height: 1.4; opacity: .92; }
+.hz-ch-bands { position: absolute; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.hz-ch-bands > i { position: absolute; top: -10%; bottom: -10%; left: -32%; width: 24%; }
+.hz-ch-fx { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.hz-ch-fx > * { position: absolute; }
+.hz-ch-fx > .hz-ch-shape > i { display: block; width: 100%; height: 100%; box-sizing: border-box; }
+.hz-ch-ring > i { border: 11px solid currentColor; border-radius: 50%; }
+.hz-ch-dot > i { background: currentColor; border-radius: 50%; }
+.hz-ch-plus > i { background: linear-gradient(currentColor, currentColor) center / 100% 24% no-repeat, linear-gradient(currentColor, currentColor) center / 24% 100% no-repeat; }
+.hz-ch-bit { width: 22px; height: 12px; border-radius: 3px; }
+
+/* autocomplete: 휴대폰 키보드 추천 단어 모형. 입력창·추천 단어·키보드는 엔진이 붙인다(hz-ac- 접두사, 저장할 때 빠짐) */
+:where([data-widget="autocomplete"]) {
   display: flex; flex-direction: column; gap: 20px; padding: 28px; overflow: hidden; border-radius: 36px;
-  background: #fff; color: var(--fg, #1f2a44); border: 4px solid var(--fg, #1f2a44);
+  background: var(--surface, #fff); color: var(--fg, #111);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg, #111) 12%, transparent), 0 .5em 1.4em rgba(0, 0, 0, .12);
 }
-.hz-w-field {
+:where(.hz-ac-field) {
   flex: none; min-height: 150px; padding: 18px 24px; border-radius: 20px; font-size: 46px; font-weight: 700; line-height: 1.35;
-  background: color-mix(in srgb, var(--fg, #1f2a44) 4%, #fff); border: 3px solid color-mix(in srgb, var(--fg, #1f2a44) 12%, transparent);
+  background: color-mix(in srgb, var(--fg, #111) 4%, var(--surface, #fff)); box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--fg, #111) 10%, transparent);
 }
-.hz-w-caret { display: inline-block; width: 4px; height: 1em; margin-left: 4px; vertical-align: -.12em; background: var(--accent, #3b6cf6); animation: hz-blink 1s steps(1) infinite; }
-.hz-w-sugg { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 18px; overflow: hidden; background: color-mix(in srgb, var(--fg, #1f2a44) 8%, #fff); }
-.hz-w-sugg > span {
+:where(.hz-ac-caret) { display: inline-block; width: 4px; height: 1em; margin-left: 4px; vertical-align: -.12em; background: var(--accent, #3b6cf6); animation: hz-blink 1s steps(1) infinite; }
+:where(.hz-ac-sugg) { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 18px; overflow: hidden; background: color-mix(in srgb, var(--fg, #111) 8%, var(--surface, #fff)); }
+:where(.hz-ac-sugg) > span {
   min-height: 84px; display: flex; align-items: center; justify-content: center; padding: 10px; text-align: center;
-  font-size: 36px; font-weight: 700; color: color-mix(in srgb, var(--fg, #1f2a44) 78%, #fff);
-  border-right: 2px solid color-mix(in srgb, var(--fg, #1f2a44) 10%, transparent); transition: background .15s, color .15s;
+  font-size: 36px; font-weight: 700; color: color-mix(in srgb, var(--fg, #111) 78%, var(--surface, #fff));
+  border-right: 2px solid color-mix(in srgb, var(--fg, #111) 10%, transparent); transition: background .15s, color .15s;
 }
-.hz-w-sugg > span:last-child { border-right: 0; }
-.hz-w-sugg > span:nth-child(2) { color: var(--fg, #1f2a44); font-weight: 800; }
-.hz-w-sugg > span.hz-w-pick { background: var(--accent-2, #ffd34d); color: var(--fg, #1f2a44); }
-.hz-w-kb { flex: none; display: flex; flex-direction: column; gap: 10px; }
-.hz-w-kb > div { display: flex; justify-content: center; gap: 10px; }
-.hz-w-kb span {
+:where(.hz-ac-sugg) > span:last-child { border-right: 0; }
+:where(.hz-ac-sugg) > span:nth-child(2) { color: var(--fg, #111); font-weight: 800; }
+:where(.hz-ac-sugg) > span.hz-ac-pick { background: var(--accent-2, #ffd34d); color: var(--fg, #111); }
+:where(.hz-ac-kb) { flex: none; display: flex; flex-direction: column; gap: 10px; }
+:where(.hz-ac-kb) > div { display: flex; justify-content: center; gap: 10px; }
+:where(.hz-ac-kb) span {
   width: 64px; height: 58px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700;
-  background: color-mix(in srgb, var(--fg, #1f2a44) 5%, #fff); border: 2px solid color-mix(in srgb, var(--fg, #1f2a44) 12%, transparent); color: color-mix(in srgb, var(--fg, #1f2a44) 70%, #fff);
+  background: color-mix(in srgb, var(--fg, #111) 5%, var(--surface, #fff)); color: color-mix(in srgb, var(--fg, #111) 70%, var(--surface, #fff));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--fg, #111) 10%, transparent);
 }
+html.hz-m-off .hz-ac-caret { animation: none; }
 
-/* 잠금 카드 */
-.hz-w-unlock { display: flex; gap: 22px; }
-.hz-w-card { position: relative; transition: filter .35s, opacity .35s; }
-.hz-w-locked { filter: grayscale(1); opacity: .62; }
-.hz-w-lock {
-  position: absolute; right: 12px; top: 12px; z-index: 2; width: 58px; height: 58px; border-radius: 50%; display: none; place-items: center;
-  background: var(--fg, #1f2a44); color: var(--bg, #fff); border: 4px solid var(--bg, #fff); font-size: 28px; pointer-events: none;
+/* unlock: 잠금 카드 묶음. 단계 없는 카드는 늘 잠겨 있고(data-open이면 열림), 단계 카드는 그 단계 전까지 hz-locked */
+:where([data-widget="unlock"]) { display: flex; gap: 22px; }
+:where([data-widget="unlock"]) > :where([data-card]) { position: relative; transition: filter .35s, opacity .35s; }
+:where([data-widget="unlock"]) > :where([data-card]:not([data-open]):not([data-step]), [data-card].hz-locked) { filter: grayscale(1); opacity: .62; }
+:where([data-widget="unlock"]) > :where([data-card])::after, :where(.hz-ul-fly) {
+  content: ""; position: absolute; right: 12px; top: 12px; z-index: 2; width: 58px; height: 58px; border-radius: 50%; pointer-events: none;
+  background: var(--fg, #111) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10.5' width='14' height='10' rx='2'/%3E%3Cpath d='M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3'/%3E%3C/svg%3E") center / 52% no-repeat;
+  box-shadow: 0 0 0 4px var(--bg, #fff); display: none;
 }
-.hz-w-locked > .hz-w-lock, .hz-w-lock.hz-w-fly { display: grid; }
-.hz-w-burst {
+:where([data-widget="unlock"]) > :where([data-card]:not([data-open]):not([data-step]), [data-card].hz-locked)::after, :where(.hz-ul-fly) { display: block; }
+:where(.hz-ul-burst) {
   position: absolute; left: -30%; top: -30%; width: 160%; height: 160%; border-radius: 50%; pointer-events: none; z-index: 3;
   background: radial-gradient(circle, color-mix(in srgb, var(--accent-2, #ffd34d) 85%, #fff) 0 22%, color-mix(in srgb, var(--accent-2, #ffd34d) 35%, transparent) 40%, transparent 66%);
 }
 
-/* 챕터 */
-.hz-w-chapter { overflow: hidden; }
-.hz-w-chapter > .hz-w-deco { position: absolute; inset: 0; pointer-events: none; }
-.hz-w-num {
-  position: absolute; right: 70px; bottom: -150px; font-size: 900px; line-height: 1; font-weight: 800;
-  color: transparent; -webkit-text-stroke: 8px color-mix(in srgb, currentColor 32%, transparent);
-}
-.hz-w-shape { position: absolute; display: block; }
-.hz-w-shape svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.hz-w-c1 { color: var(--accent-2, #ffd34d); } .hz-w-c2 { color: var(--accent, #f26b3a); }
-.hz-w-chapter > .hz-w-text {
-  position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 0 160px;
-}
-.hz-w-part {
-  display: inline-flex; align-items: center; padding: .22em 1em; margin-bottom: 30px; border-radius: 99px;
-  font-size: 46px; font-weight: 800; background: var(--accent-2, #ffd34d); color: var(--fg, #1f2a44);
-}
-.hz-w-chapter .hz-w-title { margin: 0; font-size: 150px; line-height: 1.15; }
-.hz-w-chapter .hz-w-sub { margin: 30px 0 0; font-size: 48px; }
-.hz-w-sweep { position: absolute; inset: 0; z-index: 20; overflow: hidden; pointer-events: none; }
-.hz-w-sweep i { position: absolute; top: -10%; bottom: -10%; left: -12%; width: 124%; }
-.hz-w-b1, .hz-w-b4 { background: var(--accent-2, #ffd34d); }
-.hz-w-b2 { background: var(--accent, #f26b3a); }
-.hz-w-b3 { background: var(--bg, #fff); }
-.hz-w-b5 { background: var(--fg, #1f2a44); }
-html.hz-m-off .hz-w-dots i, html.hz-m-calm .hz-w-dots i, html.hz-m-off .hz-w-caret { animation: none; }
+.hz-wi { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -.14em; }
 
 /* 영상 파일이 없을 때 (§6.3) */
 .hz-video-missing {
@@ -691,7 +708,6 @@ html.hz-pw, html.hz-pw body { background: #e9e4d8; }
 @keyframes hz-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes hz-pop-in { from { opacity: 0; scale: .92; } to { opacity: 1; scale: 1; } }
 @keyframes hz-flash { 0%, 50%, 100% { outline: 0 solid transparent; } 25%, 75% { outline: calc(6px * var(--hz-inv, 1)) solid #facc15; } }
-@keyframes hz-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-9px); opacity: 1; } }
 
 /* ---------- 인쇄·PDF ---------- */
 @media print {
@@ -704,7 +720,7 @@ html.hz-pw, html.hz-pw body { background: #e9e4d8; }
     break-after: page; page-break-after: always; opacity: 1 !important; transform: none !important; clip-path: none !important;
   }
   html.hz-on #deck > .slide[data-hidden] { display: none !important; }
-  .hz-pre, .hz-gone, .hz-w-pre { visibility: visible !important; }
+  .hz-pre, .hz-gone { visibility: visible !important; }
   [data-hz-runtime]:not([data-hz-runtime="w"]) { display: none !important; }
   [data-interact="flip"] > .front, [data-interact="flip"] > .back { transform: none !important; right: auto; width: calc(50% - 8px); }
   [data-interact="flip"] > .back { left: calc(50% + 8px); }
