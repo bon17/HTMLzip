@@ -805,6 +805,47 @@ body { font-family: var(--font); color: var(--fg); }
 .tg .tg-on { position: absolute; inset: 0; z-index: 1; border-radius: 99px; background: var(--ok); }
 .tg .tg-on::after { content: ""; position: absolute; right: 6px; top: 6px; width: 48px; height: 48px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .2); }
 
+/* 폴더 연결: Claude 앱 모형 */
+.conn-steps { gap: 22px; }
+.conn-steps li small { display: block; font-size: 32px; color: var(--muted); }
+.appwin { display: flex; padding: 0; overflow: hidden; }
+.aw-side { width: 200px; flex: none; background: #f4f6fa; border-right: 2px solid var(--line); padding: 26px 16px; display: flex; flex-direction: column; gap: 12px; }
+.aw-side i { display: block; font-style: normal; font-size: 32px; font-weight: 700; padding: 10px 18px; border-radius: 14px; color: var(--muted); }
+.aw-side i.on { background: var(--accent); color: #fff; }
+.aw-main { position: relative; flex: 1; min-width: 0; padding: 34px 34px 40px; display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; }
+.aw-hello { position: absolute; left: 34px; top: 40px; font-family: var(--display); font-size: 56px; }
+.aw-box { position: relative; height: 150px; border-radius: 22px; border: 2px solid var(--line); background: #fff; padding: 22px 24px; font-size: 30px; }
+.aw-ph { color: #8b93a3; }
+.aw-typed { position: absolute; left: 24px; right: 24px; top: 22px; background: #fff; color: var(--fg); }
+.aw-chips { display: flex; gap: 14px; }
+.aw-chips i { position: relative; font-style: normal; font-size: 30px; font-weight: 700; padding: 8px 22px; border-radius: 99px; border: 2px solid var(--line); background: #fff; color: var(--fg); }
+.aw-chips .picked { position: absolute; inset: -2px; display: flex; align-items: center; justify-content: center; border-radius: 99px; background: var(--accent-soft); color: var(--accent); box-shadow: 0 0 0 5px var(--accent-2); }
+.aw-menu { position: absolute; left: 196px; bottom: 104px; width: 340px; padding: 12px; border-radius: 18px; background: #fff; border: 2px solid var(--line); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; }
+.aw-menu i { font-style: normal; font-size: 30px; font-weight: 700; padding: 10px 16px; border-radius: 12px; color: var(--muted); }
+.aw-menu i.hl { background: var(--accent-soft); color: var(--accent); }
+
+/* 폴더 연결: ChatGPT 프로젝트 만들기 창 모형 */
+.dlg { padding: 34px 40px; display: flex; flex-direction: column; gap: 18px; border-radius: 34px; }
+.dlg-t { display: flex; justify-content: space-between; font-family: var(--display); font-size: 52px; line-height: 1.1; }
+.dlg-t span { font-family: var(--font); font-size: 40px; color: var(--muted); }
+.dlg-name { position: relative; display: flex; align-items: center; gap: 18px; height: 84px; padding: 0 22px; border: 2px solid var(--line); border-radius: 20px; font-size: 32px; }
+.dlg-name svg, .dlg-src .chosen svg { width: 42px; height: 42px; flex: none; color: var(--muted); }
+.dlg-ph { color: #8b93a3; }
+.dlg-typed { position: absolute; left: 82px; right: 20px; top: 50%; translate: 0 -50%; background: #fff; color: var(--fg); font-weight: 700; }
+.dlg-l { font-size: 30px; font-weight: 700; }
+.dlg-src { position: relative; height: 160px; border: 2px solid var(--line); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font-size: 30px; color: var(--muted); }
+.dlg-src p b { color: var(--fg); }
+.dlg-src .add { font-style: normal; font-weight: 700; color: var(--fg); padding: 6px 22px; border-radius: 99px; background: #eef0f4; }
+.dlg-src .chosen { position: absolute; inset: 18px 40px; display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 16px; background: var(--ok-soft); color: var(--ok); font-size: 34px; }
+.dlg-src .chosen svg { color: var(--ok); }
+.dlg-btns { display: flex; justify-content: flex-end; align-items: center; gap: 30px; margin-top: auto; }
+.dlg-btns i { font-style: normal; font-size: 32px; font-weight: 700; color: var(--muted); }
+.dlg-btns i.go { color: #fff; background: #1b1d22; padding: 14px 30px; border-radius: 16px; }
+.cbar { display: flex; align-items: center; gap: 30px; padding: 0 34px; border-radius: 28px; }
+.cbar i { font-style: normal; font-size: 32px; font-weight: 700; color: var(--fg); padding: 6px 16px; border-radius: 12px; }
+.cbar i.pj { background: var(--accent-soft); color: var(--accent); }
+.cbar span { margin-left: auto; font-size: 30px; color: #8b93a3; }
+
 /* 받은 파일 쓰는 법: 화면 모형 */
 .screen { background: #1b2232; border-radius: 26px; padding: 22px; box-shadow: var(--shadow); }
 .screen .in { position: relative; width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #fbfaf6; }
@@ -1285,7 +1326,7 @@ body { font-family: var(--font); color: var(--fg); }
       <div class="front">
         <div class="game-front">
           <span class="gname">A · 짝 맞추기 카드</span>
-          <div class="pairs"><i>?</i><i class="ok">증발</i><i>?</i><i>?</i><i class="o">응고</i><i>?</i><i class="ok">액체 → 기체</i><i>?</i></div>
+          <div class="pairs"><i>?</i><i class="ok">사라예보 사건</i><i>?</i><i>?</i><i class="o">참호전</i><i>?</i><i class="ok">전쟁의 계기</i><i>?</i></div>
           <span class="gsub">카드 16장 · 용어와 뜻의 짝 찾기</span>
         </div>
       </div>
@@ -1309,7 +1350,7 @@ body { font-family: var(--font); color: var(--fg); }
       </div>
       <div class="back"><b>방탈출 퀴즈</b><p>문제를 맞힐 때마다<br>자물쇠가 하나씩 열리고,<br>다 풀면 문이 열려요.<br><br>단원 마무리 복습에 딱!</p></div>
     </div>
-    <aside class="notes">게임 예시는 과학 ‘물질의 상태 변화’지만, 실습에서는 각자 PART 1에서 고른 단원으로 만들어요. 문제·용어도 AI가 단원에서 골라 줘요(직접 준비하지 않아도 돼요). 방탈출은 조금 더 신기해 보이지만 만드는 시간이 조금 더 걸려요.</aside>
+    <aside class="notes">게임 예시는 중2 역사 ‘제1차세계대전’이지만, 실습에서는 각자 PART 1에서 고른 단원으로 만들어요. 문제·용어도 AI가 단원에서 골라 줘요(직접 준비하지 않아도 돼요). 방탈출은 조금 더 신기해 보이지만 만드는 시간이 조금 더 걸려요.</aside>
   </section>
 
   <section class="slide" data-id="game-steps" data-title="게임 만들기 네 단계" data-transition="push">
@@ -1340,13 +1381,52 @@ body { font-family: var(--font); color: var(--fg); }
       <p>폴더에 생긴 파일을 열면 게임 시작</p>
     </div>
     <p class="tip" style="left:160px;top:640px;width:1600px" data-anim="fade-up" data-step="1" data-delay="400"><b>왜 영어 이름?</b> AI와 프로그램은 영어 폴더 이름을 더 잘 읽어서 오류가 줄어요.</p>
-    <div class="card app-mock" style="left:160px;top:764px;width:780px;height:200px" data-anim="fade-up" data-step="5">
-      <div class="side"><i>새 대화</i><i class="on">Code</i></div>
-      <div class="main"><div class="box">게임을 주문하는 글…</div><div class="chips"><i>Local</i><i class="on">폴더: vibecoding</i></div></div>
+    <p class="note" style="left:160px;top:790px;width:1600px" data-anim="fade-up" data-step="5">2번 <b>폴더 연결</b>은 앱마다 달라요. 다음 장에서 <b>Claude</b>와 <b>ChatGPT</b>를 하나씩 볼게요.</p>
+    <aside class="notes">1 바탕화면에 vibecoding 폴더(영어 이름: AI와 프로그램이 한글 경로를 잘못 읽을 때가 있어요) → 2 앱에서 폴더 연결 → 3 글 붙여 넣기, AI가 파일을 만들어도 되냐고 물으면 ‘허용’ → 4 폴더 속 HTML 파일 더블클릭. 폴더 연결은 다음 두 장(Claude, ChatGPT)에서 자세히 봐요.</aside>
+  </section>
+
+  <section class="slide" data-id="claude-folder" data-title="Claude: 폴더 연결하기" data-transition="slide">
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">Claude 쓰는 분 · 폴더 연결</p>
+    <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">Claude: Code 탭에서 폴더 열기</h2>
+    <ol class="steps conn-steps" style="left:160px;top:290px;width:640px">
+      <li data-anim="fade-right" data-step="1">왼쪽 위 <b>Code</b> 탭 누르기</li>
+      <li data-anim="fade-right" data-step="2">입력창 아래 첫 칸: <b>Local</b><small>내 컴퓨터에서 일한다는 뜻</small></li>
+      <li data-anim="fade-right" data-step="3">그 옆 폴더 칸 → <b>폴더 열기…</b><small>영어 화면: Open folder…</small></li>
+      <li data-anim="fade-right" data-step="4">바탕화면 → <b>vibecoding</b> → 폴더 선택</li>
+      <li data-anim="fade-right" data-step="5">입력창에 게임 글 붙여 넣고 보내기</li>
+    </ol>
+    <div class="card appwin" style="left:860px;top:270px;width:900px;height:640px" data-anim="scale-in" data-delay="300">
+      <div class="aw-side"><i>대화</i><i class="on" data-emphasis="pulse" data-emphasis-step="1">Code</i><i>설정</i></div>
+      <div class="aw-main">
+        <p class="aw-hello">무엇을 만들까요?</p>
+        <div class="aw-box"><span class="aw-ph">요청을 입력하세요</span><span class="aw-typed" data-anim="typewriter" data-step="5">‘vibecoding’ 폴더에 수업용 게임을…</span></div>
+        <div class="aw-chips"><i data-emphasis="pulse" data-emphasis-step="2">Local ▾</i><i class="pick">폴더 고르기 ▾<b class="picked" data-anim="pop" data-step="4">vibecoding ▾</b></i></div>
+        <div class="aw-menu" data-anim="fade-up" data-step="3" data-exit="fade-out" data-exit-step="4"><i>최근 폴더</i><i class="hl">폴더 열기…</i></div>
+      </div>
     </div>
-    <p class="mock-cap" style="left:980px;top:790px;width:780px" data-anim="fade-left" data-step="5"><b>Claude</b>: 왼쪽 <b>Code</b> 탭 → 입력창 아래에서 폴더 고르기</p>
-    <p class="mock-cap" style="left:980px;top:880px;width:780px" data-anim="fade-left" data-step="6"><b>ChatGPT</b>: 앱 메뉴에서 <b>Codex</b> → 폴더 고르기</p>
-    <aside class="notes">1 바탕화면에 vibecoding 폴더(영어 이름: AI와 프로그램이 한글 경로를 잘못 읽을 때가 있어요) → 2 앱에서 폴더 연결 → 3 글 붙여 넣기, AI가 파일을 만들어도 되냐고 물으면 ‘허용’ → 4 폴더 속 HTML 파일 더블클릭. 아래 그림은 간단히 그린 것이라 실제 화면과 다를 수 있어요. 만약 Code 탭이 Git 설치를 요구하면: Claude 입력창에서 폴더를 연결하고(맡기기·Cowork) 같은 글을 보내도 게임 파일이 만들어져요.</aside>
+    <p class="tip" style="left:860px;top:940px;width:900px" data-anim="fade-up" data-step="5" data-delay="1200">AI가 “파일을 만들어도 될까요?” 물으면 <b>허용</b></p>
+    <aside class="notes">Claude 데스크톱 앱 기준(공식 안내: Code 탭 → 입력창 아래 첫 칸에서 Local → 그 옆 폴더 칸에서 Open folder…). 1 왼쪽 위 Code 탭 2 입력창 아래 첫 칸을 Local로 3 그 옆 폴더 칸 → 폴더 열기 4 창이 뜨면 바탕화면의 vibecoding 폴더를 고르고 ‘폴더 선택’ 5 게임 글을 붙여 넣고 보내기. 오른쪽은 간단히 그린 그림이라 실제 화면과 조금 다를 수 있어요. 처음 Code 탭을 열 때 Git 설치를 요구하면: 입력창에서 폴더를 연결해 Cowork(맡기기)로 같은 글을 보내도 게임 파일이 만들어져요.</aside>
+  </section>
+
+  <section class="slide" data-id="chatgpt-folder" data-title="ChatGPT: 프로젝트 만들고 폴더 고르기" data-transition="slide">
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">ChatGPT 쓰는 분 · 폴더 연결</p>
+    <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">ChatGPT: 프로젝트를 만들어 폴더 고르기</h2>
+    <ol class="steps conn-steps lane-b" style="left:160px;top:290px;width:640px">
+      <li data-anim="fade-up" data-step="1">앱 메뉴에서 <b>Codex</b> 열기</li>
+      <li data-anim="fade-up" data-step="2">입력창 위 <b>프로젝트 선택</b> → <b>프로젝트 만들기</b></li>
+      <li data-anim="fade-up" data-step="3">프로젝트 이름: <b>vibecoding</b></li>
+      <li data-anim="fade-up" data-step="4">소스 폴더 <b>추가</b> → 바탕화면 <b>vibecoding</b> 고르기</li>
+      <li data-anim="fade-up" data-step="5"><b>프로젝트 만들기</b> 누르고 게임 글 보내기</li>
+    </ol>
+    <div class="card dlg" style="left:860px;top:250px;width:900px;height:590px" data-anim="scale-in" data-step="2" data-delay="200">
+      <p class="dlg-t">프로젝트 만들기<span>×</span></p>
+      <div class="dlg-name"><svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M14 34 a8 8 0 0 1 8 -8 h26 l12 12 h38 a8 8 0 0 1 8 8 v48 a8 8 0 0 1 -8 8 H22 a8 8 0 0 1 -8 -8 z"/></svg><span class="dlg-ph">프로젝트 이름</span><span class="dlg-typed" data-anim="typewriter" data-step="3">vibecoding</span></div>
+      <p class="dlg-l">소스 폴더</p>
+      <div class="dlg-src"><p><b>이 컴퓨터</b>에 폴더 추가 ▾</p><i class="add" data-emphasis="pulse" data-emphasis-step="4">+ 추가</i><b class="chosen" data-anim="pop" data-step="4" data-delay="600"><svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M14 34 a8 8 0 0 1 8 -8 h26 l12 12 h38 a8 8 0 0 1 8 8 v48 a8 8 0 0 1 -8 8 H22 a8 8 0 0 1 -8 -8 z"/></svg>바탕화면 › vibecoding</b></div>
+      <div class="dlg-btns"><i>취소</i><i class="go" data-emphasis="pulse" data-emphasis-step="5">프로젝트 만들기</i></div>
+    </div>
+    <div class="card cbar" style="left:860px;top:870px;width:900px;height:100px" data-anim="fade-up" data-delay="400"><i class="pj" data-emphasis="pulse" data-emphasis-step="2">프로젝트 선택</i><i>이 컴퓨터</i><span>무엇이든 요청하세요</span></div>
+    <aside class="notes">선생님이 직접 확인한 ChatGPT 앱(Codex) 화면 기준이에요. 1 앱 메뉴에서 Codex 2 입력창 위 ‘프로젝트 선택’ → ‘프로젝트 만들기’ 3 이름은 vibecoding 4 소스 폴더의 ‘이 컴퓨터에 폴더 추가’에서 ‘추가’ → 바탕화면의 vibecoding 폴더 고르기 5 ‘프로젝트 만들기’를 누르고 입력창에 게임 글을 붙여 넣어 보내요. 입력창 아래 ‘나 대신 승인’을 켜 두면 허락을 묻는 횟수가 줄어요. 오른쪽은 실제 화면을 단순하게 다시 그린 그림이에요.</aside>
   </section>
 
   <section class="slide" data-id="game-prompt" data-title="붙여 넣고, 한마디 더" data-transition="slide">
@@ -1355,10 +1435,11 @@ body { font-family: var(--font); color: var(--fg); }
       <p class="ph">A · 짝 맞추기 글 <span>따로 보내 드려요</span></p>
       <p>‘vibecoding’ 폴더에 수업용 게임을 만들어 주세요.</p>
       <p>· 게임: 카드를 뒤집어 짝을 맞추는 게임(16장, 8쌍)</p>
-      <p>· 내용: <mark>[중2 과학 ‘물질의 상태 변화’]</mark>에서 용어와 뜻 8쌍을 골라 주세요</p>
+      <p>· 내용: <mark>[중2 역사 ‘제1차세계대전’]</mark>에서 용어와 뜻 8쌍을 골라 주세요</p>
       <p>· 빔프로젝터용: 글자는 크게, 2모둠 점수판</p>
       <p>· 다 맞히면 축하 효과</p>
       <p>· 파일 하나로, 더블클릭하면 열리게</p>
+      <p><b>/grilling 스킬 써서 나 인터뷰한 뒤에 제작해</b></p>
     </div>
     <p class="tip" style="left:160px;top:920px;width:860px" data-anim="fade-up" data-delay="1000"><b>B · 방탈출</b>은 ‘게임’ 줄만 바뀌어요.</p>
     <div data-widget="chat" data-title="한마디 더" style="left:1060px;top:250px;width:700px;height:740px" data-anim="fade-left" data-delay="600">
@@ -1367,7 +1448,7 @@ body { font-family: var(--font); color: var(--fg); }
       <p data-from="me" data-step="3">학교 색인 초록으로 바꿔 줘</p>
       <p data-from="ai" data-step="4">바꿨어요. 버튼도 키웠어요.</p>
     </div>
-    <aside class="notes">게임 글(A·B)은 키트에 없어서, 실습 전에 메신저 등으로 따로 보내 둬요. 노란 곳만 내 단원으로. B 방탈출은 ‘게임’ 줄이 “문제 3개를 풀 때마다 자물쇠가 하나씩 열리고, 다 풀면 문이 열리는 방탈출 퀴즈”로 바뀌어요. 오른쪽처럼 한마디씩 고쳐 달라고 할 때 ‘내가 만들었다’는 느낌이 가장 커요.</aside>
+    <aside class="notes">게임 글(A·B)은 키트에 없어서, 실습 전에 메신저 등으로 따로 보내 둬요. 노란 곳만 내 단원으로. B 방탈출은 ‘게임’ 줄이 “문제 3개를 풀 때마다 자물쇠가 하나씩 열리고, 다 풀면 문이 열리는 방탈출 퀴즈”로 바뀌어요. 마지막 줄 /grilling은 AI가 바로 만들지 않고 먼저 선생님께 질문(인터뷰)을 한 뒤 만들게 하는 스킬이에요. 질문에 답하면 내 수업에 더 맞는 게임이 나와요. 오른쪽처럼 한마디씩 고쳐 달라고 할 때 ‘내가 만들었다’는 느낌이 가장 커요.</aside>
   </section>
 
   <section class="slide" data-id="practice3" data-title="실습 ③ 내 수업 게임" data-transition="cover">
@@ -1375,7 +1456,7 @@ body { font-family: var(--font); color: var(--fg); }
     <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 수업 게임 만들기</h2>
     <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
       <li>바탕화면에 ‘vibecoding’ 폴더 만들기</li>
-      <li>앱에서 폴더 연결하기<small>Claude는 Code 탭, ChatGPT는 앱 메뉴의 Codex</small></li>
+      <li>앱에서 폴더 연결하기<small>Claude: Code 탭 → 폴더 열기 · ChatGPT: 프로젝트 만들기 → 폴더 추가</small></li>
       <li>따로 받은 A 또는 B 글 붙여 넣기<small>노란 곳 = 내 단원</small></li>
       <li>물어보면 ‘허용’, 다 되면 파일 더블클릭</li>
       <li>한마디 더: 색, 효과, 문제 수</li>
