@@ -10,7 +10,7 @@
 <style id="hz-engine-style">
 /* ===== ENGINE v2.0 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
-   - 툴바·패널·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
+   - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
    - 엔진 클래스는 모두 hz- 접두사를 쓴다. */
 
@@ -59,7 +59,7 @@ html.hz-on .hz-struck { opacity: .38; }
 
 /* 강조 효과 런타임 요소 */
 .hz-fx-hl, .hz-fx-ul, .hz-fx-strike { position: absolute; pointer-events: none; z-index: -1; transform-origin: 0 50%; }
-.hz-fx-hl { background: color-mix(in srgb, var(--accent, #3b6cf6) 34%, transparent); border-radius: .14em; }
+.hz-fx-hl { background: var(--highlight, color-mix(in srgb, var(--accent, #3b6cf6) 34%, transparent)); border-radius: .14em; }
 .hz-fx-ul { background: var(--accent, #3b6cf6); border-radius: 99px; }
 .hz-fx-strike { background: currentColor; border-radius: 99px; z-index: 1; }
 .hz-fx-layer { position: absolute; inset: 0; pointer-events: none; }
