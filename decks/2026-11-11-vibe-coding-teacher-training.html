@@ -919,6 +919,23 @@ body { font-family: var(--font); color: var(--fg); }
 .prompt p { font-size: 34px; line-height: 1.6; }
 .prompt p + p { margin-top: 4px; }
 
+/* 게임 글: AI 인터뷰 부분 */
+.prompt.sm p { font-size: 30px; line-height: 1.5; }
+.prompt.sm .ph { font-size: 28px; }
+.prompt .ask { margin-top: 14px; padding: 14px 20px; border-radius: 16px; background: var(--accent-soft); box-shadow: inset 0 0 0 2px rgba(37, 80, 200, .25); }
+.prompt .ask .lab { font-size: 28px; font-weight: 700; color: var(--accent); }
+
+/* 배포: Vercel Drop 화면 모형 */
+.dropwin { display: flex; flex-direction: column; }
+.dropwin .url-pill { margin-left: 18px; padding: 4px 18px; border-radius: 99px; background: #fff; border: 2px solid var(--line); font-family: var(--mono); font-size: 26px; color: var(--muted); }
+.dropzone { position: relative; flex: 1; margin: 28px; border: 5px dashed #b9c3d6; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-size: 34px; color: var(--muted); }
+.dropzone > svg { width: 100px; height: 100px; color: var(--accent); }
+.dropzone .dragged { position: absolute; right: 40px; bottom: 30px; display: flex; align-items: center; gap: 14px; padding: 12px 24px; border-radius: 18px; background: var(--accent); color: #fff; font-size: 34px; box-shadow: var(--shadow); }
+.dropzone .dragged svg { width: 44px; height: 44px; color: #fff; }
+.urlcard { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 30px; border-radius: 24px; background: var(--ok-soft); box-shadow: inset 0 0 0 3px var(--ok), var(--shadow); }
+.urlcard span { font-family: var(--mono); font-size: 36px; font-weight: 600; color: var(--ok); }
+.urlcard i { font-style: normal; font-size: 32px; font-weight: 700; color: #fff; background: var(--ok); padding: 12px 26px; border-radius: 14px; }
+
 /* 퀴즈 */
 .quiz { display: grid; gap: 28px; }
 .quiz .opt {
@@ -1054,7 +1071,7 @@ body { font-family: var(--font); color: var(--fg); }
       <p>짝 맞추기 또는 방탈출 퀴즈</p>
     </div>
     <ol class="timeline" style="left:160px;top:868px;width:1600px" data-anim="stagger" data-step="3">
-      <li>맡겨 두기 <b>10분</b></li><li>알기 <b>15분</b></li><li>게임 <b>25분</b></li><li>마무리 <b>10분</b></li>
+      <li>맡겨 두기 <b>10분</b></li><li>알기 <b>15분</b></li><li>게임 <b>20분</b></li><li>나눠 주기 <b>10분</b></li>
     </ol>
     <aside class="notes">[3분] 오늘 끝나면 손에 남는 것 두 가지. 순서가 특이해요: 슬라이드는 AI가 만드는 데 몇 분 걸리니까 먼저 맡겨 두고, 기다리는 동안 바이브코딩을 알아봐요.</aside>
   </section>
@@ -1372,7 +1389,7 @@ body { font-family: var(--font); color: var(--fg); }
       <span class="n">3</span>
       <svg viewBox="0 0 120 120" aria-hidden="true"><rect class="ic" x="26" y="16" width="68" height="88" rx="10"/><path class="ic" d="M44 16 V10 H76 V16 M42 48 H78 M42 64 H78 M42 80 H64"/></svg>
       <h3>글 붙여 넣기</h3>
-      <p>물어보면 <b>‘허용’</b> 누르기</p>
+      <p>AI 질문에 답하고, 물어보면 <b>‘허용’</b></p>
     </div>
     <div class="card g4" style="left:1381px;top:216px;width:380px;height:400px" data-anim="pop" data-step="4">
       <span class="n">4</span>
@@ -1429,9 +1446,9 @@ body { font-family: var(--font); color: var(--fg); }
     <aside class="notes">선생님이 직접 확인한 ChatGPT 앱(Codex) 화면 기준이에요. 1 앱 메뉴에서 Codex 2 입력창 위 ‘프로젝트 선택’ → ‘프로젝트 만들기’ 3 이름은 vibecoding 4 소스 폴더의 ‘이 컴퓨터에 폴더 추가’에서 ‘추가’ → 바탕화면의 vibecoding 폴더 고르기 5 ‘프로젝트 만들기’를 누르고 입력창에 게임 글을 붙여 넣어 보내요. 입력창 아래 ‘나 대신 승인’을 켜 두면 허락을 묻는 횟수가 줄어요. 오른쪽은 실제 화면을 단순하게 다시 그린 그림이에요.</aside>
   </section>
 
-  <section class="slide" data-id="game-prompt" data-title="붙여 넣고, 한마디 더" data-transition="slide">
-    <h2 class="h2" style="left:160px;top:100px;width:1600px" data-anim="split-words">붙여 넣고, <em>한마디씩</em> 더 하면 내 게임</h2>
-    <div class="prompt" style="left:160px;top:250px;width:860px;height:640px" data-anim="fade-right" data-delay="300">
+  <section class="slide" data-id="game-prompt" data-title="A 짝 맞추기 글: AI가 먼저 물어봐요" data-transition="slide">
+    <h2 class="h2" style="left:160px;top:96px;width:1600px" data-anim="split-words">붙여 넣으면 AI가 <em>먼저 물어봐요</em></h2>
+    <div class="prompt sm" style="left:160px;top:210px;width:860px;height:780px" data-anim="fade-right" data-delay="300">
       <p class="ph">A · 짝 맞추기 글 <span>따로 보내 드려요</span></p>
       <p>‘vibecoding’ 폴더에 수업용 게임을 만들어 주세요.</p>
       <p>· 게임: 카드를 뒤집어 짝을 맞추는 게임(16장, 8쌍)</p>
@@ -1439,16 +1456,45 @@ body { font-family: var(--font); color: var(--fg); }
       <p>· 빔프로젝터용: 글자는 크게, 2모둠 점수판</p>
       <p>· 다 맞히면 축하 효과</p>
       <p>· 파일 하나로, 더블클릭하면 열리게</p>
-      <p><b>/grilling 스킬 써서 나 인터뷰한 뒤에 제작해</b></p>
+      <div class="ask">
+        <p class="lab">AI가 먼저 물어보게 하는 부분</p>
+        <p>만들기 전에 저를 인터뷰해 주세요.</p>
+        <p>· 질문은 한 번에 하나씩, 5개까지</p>
+        <p>· 다 들으면 만들 내용을 3줄로 정리해 보여 주고, 제가 “좋아요”라고 하면 만들어 주세요</p>
+      </div>
     </div>
-    <p class="tip" style="left:160px;top:920px;width:860px" data-anim="fade-up" data-delay="1000"><b>B · 방탈출</b>은 ‘게임’ 줄만 바뀌어요.</p>
-    <div data-widget="chat" data-title="한마디 더" style="left:1060px;top:250px;width:700px;height:740px" data-anim="fade-left" data-delay="600">
-      <p data-from="me" data-step="1">다 맞히면 색종이 터뜨려 줘</p>
+    <div class="sm" data-widget="chat" data-title="AI 인터뷰" style="left:1070px;top:210px;width:690px;height:780px" data-anim="fade-left" data-delay="600">
+      <p data-from="ai" data-step="1">질문 1/5 · 학생들이 이 단원을 어디까지 배웠나요?</p>
+      <p data-from="me" data-step="2">전쟁이 끝난 뒤까지요</p>
+      <p data-from="ai" data-step="3">질문 5개 끝! 정리하면 용어 8쌍, 2모둠 점수판, 축하 효과예요. “좋아요” 하면 만들게요.</p>
+      <p data-from="me" data-step="4">좋아요!</p>
+    </div>
+    <aside class="notes">게임 글(A·B)은 키트에 없어서, 실습 전에 메신저 등으로 따로 보내 둬요. 노란 곳만 내 단원으로. 아래 파란 칸이 ‘인터뷰’ 부분이에요. 따로 설치하는 스킬 없이도 Claude·ChatGPT 어디서나 AI가 바로 만들지 않고 질문부터 해요. 질문에 답하면 내 수업에 더 맞는 게임이 나와요. 질문 수를 줄이고 싶으면 “3개까지”로 바꿔요.</aside>
+  </section>
+
+  <section class="slide" data-id="game-prompt-b" data-title="B 방탈출 글: 혼자 푸는 게임" data-transition="push">
+    <h2 class="h2" style="left:160px;top:96px;width:1600px" data-anim="split-words">B · 방탈출은 <em>혼자 푸는</em> 게임으로</h2>
+    <div class="prompt sm" style="left:160px;top:210px;width:860px;height:780px" data-anim="fade-up" data-delay="300">
+      <p class="ph">B · 방탈출 퀴즈 글 <span>따로 보내 드려요</span></p>
+      <p>‘vibecoding’ 폴더에 수업용 게임을 만들어 주세요.</p>
+      <p>· 게임: 학생이 혼자 푸는 방탈출 퀴즈. 문제를 맞힐 때마다 자물쇠가 하나씩 열리고, 3개를 다 풀면 문이 열려요</p>
+      <p>· 내용: <mark>[중2 역사 ‘제1차세계대전’]</mark>에서 문제 3개를 만들어 주세요</p>
+      <p>· 학생이 각자 태블릿·노트북으로 풀게, 글자와 버튼은 크게</p>
+      <p>· 틀리면 힌트를 보여 주고 다시 풀게</p>
+      <p>· 문이 열리면 축하 효과와 걸린 시간</p>
+      <p>· 파일 하나로, 더블클릭하면 열리게</p>
+      <div class="ask">
+        <p class="lab">AI가 먼저 물어보게 하는 부분</p>
+        <p>만들기 전에 저를 인터뷰해 주세요. … (A와 같아요)</p>
+      </div>
+    </div>
+    <div class="sm" data-widget="chat" data-title="다 만든 뒤 한마디 더" style="left:1070px;top:210px;width:690px;height:780px" data-anim="fade-left" data-delay="600">
+      <p data-from="me" data-step="1">문제마다 힌트 버튼을 넣어 줘</p>
       <p data-from="ai" data-step="2">넣었어요! 다시 열어 보세요.</p>
-      <p data-from="me" data-step="3">학교 색인 초록으로 바꿔 줘</p>
-      <p data-from="ai" data-step="4">바꿨어요. 버튼도 키웠어요.</p>
+      <p data-from="me" data-step="3">문이 열릴 때 효과를 더 크게</p>
+      <p data-from="ai" data-step="4">바꿨어요. 걸린 시간도 크게 보여요.</p>
     </div>
-    <aside class="notes">게임 글(A·B)은 키트에 없어서, 실습 전에 메신저 등으로 따로 보내 둬요. 노란 곳만 내 단원으로. B 방탈출은 ‘게임’ 줄이 “문제 3개를 풀 때마다 자물쇠가 하나씩 열리고, 다 풀면 문이 열리는 방탈출 퀴즈”로 바뀌어요. 마지막 줄 /grilling은 AI가 바로 만들지 않고 먼저 선생님께 질문(인터뷰)을 한 뒤 만들게 하는 스킬이에요. 질문에 답하면 내 수업에 더 맞는 게임이 나와요. 오른쪽처럼 한마디씩 고쳐 달라고 할 때 ‘내가 만들었다’는 느낌이 가장 커요.</aside>
+    <aside class="notes">B는 모둠 점수판 대신 학생이 각자 푸는 게임이에요. 그래서 학생 기기에서 열려야 하고, PART 4의 ‘주소로 나눠 주기’와 이어져요. 오른쪽처럼 다 만든 뒤 한마디씩 고쳐 달라고 할 때 ‘내가 만들었다’는 느낌이 가장 커요.</aside>
   </section>
 
   <section class="slide" data-id="practice3" data-title="실습 ③ 내 수업 게임" data-transition="cover">
@@ -1458,14 +1504,66 @@ body { font-family: var(--font); color: var(--fg); }
       <li>바탕화면에 ‘vibecoding’ 폴더 만들기</li>
       <li>앱에서 폴더 연결하기<small>Claude: Code 탭 → 폴더 열기 · ChatGPT: 프로젝트 만들기 → 폴더 추가</small></li>
       <li>따로 받은 A 또는 B 글 붙여 넣기<small>노란 곳 = 내 단원</small></li>
-      <li>물어보면 ‘허용’, 다 되면 파일 더블클릭</li>
-      <li>한마디 더: 색, 효과, 문제 수</li>
+      <li>AI 질문에 답하고 “좋아요” → 물어보면 ‘허용’</li>
+      <li>파일 더블클릭, 한마디 더: 색, 효과, 문제 수</li>
     </ul>
     <div class="clock" style="left:1340px;top:280px;width:420px;height:420px" data-anim="progress-ring" data-delay="400">
       <svg viewBox="0 0 420 420" width="420" height="420" aria-label="15분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">15</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
     </div>
     <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">다 되면 손을 들어 주세요. 같이 한 판 해 봐요!</p>
-    <aside class="notes">[35~50분] T로 타이머 15분. 끝나기 3분 전에 두세 분의 게임을 빔프로젝터로 띄워 다 같이 한 판 해요(자랑하기).</aside>
+    <aside class="notes">[33~48분] T로 타이머 15분. AI 인터뷰 질문에 너무 오래 답하지 않게 “짧게 답해도 돼요”라고 안내해요. 끝나기 3분 전에 두세 분의 게임을 빔프로젝터로 띄워 다 같이 한 판 해요(자랑하기).</aside>
+  </section>
+
+  <!-- ===================== PART 4 나눠 주기 ===================== -->
+  <section class="slide plain" data-id="part4" data-title="PART 4 학생에게 주소로 나눠 주기" data-transition="wipe">
+    <div data-widget="chapter" data-part="PART 4 · 나눠 주기" data-num="4" style="left:0;top:0;width:1920px;height:1080px">
+      <h2>학생에게 주소로 나눠 주기</h2>
+      <p>내 컴퓨터에만 있는 게임을 인터넷 주소로 만들어요.</p>
+    </div>
+    <aside class="notes">[48분] PART 4는 7분 정도. 배포는 시연으로 보여 주고, 시간이 남으면 같이 해 봐요. 집에서 다시 해 볼 수 있게 순서를 천천히 보여 줘요.</aside>
+  </section>
+
+  <section class="slide" data-id="deploy-drop" data-title="방법 1: Vercel Drop" data-transition="zoom">
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">방법 1 · 끌어다 놓기</p>
+    <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">배포 = 파일을 <em>인터넷 주소</em>로 만들기</h2>
+    <ol class="steps conn-steps" style="left:160px;top:300px;width:700px">
+      <li data-anim="fade-right" data-step="1">주소창에 <b>vercel.com/drop</b></li>
+      <li data-anim="fade-right" data-step="2"><b>vibecoding</b> 폴더를 화면에 끌어다 놓기</li>
+      <li data-anim="fade-right" data-step="3">첫 화면이 될 파일 고르기<small>파일 이름이 index.html이면 건너뛰어요</small></li>
+      <li data-anim="fade-right" data-step="4">나온 <b>주소</b>를 복사해 학생에게</li>
+    </ol>
+    <div class="win dropwin" style="left:920px;top:270px;width:840px;height:520px" data-anim="scale-in" data-delay="300">
+      <div class="bar"><i></i><i></i><i></i><span class="url-pill">vercel.com/drop</span></div>
+      <div class="dropzone">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M60 84 V30"/><path class="ic" d="M38 52 L60 30 L82 52"/><path class="ic" d="M20 82 V96 H100 V82"/></svg>
+        <p>폴더나 파일을 여기에 놓으세요</p>
+        <b class="dragged" data-anim="slide-left" data-step="2"><svg viewBox="0 0 120 120" aria-hidden="true"><path class="ic" d="M14 34 a8 8 0 0 1 8 -8 h26 l12 12 h38 a8 8 0 0 1 8 8 v48 a8 8 0 0 1 -8 8 H22 a8 8 0 0 1 -8 -8 z"/></svg>vibecoding</b>
+      </div>
+    </div>
+    <div class="urlcard" style="left:920px;top:820px;width:840px;height:120px" data-anim="pop" data-step="4"><span>my-ww1-game.vercel.app</span><i>주소 복사</i></div>
+    <p class="tip" style="left:160px;top:820px;width:700px" data-anim="fade-up" data-step="4" data-delay="500">주소는 누구나 열 수 있어요. <b>학생 이름 같은 개인정보</b>는 넣지 마세요.</p>
+    <aside class="notes">Vercel Drop은 Git이나 프로그램 설치 없이 브라우저에서 파일·폴더를 끌어다 놓아 바로 올리는 방법이에요. 계정이 없어도 올릴 수 있다고 안내돼 있지만, 내 프로젝트로 계속 관리하려면 무료 계정(Hobby)으로 로그인한 뒤 올려요. 폴더 맨 위에 index.html이 없으면 첫 화면으로 쓸 파일을 고르라고 나와요. 주소를 QR로 바꾸려면 AI에게 “이 주소 QR 코드 만들어 줘”. 오른쪽은 간단히 그린 그림이에요.</aside>
+  </section>
+
+  <section class="slide" data-id="deploy-ai" data-title="방법 2: AI에게 배포 맡기기" data-transition="push">
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">방법 2 · AI에게 맡기기</p>
+    <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">“Vercel에 배포해 줘” 한마디로</h2>
+    <div class="prompt sm" style="left:160px;top:290px;width:860px;height:420px" data-anim="fade-right" data-delay="300">
+      <p class="ph">배포 글 <span>Code·Codex 같은 대화에 이어서</span></p>
+      <p>‘vibecoding’ 폴더의 게임을 Vercel에 배포해 주세요.</p>
+      <p>· 게임 파일 이름은 index.html로 해 주세요</p>
+      <p>· 저는 처음이에요. 제가 할 일을 하나씩 알려 주세요</p>
+      <p>· 다 되면 학생에게 줄 주소를 알려 주세요</p>
+    </div>
+    <p class="tip" style="left:160px;top:750px;width:860px" data-anim="fade-up" data-step="2">처음 한 번은 <b>Vercel 무료 가입</b>과 <b>로그인 승인</b>이 필요해요.</p>
+    <p class="tip" style="left:160px;top:880px;width:860px" data-anim="fade-up" data-step="4" data-delay="400">설치가 막히는 학교 컴퓨터라면 <b>방법 1</b>로 해요.</p>
+    <div class="sm" data-widget="chat" data-title="AI와 대화" style="left:1070px;top:270px;width:690px;height:720px" data-anim="fade-left" data-delay="600">
+      <p data-from="me" data-step="1">‘vibecoding’ 폴더의 게임을 Vercel에 배포해 주세요 …</p>
+      <p data-from="ai" data-step="2">로그인이 필요해요. 열린 창에서 ‘승인’을 눌러 주세요.</p>
+      <p data-from="me" data-step="3">눌렀어요</p>
+      <p data-from="ai" data-kind="doc" data-step="4">배포했어요!<br>my-ww1-game.vercel.app</p>
+    </div>
+    <aside class="notes">게임을 만든 Code(Claude)나 Codex(ChatGPT) 대화에 이어서 보내요. AI가 Vercel 도구로 올리고, 처음에는 브라우저에 Vercel 로그인 승인 창을 띄워요(무료 가입 필요). AI가 필요한 프로그램(Node.js 등)을 설치해도 되냐고 물을 수 있어요. 학교 컴퓨터에서 설치가 막히면 방법 1(Vercel Drop)을 써요. Claude와 ChatGPT에는 Vercel 연결(커넥터)도 있지만 오늘은 다루지 않아요. 주소는 누구나 열 수 있으니 개인정보는 넣지 않아요.</aside>
   </section>
 
   <!-- ===================== 마무리 ===================== -->
