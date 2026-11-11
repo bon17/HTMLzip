@@ -675,7 +675,7 @@ body { font-family: var(--font); color: var(--fg); }
 }
 .lane-b .steps li::before { background: #e6e9ef; color: var(--fg); }
 .addr { display: flex; align-items: center; gap: 18px; padding: 18px 22px; border-radius: 18px; background: #f4f6fa; border: 2px solid var(--line); }
-.addr .url { flex: 1; min-width: 0; white-space: nowrap; font-family: var(--mono); font-size: 28px; color: var(--muted); background: var(--surface); border: 2px solid var(--line); border-radius: 99px; padding: 8px 18px; }
+.addr .url { flex: 1; min-width: 0; white-space: nowrap; font-family: var(--mono); font-size: 26px; color: var(--muted); background: var(--surface); border: 2px solid var(--line); border-radius: 99px; padding: 8px 18px; }
 .addr .go { font-size: 30px; font-weight: 700; padding: 10px 22px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
 .lane-b .addr .go { background: var(--fg); }
 
@@ -787,6 +787,23 @@ body { font-family: var(--font); color: var(--fg); }
 .big-steps p { font-size: 36px; color: var(--muted); line-height: 1.4; }
 .tip { border-left: 10px solid var(--accent-2); background: var(--surface); border-radius: 0 20px 20px 0; padding: 22px 30px; font-size: 34px; line-height: 1.45; box-shadow: var(--shadow); }
 .tip b { color: var(--fg); }
+
+/* Claude 설정 화면 모형 */
+.set-steps li small { display: block; font-size: 32px; color: var(--muted); }
+.setmock { display: flex; padding: 0; overflow: hidden; }
+.setmock .nav { width: 230px; flex: none; background: #f4f6fa; border-right: 2px solid var(--line); padding: 28px 16px; display: flex; flex-direction: column; gap: 10px; }
+.setmock .nav i { font-style: normal; font-size: 32px; font-weight: 700; padding: 10px 18px; border-radius: 14px; color: var(--muted); }
+.setmock .nav i.on { background: var(--accent-soft); color: var(--accent); }
+.setmock .pane { flex: 1; min-width: 0; padding: 30px 34px; display: flex; flex-direction: column; gap: 20px; }
+.setmock .pt { font-family: var(--display); font-size: 52px; line-height: 1.1; }
+.setmock .row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 22px; border: 2px solid var(--line); border-radius: 20px; }
+.setmock .row b { display: block; font-size: 34px; line-height: 1.3; }
+.setmock .row span { display: block; font-size: 28px; line-height: 1.3; color: var(--muted); }
+.setmock .row.dim { opacity: .45; }
+.tg { position: relative; flex: none; width: 110px; height: 60px; border-radius: 99px; background: #cfd5df; }
+.tg::after { content: ""; position: absolute; left: 6px; top: 6px; width: 48px; height: 48px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .2); }
+.tg .tg-on { position: absolute; inset: 0; z-index: 1; border-radius: 99px; background: var(--ok); }
+.tg .tg-on::after { content: ""; position: absolute; right: 6px; top: 6px; width: 48px; height: 48px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .2); }
 
 /* 받은 파일 쓰는 법: 화면 모형 */
 .screen { background: #1b2232; border-radius: 26px; padding: 22px; box-shadow: var(--shadow); }
@@ -953,18 +970,18 @@ body { font-family: var(--font); color: var(--fg); }
         <li><b>Windows용 내려받기</b> → 설치</li>
         <li>Claude 앱을 열고 <b>로그인</b></li>
       </ol>
-      <div class="addr"><span class="url">claude.com/download</span><span class="go">Windows용 받기</span></div>
+      <div class="addr"><span class="url">claude.com/download</span><span class="go">받기</span></div>
     </div>
     <div class="card lane lane-b" style="left:980px;top:370px;width:780px;height:560px" data-anim="slide-left" data-step="2">
       <p class="lane-tag">ChatGPT 쓰는 분</p>
       <ol class="steps">
-        <li>시작 메뉴에서 <b>Microsoft Store</b></li>
-        <li><b>ChatGPT</b> 검색 → <b>받기</b></li>
+        <li>주소창에<br><b>chatgpt.com/ko-KR/download</b></li>
+        <li><b>Windows용 내려받기</b> → 설치</li>
         <li>ChatGPT 앱을 열고 <b>로그인</b></li>
       </ol>
-      <div class="addr"><span class="url">ChatGPT</span><span class="go">받기</span></div>
+      <div class="addr"><span class="url">chatgpt.com/ko-KR/download</span><span class="go">받기</span></div>
     </div>
-    <aside class="notes">[0~3분] 두 계정이 다 있으면 하나만 골라요. 두 회사 모두 앱 하나에 대화·맡기기·만들기가 다 들어 있어요(Claude: 대화·Cowork·Code, ChatGPT: Chat·Work·Codex). ChatGPT 앱은 2026년 7월부터 Codex가 들어간 통합 앱이에요. 예전 앱이 깔려 있으면 아이콘이 둘 보일 수 있는데, ‘ChatGPT Classic’이 아니라 ‘ChatGPT’를 써요. 학교 노트북에서 설치가 막히면(관리자 권한) 옆 사람과 같이 해요. 아래 회색 그림은 간단히 그린 것이라 실제 화면과 조금 다를 수 있어요.</aside>
+    <aside class="notes">[0~3분] 두 계정이 다 있으면 하나만 골라요. 두 회사 모두 앱 하나에 대화·맡기기·만들기가 다 들어 있어요(Claude: 대화·Cowork·Code, ChatGPT: Chat·Work·Codex). ChatGPT 앱은 chatgpt.com/ko-KR/download 에서 받아요. 2026년 7월부터 Codex가 들어간 통합 앱이에요. 예전 앱이 깔려 있으면 아이콘이 둘 보일 수 있는데, ‘ChatGPT Classic’이 아니라 ‘ChatGPT’를 써요. 학교 노트북에서 설치가 막히면(관리자 권한) 옆 사람과 같이 해요. 아래 회색 그림은 간단히 그린 것이라 실제 화면과 조금 다를 수 있어요.</aside>
   </section>
 
   <section class="slide" data-id="today" data-title="오늘 가져갈 것" data-transition="push">
@@ -1041,7 +1058,7 @@ body { font-family: var(--font); color: var(--fg); }
       <li data-anim="fade-right" data-step="2"><span class="n">2</span><h3>1단계 글 붙여 넣기</h3><p><mark>노란 곳</mark>만 우리 반에 맞게 바꿔요</p></li>
       <li data-anim="fade-right" data-step="4"><span class="n">3</span><h3>“만들어 줘”</h3><p>구성안을 보고 2단계 글을 붙여 넣어요</p></li>
     </ol>
-    <p class="tip" style="left:160px;top:830px;width:740px" data-anim="fade-up" data-delay="900"><b>Claude</b>는 설정에서 ‘코드 실행 및 파일 생성’을 켜 두세요.</p>
+    <p class="tip" style="left:160px;top:830px;width:740px" data-anim="fade-up" data-delay="900"><b>Claude</b>는 ‘파일 만들기’가 켜져 있어야 해요. 다음 장에서 확인해요.</p>
     <div class="sm" data-widget="chat" data-title="AI와 대화" style="left:960px;top:236px;width:800px;height:790px" data-anim="fade-left" data-delay="300">
       <p data-from="me" data-kind="doc" data-step="1">교과서-3단원.pdf<br>slide-template.html</p>
       <p data-from="me" data-step="2">첨부한 PDF는 <mark>[중2 역사]</mark> <mark>[3단원]</mark>이에요. 구성안만 보여 주세요 …</p>
@@ -1052,12 +1069,34 @@ body { font-family: var(--font); color: var(--fg); }
     <aside class="notes">글은 키트에서 복사 버튼으로 가져와요. 1: 새 대화에 파일 2개 올리기. 2: 1단계 글(구성안 받기) 붙여 넣기. 노란 [ ] 부분만 바꿔요. 슬라이드 수는 [6~8장]으로. 3: AI가 구성안을 보여 줘요. 4: 오늘은 고치지 말고 바로 2단계 글(“만들어 줘”). 5: 몇 분 뒤 HTML 파일이 나와요. ChatGPT는 앱의 대화(Chat)에서 똑같이 해요.</aside>
   </section>
 
+  <section class="slide" data-id="claude-setting" data-title="Claude: 파일 만들기 켜기" data-transition="push">
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">Claude 쓰는 분만 · 10초</p>
+    <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">‘파일 만들기’가 켜져 있나 확인해요</h2>
+    <p class="lead" style="left:160px;top:256px;width:1600px" data-anim="fade-up" data-delay="500">대부분 처음부터 켜져 있어요. 꺼져 있으면 AI가 슬라이드 파일을 만들어 주지 못해요.</p>
+    <ol class="steps set-steps" style="left:160px;top:380px;width:700px">
+      <li data-anim="fade-right" data-step="1">왼쪽 아래 <b>내 이름</b> 누르기</li>
+      <li data-anim="fade-right" data-step="2"><b>설정</b> 누르기</li>
+      <li data-anim="fade-right" data-step="3"><b>기능</b> 고르기<small>영어 화면: Capabilities</small></li>
+      <li data-anim="fade-right" data-step="4"><b>파일 생성 및 편집</b> 켜기<small>예전 이름: 코드 실행 및 파일 생성</small></li>
+    </ol>
+    <div class="card setmock" style="left:920px;top:370px;width:840px;height:500px" data-anim="scale-in" data-delay="300">
+      <div class="nav"><i>일반</i><i>계정</i><i class="on" data-emphasis="pulse" data-emphasis-step="3">기능</i><i>연결</i></div>
+      <div class="pane">
+        <p class="pt">기능</p>
+        <div class="row"><div><b>파일 생성 및 편집</b><span>코드를 실행해 파일을 만들어요</span></div><i class="tg"><b class="tg-on" data-anim="pop" data-step="4"></b></i></div>
+        <div class="row dim"><div><b>다른 기능</b><span>그대로 두세요</span></div><i class="tg"></i></div>
+      </div>
+    </div>
+    <p class="tip" style="left:160px;top:912px;width:1600px" data-anim="fade-up" data-step="5"><b>ChatGPT</b>는 따로 켤 것 없이 바로 돼요.</p>
+    <aside class="notes">Claude 개인 요금제(Pro·Max)는 이 기능이 처음부터 켜져 있는 게 기본이라 대부분 확인만 하면 돼요. 꺼져 있으면 Claude가 HTML 파일을 만들어 내려받게 해 주지 못해요. 경로: 왼쪽 아래 이름 → 설정 → 기능(Capabilities) → ‘파일 생성 및 편집’(Create and edit files, 예전 이름 ‘코드 실행 및 파일 생성’). 메뉴 이름은 앱 버전에 따라 조금 다를 수 있어요. 오른쪽 그림은 간단히 그린 것이에요. 학교 단체 요금제(Team)라면 관리자가 켜고 끄는 항목이에요.</aside>
+  </section>
+
   <section class="slide" data-id="practice1" data-title="실습 ① 슬라이드 맡겨 두기" data-transition="cover">
     <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ① · 7분</span></p>
     <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 교과서로 슬라이드 맡겨 두기</h2>
     <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
-      <li>교과서 PDF 준비<small>수업할 단원 쪽만</small></li>
-      <li>키트에서 틀 파일 내려받기</li>
+      <li>Claude 쓰는 분: 파일 만들기 켜져 있나 확인<small>설정 → 기능</small></li>
+      <li>교과서 PDF(단원 쪽만)와 틀 파일 준비</li>
       <li>1단계 글 붙여 넣고 노란 곳 바꾸기<small>슬라이드 수는 [6~8장]</small></li>
       <li>구성안이 나오면 2단계 글로 “만들어 줘”</li>
       <li>AI가 만드는 동안 앞을 봐 주세요!</li>
@@ -1066,7 +1105,7 @@ body { font-family: var(--font); color: var(--fg); }
       <svg viewBox="0 0 420 420" width="420" height="420" aria-label="7분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">7</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
     </div>
     <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">구성안은 오늘 고치지 말고 바로 “만들어 줘”</p>
-    <aside class="notes">[7~14분] T를 눌러 타이머(7분)를 켜요. 모두 “만들어 줘”까지 보냈는지 확인하고 PART 2로 넘어가요. 자주 막히는 곳: Claude는 ‘코드 실행 및 파일 생성’ 설정, PDF가 너무 큼(단원 쪽만 자르기).</aside>
+    <aside class="notes">[7~14분] T를 눌러 타이머(7분)를 켜요. 모두 “만들어 줘”까지 보냈는지 확인하고 PART 2로 넘어가요. 자주 막히는 곳: Claude의 ‘파일 생성 및 편집’ 설정이 꺼져 있음(앞 장), PDF가 너무 큼(단원 쪽만 자르기).</aside>
   </section>
 
   <!-- ===================== PART 2 기다리는 동안 ===================== -->
