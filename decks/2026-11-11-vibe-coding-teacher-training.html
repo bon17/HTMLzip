@@ -1015,6 +1015,32 @@ body { font-family: var(--font); color: var(--fg); }
 .ideas { display: flex; flex-wrap: wrap; gap: 20px; }
 .ideas li { padding: 16px 30px; border-radius: 99px; background: #fff; color: var(--accent); font-size: 36px; font-weight: 700; box-shadow: 0 14px 34px rgba(6, 16, 50, .25); }
 
+/* 반응형 팁: 기기 모형 (같은 게임이 화면 크기에 맞춰 배치가 바뀜) */
+.dev { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.dev .frame { width: 100%; flex: 1; min-height: 0; background: #1b2232; padding: 14px; border-radius: 22px; box-shadow: var(--shadow); }
+.dev.pc .frame { border-radius: 18px; }
+.dev.pc .stand { display: block; width: 150px; height: 24px; margin-top: -12px; border-radius: 0 0 14px 14px; background: #c9d0dc; }
+.dev.tab .frame { padding: 18px; border-radius: 30px; }
+.dev.ph .frame { padding: 16px 10px; border-radius: 38px; }
+.dev .cap { font-size: 32px; font-weight: 700; line-height: 1.3; }
+.scr { display: flex; flex-direction: row-reverse; gap: 10px; width: 100%; height: 100%; padding: 12px; border-radius: 10px; background: #26345e; }
+.dev.ph .scr { flex-direction: column; border-radius: 26px; }
+.g-q { flex: 3; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 8px; background: #fbf6ea; min-width: 0; }
+.g-q > i { display: block; height: 12px; border-radius: 6px; background: #d9d1bd; }
+.g-q > i.t { width: 80%; height: 16px; background: #1f2433; }
+.g-q > i.s { width: 60%; }
+.g-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+.dev.ph .g-opts { grid-template-columns: 1fr; }
+.g-opts b { display: block; height: 30px; border-radius: 6px; background: #fff; box-shadow: inset 0 0 0 2px #e2dccb; }
+.g-opts b.ok { background: var(--ok-soft); box-shadow: inset 0 0 0 3px var(--ok); }
+.g-door { flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border-radius: 46% 46% 8px 8px / 26% 26% 8px 8px; background: linear-gradient(#a8693a, #7d4a26); }
+.dev.ph .g-door { flex: none; height: 84px; flex-direction: row; border-radius: 12px; }
+.g-door i { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 0 4px rgba(0, 0, 0, .22); }
+.g-door i.open { background: #5fd394; }
+.dev, .dev * { box-sizing: border-box; }
+.rsp-line .def { margin-top: 6px; font-size: 28px; color: var(--muted); }
+.rsp-line .def b { color: var(--accent); }
+.rsp-line .def span { margin: 0 .4em; }
 </style>
 </head>
 <body>
@@ -1483,14 +1509,15 @@ body { font-family: var(--font); color: var(--fg); }
   </section>
 
   <section class="slide" data-id="game-prompt" data-title="A 짝 맞추기 글" data-transition="slide">
-    <h2 class="h2" style="left:160px;top:86px;width:1600px" data-anim="split-words">A · 짝 맞추기 글</h2>
-    <div class="prompt sm" style="left:160px;top:190px;width:1600px;height:800px" data-anim="fade-up" data-delay="300">
+    <h2 class="h2" style="left:160px;top:76px;width:1600px" data-anim="split-words">A · 짝 맞추기 글</h2>
+    <div class="prompt sm" style="left:160px;top:178px;width:1600px;height:830px" data-anim="fade-up" data-delay="300">
       <p class="ph">예시 게임을 만든 글 <span>키트에 있어요</span></p>
       <p>‘vibecoding’ 폴더에 수업용 게임을 만들어 주세요.</p>
       <p>· 게임: 카드 16장(용어 8장 + 뜻 8장)을 뒤집어 짝을 맞추는 게임</p>
       <p>· 내용: <mark>[중2 역사 ‘제1차세계대전’]</mark>에서 용어와 뜻 8쌍을 골라 주세요</p>
       <p>· 2모둠이 번갈아 해요. 짝을 맞히면 1점, 맞히든 틀리든 다음 모둠 차례</p>
       <p>· 빔프로젝터용: 글자는 크게, 전체 화면 버튼</p>
+      <p>· 컴퓨터·태블릿·휴대폰 모두 되게: 화면 크기에 맞춰 바뀌는 반응형, 마우스·터치 모두</p>
       <p>· 다 맞히면 축하 효과와 이긴 모둠 발표</p>
       <p>· 파일 하나로, 더블클릭하면 열리게</p>
       <div class="ask">
@@ -1501,12 +1528,12 @@ body { font-family: var(--font); color: var(--fg); }
         <p>· 다 들으면 만들 내용을 3줄로 정리해 보여 주고, 제가 “좋아요”라고 하면 만들어 주세요</p>
       </div>
     </div>
-    <aside class="notes">게임 글(A·B)은 키트(textbook-slides-guide.html)의 ‘수업 게임’에 인터뷰 부분까지 붙어 있어요. 복사 버튼으로 가져와요. 노란 곳만 내 단원으로 바꿔요. 이 글로 앞 장의 A 예시 게임(2모둠 번갈아 하기, 맞히면 1점, 전체 화면 버튼)이 나왔어요. 파란 칸은 다음다음 장에서 설명해요.</aside>
+    <aside class="notes">게임 글(A·B)은 키트(textbook-slides-guide.html)의 ‘수업 게임’에 인터뷰 부분까지 붙어 있어요. 복사 버튼으로 가져와요. 노란 곳만 내 단원으로 바꿔요. 이 글로 앞 장의 A 예시 게임(2모둠 번갈아 하기, 맞히면 1점, 전체 화면 버튼)이 나왔어요. 파란 칸은 다음다음 장, ‘반응형’ 줄은 그다음 장에서 설명해요.</aside>
   </section>
 
   <section class="slide" data-id="game-prompt-b" data-title="B 방탈출 글" data-transition="push">
-    <h2 class="h2" style="left:160px;top:86px;width:1600px" data-anim="split-words">B · 방탈출 퀴즈 글 <em>(혼자 풀기)</em></h2>
-    <div class="prompt sm" style="left:160px;top:190px;width:1600px;height:800px" data-anim="fade-right" data-delay="300">
+    <h2 class="h2" style="left:160px;top:76px;width:1600px" data-anim="split-words">B · 방탈출 퀴즈 글 <em>(혼자 풀기)</em></h2>
+    <div class="prompt sm" style="left:160px;top:178px;width:1600px;height:830px" data-anim="fade-right" data-delay="300">
       <p class="ph">예시 게임을 만든 글 <span>키트에 있어요</span></p>
       <p>‘vibecoding’ 폴더에 수업용 게임을 만들어 주세요.</p>
       <p>· 게임: 학생이 혼자 푸는 방탈출 퀴즈. 문제를 3개 맞힐 때마다 문의 자물쇠가 하나씩 열리고, 9문제를 다 풀면 문이 열려요</p>
@@ -1514,7 +1541,8 @@ body { font-family: var(--font); color: var(--fg); }
       <p>· 보기는 4개, 틀린 보기는 흐리게 하고 남은 보기에서 다시 고르게</p>
       <p>· 화면: 왼쪽은 문제와 9칸 진행 막대, 오른쪽은 자물쇠 3개가 달린 문</p>
       <p>· 문이 열리면 축하 효과와 ‘다시 도전’ 버튼, 할 때마다 문제와 보기 순서 섞기</p>
-      <p>· 학생이 각자 태블릿·노트북으로 풀게, 글자와 버튼은 크게</p>
+      <p>· 학생이 각자 자기 기기로 풀게, 글자와 버튼은 크게</p>
+      <p>· 컴퓨터·태블릿·휴대폰 모두 되게: 화면 크기에 맞춰 바뀌는 반응형, 마우스·터치 모두</p>
       <p>· 파일 하나로, 더블클릭하면 열리게</p>
       <div class="ask">
         <p class="lab">끝에 붙이는 인터뷰 부분 (A와 같아요)</p>
@@ -1539,6 +1567,29 @@ body { font-family: var(--font); color: var(--fg); }
     </div>
     <p class="tip" style="left:160px;top:800px;width:860px" data-anim="fade-up" data-step="7" data-delay="400">스킬을 따로 설치하지 않아도 Claude·ChatGPT 어디서나 돼요.</p>
     <aside class="notes">AI는 보통 글을 받으면 바로 만들기 시작해요. 끝에 인터뷰 부분을 붙이면 먼저 질문을 하고, 정리한 내용을 확인받은 뒤 만들어요. 오른쪽 예처럼 더 물어볼 게 없으면 질문 하나로 끝나기도 해요. 실습 시간이 짧으니 “짧게 답해도 돼요”라고 안내해요.</aside>
+  </section>
+
+  <section class="slide" data-id="responsive" data-title="팁: 반응형으로 써 주세요" data-transition="zoom">
+    <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">팁 · 한 줄 더 쓰기</p>
+    <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">‘반응형’이라고 쓰면 <em>어디서나</em> 잘 열려요</h2>
+    <div class="dev pc" style="left:160px;top:290px;width:620px;height:430px" data-anim="pop" data-step="1">
+      <div class="frame"><div class="scr"><div class="g-door"><i class="open"></i><i></i><i></i></div><div class="g-q"><i class="t"></i><i></i><i class="s"></i><div class="g-opts"><b></b><b class="ok"></b><b></b><b></b></div></div></div></div><i class="stand"></i>
+      <p class="cap">컴퓨터</p>
+    </div>
+    <div class="dev tab" style="left:850px;top:340px;width:440px;height:380px" data-anim="pop" data-step="2">
+      <div class="frame"><div class="scr"><div class="g-door"><i class="open"></i><i></i><i></i></div><div class="g-q"><i class="t"></i><i></i><i class="s"></i><div class="g-opts"><b></b><b class="ok"></b><b></b><b></b></div></div></div></div>
+      <p class="cap">태블릿</p>
+    </div>
+    <div class="dev ph" style="left:1380px;top:250px;width:240px;height:470px" data-anim="pop" data-step="3">
+      <div class="frame"><div class="scr"><div class="g-door"><i class="open"></i><i></i><i></i></div><div class="g-q"><i class="t"></i><i></i><i class="s"></i><div class="g-opts"><b></b><b class="ok"></b><b></b><b></b></div></div></div></div>
+      <p class="cap">휴대폰</p>
+    </div>
+    <div class="prompt sm rsp-line" style="left:160px;top:756px;width:1560px;height:240px" data-anim="fade-up" data-step="4">
+      <p class="ph">A·B 글과 기획 글에 넣은 한 줄</p>
+      <p>· 컴퓨터·태블릿·휴대폰 모두 되게: 화면 크기에 맞춰 바뀌는 반응형, 마우스·터치 모두</p>
+      <p class="def" data-anim="fade-up" data-step="5"><b>반응형</b> 화면 크기에 맞춰 배치가 저절로 바뀌어요 <span>·</span> <b>마우스·터치 모두</b> 클릭도, 손가락으로 누르기도 돼요</p>
+    </div>
+    <aside class="notes">AI는 보통 컴퓨터 화면을 기준으로 만들어요. 글에 ‘컴퓨터·태블릿·휴대폰 모두 되게, 반응형, 마우스·터치 모두’를 써 두면, 학생이 휴대폰이나 태블릿으로 열어도 글자와 버튼이 잘리지 않고 손가락으로 눌러져요. 그림처럼 넓은 화면에서는 문제와 문이 나란히, 휴대폰에서는 위아래로 놓여요. 오늘 A·B 글과 PART 5 기획 글에 이 줄을 넣어 두었어요. 내가 쓴 글에도 붙여 보세요. 다 만든 뒤에는 PART 4처럼 주소로 올려 휴대폰으로도 열어 확인해요.</aside>
   </section>
 
   <section class="slide" data-id="practice3" data-title="실습 ③ 내 수업 게임" data-transition="cover">
@@ -1715,10 +1766,11 @@ body { font-family: var(--font); color: var(--fg); }
   <section class="slide" data-id="game-plan" data-title="① 기획 부탁하기" data-transition="push">
     <p class="eye" style="left:160px;top:92px;width:1600px" data-anim="fade-right">① 기획 부탁하기</p>
     <h2 class="h2" style="left:160px;top:144px;width:1600px" data-anim="split-words">만들기 전에 계획부터 세워 달라고 해요</h2>
-    <div class="prompt sm" style="left:160px;top:270px;width:860px;height:530px" data-anim="fade-right" data-delay="300">
+    <div class="prompt sm" style="left:160px;top:256px;width:860px;height:610px" data-anim="fade-right" data-delay="300">
       <p class="ph">기획 글 <span>Code·Codex에</span></p>
       <p><mark>[독도의 역사와 근거]</mark> 내용으로 <mark>[8단계 탐험]</mark> 형태의 게임을 만들고 싶어요. 만들기 전에 계획(기획서)부터 세워 주세요.</p>
       <p>· 넣을 것: 대상·목표·기기·플레이 시간, 줄거리, 단계 구성, 규칙과 점수, 화면 구성, 필요한 그림</p>
+      <p>· 컴퓨터·태블릿·휴대폰 모두 되게: 화면 크기에 맞춰 바뀌는 반응형, 마우스·터치 모두</p>
       <p>· 기획서는 ‘vibecoding’ 폴더에 game-plan.md로 저장해 주세요</p>
       <p>· 궁금한 점은 한 번에 하나씩 물어봐 주세요</p>
     </div>
@@ -1739,7 +1791,7 @@ body { font-family: var(--font); color: var(--fg); }
         <li><b>8</b>최종 반박 배틀<span>카드 배틀</span></li>
       </ol>
     </div>
-    <p class="tip" style="left:160px;top:830px;width:860px" data-anim="fade-up" data-delay="1200">기획서가 파일로 남으면, 나중에 고칠 때도 AI가 이 기준을 따라요.</p>
+    <p class="tip" style="left:160px;top:890px;width:860px" data-anim="fade-up" data-delay="1200">기획서 파일이 있으면 고칠 때도 AI가 따라요.</p>
     <aside class="notes">오른쪽은 독도 게임 기획서의 첫머리예요. 대상·쓰는 곳·목표·형식·기기·시간을 표로 정하고, 단계마다 게임 방식·다루는 지식·필요한 그림·목표 시간을 적었어요. 노란 곳만 바꿔서 내 수업 게임의 기획을 부탁해요.</aside>
   </section>
 
@@ -1796,13 +1848,13 @@ body { font-family: var(--font); color: var(--fg); }
       <p data-from="me" data-step="1">기획서대로 만들어 줘</p>
       <p data-from="ai" data-kind="doc" data-step="2">index.html 완성!</p>
       <p data-from="me" data-step="3">학생 입장에서 해 보고 고칠 점 5가지 찾아 줘</p>
-      <p data-from="ai" data-step="4">① 3단계 글자가 작아요 ② 틀리면 다음으로 안 넘어가요 …</p>
+      <p data-from="ai" data-step="4">① 휴대폰에서 버튼이 잘려요 ② 틀리면 다음으로 안 넘어가요 …</p>
       <p data-from="me" data-step="5">1, 2번 고쳐 줘</p>
     </div>
     <div class="card rules" style="left:1040px;top:210px;width:720px;height:560px" data-anim="fade-left" data-delay="600">
       <p class="rl-t">직접 해 보며 확인할 것</p>
       <ul>
-        <li>학생 기기에서 한 화면에 보이나요?</li>
+        <li>컴퓨터·태블릿·휴대폰에서 다 잘 보이나요?</li>
         <li>글자와 버튼이 충분히 큰가요?</li>
         <li>틀렸을 때 막히지 않고 이어지나요?</li>
         <li>한 판에 걸리는 시간이 알맞나요?</li>
