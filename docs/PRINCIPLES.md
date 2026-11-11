@@ -437,12 +437,12 @@
 
 | 위젯 | 하는 일 | 마크업 | 등급 |
 |---|---|---|---|
-| `chapter` | 섹션 시작 화면을 크게 연출한다. 색 띠가 화면을 휩쓸고 지나간 뒤, 큰 번호와 제목 글자가 하나씩 떨어지고, 도형과 색종이 조각이 튀어나온다. | `<div data-widget="chapter" data-part="PART 1" data-num="1" style="left:0;top:0;width:1920px;height:1080px"><h2>제목</h2><p>부제</p></div>` | 권장 |
-| `chat` | AI 채팅 화면 모형. 말풍선이 단계마다 하나씩 나오고, AI 답은 ‘입력 중’ 점이 잠깐 보인 뒤 나타난다. 사진·문서를 보낸 말풍선도 쓸 수 있다. | `<div data-widget="chat" data-title="AI 채팅"><p data-from="me" data-step="1">써줘</p><p data-from="ai" data-step="2">물론이죠!</p></div>` · 사진 말풍선은 `data-kind="doc"` | 권장 |
+| `chapter` | 섹션 시작 화면을 크게 연출한다. 색 띠가 화면을 휩쓸고 지나간 뒤, 큰 번호와 제목 글자가 하나씩 떨어지고, 도형과 색종이 조각이 튀어나온다. `data-anim` 없이도 슬라이드에 들어오면 재생되고, `data-step`을 붙이면 그 단계에 재생된다. | `<div data-widget="chapter" data-part="PART 1" data-num="1" style="left:0;top:0;width:1920px;height:1080px"><h2>제목</h2><p>부제</p></div>` | 권장 |
+| `chat` | AI 채팅 화면 모형. 말풍선이 단계마다 하나씩 나오고, AI 답은 ‘입력 중’ 점이 잠깐 보인 뒤 나타난다. 파일·사진을 보낸 말풍선도 쓸 수 있다. 상자에 `width`·`height`를 주고, 말풍선이 모두 보였을 때 상자 안에 들어가게 쓴다. | `<div data-widget="chat" data-title="AI 채팅"><p data-from="me" data-step="1">써줘</p><p data-from="ai" data-step="2">물론이죠!</p></div>` · 파일·사진 말풍선은 `data-kind="doc"`(앞에 문서 아이콘) | 권장 |
 | `autocomplete` | 휴대폰 키보드 추천 단어 모형. 가운데 추천 단어가 차례로 눌리며 문장이 만들어진다. | `<div data-widget="autocomplete" data-step="1" data-words="오늘 학교에서 친구랑" data-pool="그리고 나는 근데"></div>` | 선택 |
 | `unlock` | 잠금 카드 묶음. 잠긴 카드가 단계마다 열리며 빛과 조각이 터진다. 이미 얻은 카드는 열린 채로 보인다. 미션을 깰 때마다 보상을 모으는 흐름에 쓴다. | `<div data-widget="unlock"><div data-card data-open>안전장치</div><div data-card data-step="1">디테일</div></div>` | 선택 |
 
-- **모양**: 위젯의 기본 모양은 덱 변수(`--bg`, `--fg`, `--accent`, `--accent-2`)를 따른다. 덱 디자인에서 위젯 안쪽 클래스(`hz-w-` 접두사)를 덮어써 다듬을 수 있다. 엔진 스타일 중 이것만 예외로 허용한다.
+- **모양**: 위젯의 기본 모양은 덱 변수(`--bg`, `--fg`, `--accent`, `--accent-2`, 있으면 `--surface`)를 따르고 CSS만으로 그린다. 그래서 저장 파일·썸네일·인쇄에도 그대로 보이고, 엔진은 움직임만 더한다. 엔진의 위젯 스타일은 특이도가 0(`:where`)이라 덱 디자인에서 `.slide [data-widget="chat"]`처럼 덮어써 다듬는다. 위젯이 잠깐 만드는 런타임 요소(`hz-dots`, `hz-ch-` 접두사)도 덮어쓸 수 있다. 엔진 스타일 중 이것만 예외로 허용한다.
 - **편집**: 위젯도 상자라서 이동·크기·모션 지정이 된다. 위젯 안 글자는 더블클릭(두 번 탭)으로 고친다.
 - **새 위젯**: 한 강의에서만 쓰는 화면은 그 덱의 디자인과 내용으로 만든다. 두 번째 강의에서도 필요해지면 이 표에 올리고 엔진에 넣는다.
 
