@@ -1,0 +1,5 @@
+# 영상은 저작권(방송 클립)과 용량 때문에 저장소에 올리지 않아요. 수업 컴퓨터의 assets/에 따로 넣어요.
+assets/*.mp4
+assets/*.mov
+assets/*.webm
+assets/*.m4v
