@@ -5,6 +5,8 @@
 
 ## 지금 상태: 도입부 17장은 원칙 덱으로 옮겼어요 (2026-11-11)
 
+> **다음 세션은 [HANDOFF.md](HANDOFF.md)부터 읽어요.** 이 작업은 브랜치 `claude/keen-ramanujan-tzzg8b`에 있고 `main`(엔진 v2.2)과 갈라져 있어요. `main` 기준으로 옮기는 방법이 거기 적혀 있어요.
+
 이 폴더는 HTMLzip 원칙([../../docs/PRINCIPLES.md](../../docs/PRINCIPLES.md))이 생기기 전에 만든 작업본이에요. 도입부 17장은 원칙에 맞춰 옮겼고, **앞으로의 작업은 새 덱에서** 해요.
 
 - 새 덱: `decks/2026-11-11-ai-prompt-class/index.html` (영상 때문에 폴더형 덱이에요. 영상은 `assets/`에 따로 넣어요. `assets/README.md` 참고)
