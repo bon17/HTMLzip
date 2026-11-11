@@ -29,12 +29,20 @@
 ```
 docs/PRINCIPLES.md   제작 원칙
 engine/              모든 덱이 함께 쓰는 기능 코드 (디자인 없음)
-themes/              다시 쓰고 싶은 디자인 모음 (선택)
+tools/               엔진을 덱에 넣는 도구 (node tools/sync-engine.js)
+themes/              다시 쓰고 싶은 디자인 모음 (선택, 아직 없음)
 decks/               완성된 슬라이드 (각 파일에 엔진이 들어 있음)
+wip/                 원칙 이전에 만든 작업본 (참고용)
 ```
 
-`engine/`, `themes/`, `decks/`는 첫 덱을 만들 때 생깁니다.
+엔진은 `engine/`에서만 고치고, `node tools/sync-engine.js`로 모든 덱의 엔진 구역을 바꿔 넣습니다.
+
+## 덱 목록
+
+| 덱 | 내용 |
+|---|---|
+| [decks/2026-11-11-ai-prompt-class/](decks/2026-11-11-ai-prompt-class/) | 중2 프롬프트 특강 “AI 잘 쓰면, 나도 잘 된다!” 도입부 17장. 영상 2개는 `assets/`에 따로 넣어요. |
 
 ## 보는 법
 
-`decks/` 안의 HTML 파일을 브라우저로 열면 됩니다. 덱 안에서 `?` 키를 누르면 단축키 목록이 나옵니다.
+`decks/` 안의 HTML 파일(폴더형 덱은 `index.html`)을 브라우저로 열면 됩니다. 덱 안에서 `?` 키를 누르면 단축키 목록이 나옵니다.

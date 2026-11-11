@@ -243,6 +243,7 @@ html.hz-board-on:not(.hz-fs) #hz-boardbar{display:flex}
 #hz-notice{position:fixed;right:16px;top:16px;z-index:3100;padding:8px 14px;border-radius:11px;background:var(--hz-panel);color:#fff;font:700 14px/1 var(--hz-ui);display:flex;gap:7px;align-items:center;pointer-events:none;opacity:0;transition:opacity .2s}
 #hz-notice svg{width:18px;height:18px}
 #hz-notice.hz-show{opacity:1}
+html.hz-edit #hz-notice{top:68px;right:330px}
 #hz-jump{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:3100;padding:12px 22px;border-radius:14px;background:var(--hz-panel);color:#fff;font:800 22px/1 var(--hz-ui);display:none}
 #hz-jump.hz-show{display:block}
 
@@ -360,6 +361,8 @@ html.hz-edit #hz-editbar{display:flex}
 html.hz-edit #hz-props{display:flex}
 .hz-ps{padding:12px 14px;border-bottom:1px solid var(--hz-line);display:flex;flex-direction:column;gap:8px}
 .hz-ps h4{margin:0;font:800 13px/1 var(--hz-ui);color:var(--hz-on);display:flex;align-items:center;gap:6px}
+.hz-ps h4 svg{width:16px;height:16px;flex:none}
+.hz-modal h3 > span svg,.hz-tm-head > span svg{width:100%;height:100%;display:block}
 .hz-ps .hz-g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .hz-ps .hz-g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hz-ps label{display:flex;flex-direction:column;gap:3px;font:700 11.5px/1.2 var(--hz-ui);color:var(--hz-sub)}
