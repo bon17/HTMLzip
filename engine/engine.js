@@ -3156,21 +3156,28 @@
     run: function () {
       if (!SL.length || IS_PW) return;
       var items = [], lastDom = null, streak = 0;
+      // 크기는 화면 밖에 둔 깨끗한 복사본으로 잰다 (재생 중인 모션·엔진 표시가 끼어들지 않게)
+      var host = h('div', { 'aria-hidden': 'true' });
+      host.style.cssText = 'position:fixed;left:-40000px;top:0;width:1920px;height:1080px;overflow:hidden;visibility:hidden;pointer-events:none;contain:strict';
+      document.body.appendChild(host);
       SL.forEach(function (s, i) {
         function add(msg, el) { items.push({ i: i, msg: msg, el: el || null }); }
-        var measure = !s.classList.contains('hz-active') && !s.classList.contains('hz-leaving');
-        if (measure) s.classList.add('hz-measure');
+        var copy = cleanTree(s.cloneNode(true));
+        $$('video,audio,iframe', copy).forEach(function (v) { var d = h('div'); d.setAttribute('style', v.getAttribute('style') || ''); d.style.width = d.style.width || '100%'; d.style.height = d.style.height || '100%'; v.parentNode.replaceChild(d, v); });
+        copy.removeAttribute('data-id');
+        copy.style.display = 'block'; copy.style.position = 'absolute'; copy.style.left = '0'; copy.style.top = '0';
+        host.appendChild(copy);
         try {
-          var boxes = boxesOf(s);
+          var boxes = boxesOf(s), mboxes = boxesOf(copy);
           if (!boxes.length) add('빈 슬라이드예요');
           if (!s.getAttribute('data-title')) add('제목(data-title)이 없어요');
           if (s.getAttribute('data-transition') && !TRANS_OK[s.getAttribute('data-transition')]) add('알 수 없는 전환 효과: ' + s.getAttribute('data-transition'));
           if (s.getAttribute('data-ambient') && !AMB_OK[s.getAttribute('data-ambient')]) add('알 수 없는 배경 움직임: ' + s.getAttribute('data-ambient'));
           if (s.getAttribute('data-celebrate') && !CEL_OK[s.getAttribute('data-celebrate')]) add('알 수 없는 보상 효과: ' + s.getAttribute('data-celebrate'));
-          boxes.forEach(function (b) {
-            var x = b.offsetLeft, y = b.offsetTop, w = b.offsetWidth, hh = b.offsetHeight;
-            if (x < -2 || y < -2 || x + w > W + 2 || y + hh > H + 2) add('요소가 무대 밖으로 나가요', b);
-            if (b.textContent.trim() && b.tagName !== 'svg' && (b.scrollHeight > b.clientHeight + 4 || b.scrollWidth > b.clientWidth + 4)) add('글자가 상자 밖으로 넘쳐요', b);
+          mboxes.forEach(function (b, j) {
+            var real = boxes[j] || null, x = b.offsetLeft, y = b.offsetTop, w = b.offsetWidth, hh = b.offsetHeight;
+            if (x < -2 || y < -2 || x + w > W + 2 || y + hh > H + 2) add('요소가 무대 밖으로 나가요', real);
+            if (b.textContent.trim() && b.tagName.toLowerCase() !== 'svg' && (b.scrollHeight > b.clientHeight + 4 || b.scrollWidth > b.clientWidth + 4)) add('글자가 상자 밖으로 넘쳐요', real);
           });
           $$('img', s).forEach(function (im) {
             if (im.complete && im.getAttribute('src') && !im.naturalWidth) add('이미지를 불러오지 못했어요 (깨진 이미지)', im);
@@ -3206,8 +3213,9 @@
             if (streak > 3) add('같은 본문 등장 효과(' + dom + ')가 ' + streak + '장째 이어져요');
           }
         } catch (e) { add('점검 중 오류: ' + e.message); }
-        if (measure) s.classList.remove('hz-measure');
+        host.removeChild(copy);
       });
+      document.body.removeChild(host);
       this.items = items; this.count = items.length;
       updateChrome();
       return items;
