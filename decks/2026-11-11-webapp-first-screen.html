@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style id="hz-engine-style">
-/* ===== ENGINE v2.2 ===== */
+/* ===== ENGINE v2.3 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -117,11 +117,105 @@ html.hz-m-off [data-interact="flip"] > * { transition: none; }
 }
 .hz-hint {
   position: absolute; right: -14px; top: -18px; z-index: 7; padding: 6px 14px; border-radius: 99px;
-  background: #111; color: #fff; font: 700 20px/1.2 var(--hz-font); pointer-events: none;
+  background: #111; color: #fff; font-size: 28px; font-weight: 700; line-height: 1.2; pointer-events: none;
   animation: hz-bob 1.6s ease-in-out infinite;
 }
 html.hz-m-off [data-spot], html.hz-m-calm [data-spot],
 html.hz-m-off .hz-hint, html.hz-m-calm .hz-hint, html.hz-m-off .hz-caret { animation: none; }
+
+/* ---------- 수업 위젯 (§4.6) ----------
+   기본 모양은 덱 변수(--bg, --fg, --accent, --accent-2, 있으면 --surface)를 따른다.
+   모두 :where()로 감싸 특이도를 0으로 두었다. 덱 디자인에서 자유롭게 덮어쓴다.
+   모양은 CSS만으로 그려서 저장 파일·썸네일·인쇄에도 그대로 보이고, 엔진은 움직임만 더한다.
+   썸네일·점검(엔진 UI 안)과 무대에서 크기가 같도록 위젯 안쪽은 border-box로 고정한다. */
+[data-widget], [data-widget] *, [data-widget]::before, [data-widget]::after, [data-widget] *::before, [data-widget] *::after { box-sizing: border-box; }
+
+/* chat: AI 채팅 화면 모형. 말풍선(<p data-from="me|ai">)이 단계마다 나온다 */
+:where([data-widget="chat"]) {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
+  padding: 2.7em 1em 3.5em; overflow: hidden;
+  background: var(--surface, #fff); color: var(--fg, #111); border-radius: 1em;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg, #111) 12%, transparent), 0 .5em 1.4em rgba(0, 0, 0, .12);
+  line-height: 1.45;
+}
+:where([data-widget="chat"])::before {
+  content: "AI 채팅"; position: absolute; left: 0; right: 0; top: 0; height: 2.6em; padding: 0 1em 0 2.4em;
+  display: flex; align-items: center; font-size: .78em; font-weight: 700;
+  border-bottom: 2px solid color-mix(in srgb, var(--fg, #111) 10%, transparent);
+  background: radial-gradient(circle at 1.3em 50%, var(--accent, #3b6cf6) .34em, transparent .36em);
+}
+:where([data-widget="chat"][data-title])::before { content: attr(data-title); }
+:where([data-widget="chat"])::after {
+  content: "메시지를 입력하세요"; position: absolute; left: 1em; right: 1em; bottom: 1em; height: 2.6em;
+  display: flex; align-items: center; padding: 0 3.4em 0 1.2em; border-radius: 1.3em; font-size: .78em;
+  color: color-mix(in srgb, var(--fg, #111) 50%, transparent);
+  background:
+    radial-gradient(circle at calc(100% - 1.3em) 50%, var(--accent, #3b6cf6) .9em, transparent .93em),
+    color-mix(in srgb, var(--fg, #111) 5%, var(--surface, #fff));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--fg, #111) 10%, transparent);
+}
+:where([data-widget="chat"]) > :where([data-from]) {
+  position: relative; max-width: 84%; margin: 0; padding: .45em .8em; border-radius: .9em;
+  overflow-wrap: anywhere; word-break: keep-all; transition: color .25s;
+}
+:where([data-widget="chat"]) > :where([data-from="me"]) {
+  align-self: flex-end; background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff); border-bottom-right-radius: .25em;
+}
+:where([data-widget="chat"]) > :where([data-from="ai"]) {
+  background: color-mix(in srgb, var(--fg, #111) 7%, var(--surface, #fff)); border-bottom-left-radius: .25em;
+}
+/* 프로필 자리: 덱의 흔한 초기화(.slide p { margin: 0 })에 지지 않도록 이것만 특이도를 둔다 */
+[data-widget="chat"] > [data-from="ai"] { margin-left: 1.8em; }
+:where([data-widget="chat"]) > :where([data-from="ai"])::before {
+  content: "AI"; position: absolute; left: -3.3em; bottom: 0; width: 2.6em; height: 2.6em; border-radius: 50%;
+  display: grid; place-items: center; font-size: .52em; font-weight: 800; line-height: 1;
+  background: var(--fg, #111); color: var(--bg, #fff);
+}
+/* 파일·사진을 보낸 말풍선: 앞에 문서 아이콘 */
+:where([data-widget="chat"]) > :where([data-kind="doc"]) { padding-left: 2.2em; font-weight: 600; }
+:where([data-widget="chat"]) > :where([data-kind="doc"])::after {
+  content: ""; position: absolute; left: .75em; top: .58em; width: 1em; height: 1.2em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M3 1.5h9.5L18 7v15.5H3z'/%3E%3Cpath d='M12.5 1.5V7H18M6.5 12.5h8M6.5 17h8'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M3 1.5h9.5L18 7v15.5H3z'/%3E%3Cpath d='M12.5 1.5V7H18M6.5 12.5h8M6.5 17h8'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* AI 답: '입력 중' 점이 잠깐 보인 뒤 글이 나타난다 */
+:where([data-widget="chat"]) > .hz-typing { color: transparent !important; min-width: 3.4em; }
+:where([data-widget="chat"]) > .hz-typing > :not(.hz-dots), :where([data-widget="chat"]) > .hz-typing::after { visibility: hidden; }
+.hz-dots { position: absolute; left: .8em; top: .45em; height: 1.45em; display: flex; align-items: center; gap: .26em; }
+.hz-dots > i { width: .36em; height: .36em; border-radius: 50%; background: var(--fg, #111); animation: hz-dot 1s ease-in-out infinite; }
+.hz-dots > i:nth-child(2) { animation-delay: .15s; }
+.hz-dots > i:nth-child(3) { animation-delay: .3s; }
+@keyframes hz-dot { 0%, 60%, 100% { transform: none; opacity: .3; } 30% { transform: translateY(-.25em); opacity: .85; } }
+
+/* chapter: 섹션 시작 화면. data-num(큰 번호), data-part(꼬리표), 안에 제목과 부제 */
+:where([data-widget="chapter"]) {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 30px;
+  padding: 0 160px; overflow: hidden; isolation: isolate;
+  background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff);
+  background-image:
+    radial-gradient(circle at 86% 18%, transparent 70px, color-mix(in srgb, var(--accent-ink, #fff) 30%, transparent) 72px 84px, transparent 86px),
+    radial-gradient(circle at 95% 64%, color-mix(in srgb, var(--accent-2, #ffd34d) 85%, transparent) 0 22px, transparent 24px);
+}
+:where([data-widget="chapter"])::before {
+  content: attr(data-num); position: absolute; right: 70px; bottom: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  font-size: 760px; font-weight: 900; line-height: .82; letter-spacing: -.05em; opacity: .16;
+}
+:where([data-widget="chapter"])::after {
+  content: attr(data-part); order: -1; padding: 10px 30px; border-radius: 99px;
+  background: var(--accent-ink, #fff); color: var(--accent, #3b6cf6); font-size: 34px; font-weight: 800; letter-spacing: .06em;
+}
+:where([data-widget="chapter"]:not([data-part]))::after { display: none; }
+:where([data-widget="chapter"]) > :where(h1, h2) { margin: 0; font-size: 132px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+:where([data-widget="chapter"]) > :where(p) { margin: 0; font-size: 46px; line-height: 1.4; opacity: .92; }
+.hz-ch-bands { position: absolute; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.hz-ch-bands > i { position: absolute; top: -10%; bottom: -10%; left: -32%; width: 24%; }
+.hz-ch-fx { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.hz-ch-fx > * { position: absolute; }
+.hz-ch-fx > .hz-ch-shape > i { display: block; width: 100%; height: 100%; box-sizing: border-box; }
+.hz-ch-ring > i { border: 11px solid currentColor; border-radius: 50%; }
+.hz-ch-dot > i { background: currentColor; border-radius: 50%; }
+.hz-ch-plus > i { background: linear-gradient(currentColor, currentColor) center / 100% 24% no-repeat, linear-gradient(currentColor, currentColor) center / 24% 100% no-repeat; }
+.hz-ch-bit { width: 22px; height: 12px; border-radius: 3px; }
 
 /* ---------- 엔진 UI 공통: 종이 패널 ---------- */
 #hz-ui {
@@ -882,12 +976,12 @@ body { font-family: var(--font); color: var(--fg); }
 
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v2.2 =====
+// ===== ENGINE v2.3 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·전체 화면·모션·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.2';
+const VERSION = '2.3';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -1270,7 +1364,7 @@ function finishAll() {
 const isCssAnim = a => ('animationName' in a) || ('transitionProperty' in a);
 
 /* 런타임으로 넣은 것(글자 나누기, 효과 요소, 상태 클래스)을 원래대로 */
-const RUNTIME_CLASSES = ['hz-pre', 'hz-gone', 'hz-struck', 'hz-fx-color', 'hz-fx-rel', 'hz-fx-host', 'hz-flipped', 'hz-correct', 'hz-wrong', 'hz-zoomed'];
+const RUNTIME_CLASSES = ['hz-pre', 'hz-gone', 'hz-struck', 'hz-fx-color', 'hz-fx-rel', 'hz-fx-host', 'hz-flipped', 'hz-correct', 'hz-wrong', 'hz-zoomed', 'hz-typing'];
 function unwrapIn(r) {
   const wraps = $$('[data-hz-wrap]', r).reverse();
   const parents = new Set();
@@ -1393,7 +1487,7 @@ const ENTER = {
   wipe: [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }]
 };
 const EASE_OF = { pop: EASE_BACK, drop: 'linear', wipe: EASE_IO, 'rotate-in': EASE_BACK };
-const DUR = { pop: 620, drop: 950, 'flip-in': 820, 'blur-in': 900, wipe: 900, 'split-words': 620, 'split-chars': 520, 'count-up': 1600, 'bar-grow': 950, draw: 1300, 'progress-ring': 1500, connect: 900, flow: 700, 'rotate-in': 800 };
+const DUR = { 'hz-chat': 520, pop: 620, drop: 950, 'flip-in': 820, 'blur-in': 900, wipe: 900, 'split-words': 620, 'split-chars': 520, 'count-up': 1600, 'bar-grow': 950, draw: 1300, 'progress-ring': 1500, connect: 900, flow: 700, 'rotate-in': 800 };
 
 const CUSTOM = {
   stagger(el, delay) {
@@ -1463,8 +1557,103 @@ const CUSTOM = {
     });
     return delay + dur;
   },
-  fallback(el, delay, dur) { anim(el, ENTER.fade, { duration: dur, delay, easing: EASE, fill: 'backwards' }); return delay + dur; }
+  fallback(el, delay, dur) { anim(el, ENTER.fade, { duration: dur, delay, easing: EASE, fill: 'backwards' }); return delay + dur; },
+  // 아래 둘은 위젯 전용(덱에서 data-anim으로 쓰는 이름이 아니다)
+  'hz-chat'(el, delay, dur) {
+    const o = el.dataset.from === 'ai' ? '0% 100%' : '100% 100%';
+    anim(el, [{ opacity: 0, transform: 'translateY(26px) scale(.8)', transformOrigin: o }, { opacity: 1, transform: 'none', transformOrigin: o }],
+      { duration: dur, delay, easing: EASE_BACK, fill: 'backwards' });
+    return delay + dur;
+  },
+  'hz-chapter': (el, delay) => chapterFx(el, delay)
 };
+
+/* ------------------------------------------------------------------ */
+/* 수업 위젯 (docs/PRINCIPLES.md §4.6). 모양은 engine.css, 여기서는 움직임만 */
+/* ------------------------------------------------------------------ */
+const isChatBubble = el => el.hasAttribute('data-from') && !!el.parentElement && el.parentElement.dataset.widget === 'chat';
+const isChapter = el => el.dataset.widget === 'chapter';
+/* chat: AI 답은 '입력 중' 점이 잠깐 보인 뒤 글이 나타난다 */
+function chatTyping(el, delay) {
+  const ms = T(900);
+  el.classList.add('hz-typing');
+  const dots = h('span', { class: 'hz-dots', 'data-hz-runtime': '' }, h('i'), h('i'), h('i'));
+  el.appendChild(dots);
+  later(delay + ms, () => { el.classList.remove('hz-typing'); dots.remove(); });
+  return delay + ms;
+}
+/* chapter: 색 띠가 휩쓸고 지나가며 화면이 열리고, 큰 번호·꼬리표가 튀어나오고,
+   제목 글자가 하나씩 떨어진 뒤 색종이 조각과 도형이 터진다 */
+function chapterFx(el, delay) {
+  const big = strength() === 'rich';
+  const slide = el.closest('.slide') || el.parentElement;
+  const bands = h('div', { class: 'hz-ch-bands', 'data-hz-runtime': '' });
+  ['var(--accent-2, #ffd34d)', 'var(--accent-ink, #fff)', 'var(--fg, #111)', 'var(--accent, #3b6cf6)', 'var(--bg, #fff)'].forEach((c, i) => {
+    const b = h('i', { style: 'background:' + c });
+    bands.appendChild(b);
+    anim(b, [{ transform: 'translateX(0) skewX(-14deg)' }, { transform: 'translateX(560%) skewX(-14deg)' }],
+      { duration: T(950), delay: delay + T(i * 70), easing: 'cubic-bezier(.7, 0, .25, 1)', fill: 'both' });
+  });
+  slide.appendChild(bands);
+  later(delay + T(1300), () => bands.remove());
+
+  const open = delay + T(260);
+  anim(el, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }], { duration: T(700), delay: open, easing: EASE_IO, fill: 'backwards' });
+  const numOp = getComputedStyle(el, '::before').opacity || '1';
+  anim(el, [{ opacity: 0, transform: 'translateY(180px) scale(.55) rotate(-10deg)' }, { opacity: numOp, transform: 'none' }],
+    { duration: T(950), delay: open + T(340), easing: EASE_BACK, fill: 'backwards', pseudoElement: '::before' });
+  anim(el, [{ opacity: 0, transform: 'translateY(-60px) scale(.6)' }, { opacity: 1, transform: 'none' }],
+    { duration: T(620), delay: open + T(420), easing: EASE_BACK, fill: 'backwards', pseudoElement: '::after' });
+
+  const kids = [...el.children].filter(c => !c.hasAttribute('data-hz-runtime'));
+  const title = kids.find(c => /^H[1-6]$/.test(c.tagName)) || kids[0];
+  let end = open + T(1000), burstAt = end;
+  if (title) {
+    const chars = splitText(title, 'c');
+    const gap = Math.min(55, 900 / Math.max(1, chars.length));
+    const t0 = open + T(520);
+    chars.forEach((c, i) => anim(c, [{ opacity: 0, transform: 'translateY(-1.1em) rotate(-14deg)' }, { opacity: 1, transform: 'none' }],
+      { duration: T(640), delay: t0 + T(i * gap), easing: EASE_BACK, fill: 'backwards' }));
+    burstAt = t0 + T(chars.length * gap * .6 + 200);
+    end = Math.max(end, t0 + T(chars.length * gap + 640));
+  }
+  kids.filter(c => c !== title).forEach((c, i) => {
+    const d = end - T(220) + T(i * 140);
+    anim(c, ENTER['fade-up'], { duration: T(620), delay: d, easing: EASE, fill: 'backwards' });
+    end = Math.max(end, d + T(620));
+  });
+
+  const fx = h('div', { class: 'hz-ch-fx', 'data-hz-runtime': '' });
+  el.appendChild(fx);
+  const ew = el.offsetWidth || W, eh = el.offsetHeight || H;
+  let ox = ew * .45, oy = eh * .5;
+  if (title && scale) {
+    const er = el.getBoundingClientRect(), tr = title.getBoundingClientRect();
+    if (tr.width) { ox = (tr.right - er.left) / scale; oy = (tr.top + tr.height / 2 - er.top) / scale; }
+  }
+  const cols = ['var(--accent-ink, #fff)', 'var(--accent-2, #ffd34d)', 'var(--fg, #111)', 'var(--bg, #fff)'];
+  const nBits = big ? 36 : 14;
+  for (let i = 0; i < nBits; i++) {
+    const a = (i / nBits) * Math.PI * 2 + rand(-.2, .2), dist = rand(260, big ? 760 : 460);
+    const bit = h('i', { class: 'hz-ch-bit', style: `left:${ox}px;top:${oy}px;background:${cols[i % cols.length]}` });
+    fx.appendChild(bit);
+    anim(bit, [
+      { opacity: 1, transform: 'translate(-50%, -50%) rotate(0deg) scale(.4)' },
+      { opacity: 1, transform: `translate(calc(-50% + ${Math.cos(a) * dist * .8}px), calc(-50% + ${Math.sin(a) * dist * .6}px)) rotate(${rand(180, 540)}deg) scale(1)`, offset: .7 },
+      { opacity: 0, transform: `translate(calc(-50% + ${Math.cos(a) * dist}px), calc(-50% + ${Math.sin(a) * dist * .75 + 120}px)) rotate(${rand(540, 900)}deg) scale(.9)` }
+    ], { duration: T(1500), delay: burstAt + T(i % 6 * 25), easing: 'cubic-bezier(.15, .7, .3, 1)', fill: 'both' });
+  }
+  const SH = [[.80, .14, 'ring', 150, 0], [.93, .40, 'dot', 56, 1], [.70, .80, 'plus', 92, 0], [.55, .10, 'dot', 34, 0], [.90, .80, 'ring', 96, 1], [.05, .12, 'plus', 64, 1], [.04, .84, 'ring', 120, 0]];
+  SH.slice(0, big ? SH.length : 4).forEach(([x, y, k, sz, ci], i) => {
+    const s = h('div', { class: 'hz-ch-shape hz-ch-' + k, style: `left:${x * ew - sz / 2}px;top:${y * eh - sz / 2}px;width:${sz}px;height:${sz}px;color:${ci ? 'var(--accent-2, #ffd34d)' : 'var(--accent-ink, #fff)'}` }, h('i'));
+    fx.appendChild(s);
+    anim(s.firstChild, [{ opacity: 0, transform: 'scale(0) rotate(-90deg)' }, { opacity: 1, transform: 'none' }],
+      { duration: T(700), delay: burstAt + T(i * 80), easing: EASE_BACK, fill: 'backwards' });
+    anim(s, [{ transform: 'translateY(0)' }, { transform: `translateY(${i % 2 ? -18 : 18}px)` }],
+      { duration: 3200 + i * 450, delay: burstAt + T(800), iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' });
+  });
+  return Math.max(end, burstAt + T(900));
+}
 function splitAnim(el, delay, dur, mode) {
   const parts = splitText(el, mode);
   const n = parts.length;
@@ -1509,7 +1698,8 @@ function drawShapes(el, delay, dur, o) {
 
 /* 등장 */
 function enter(el, name, extra = 0) {
-  name = name || el.dataset.anim || 'fade';
+  const chat = isChatBubble(el);
+  name = name || el.dataset.anim || (chat ? 'hz-chat' : isChapter(el) ? 'hz-chapter' : 'fade');
   const st = strength();
   const delay = T(num(el.dataset.delay)) + extra;
   const dur = T(num(el.dataset.duration, DUR[name] || 700));
@@ -1526,6 +1716,7 @@ function enter(el, name, extra = 0) {
     anim(el, ENTER[name] || ENTER.fade, { duration: dur, delay, easing: EASE_OF[name] || EASE, fill: 'backwards' });
     end = delay + dur;
   }
+  if (chat && el.dataset.from === 'ai' && (st === 'rich' || st === 'default')) end = Math.max(end, chatTyping(el, delay + T(120)));
   if (el.dataset.emphasis && el.dataset.emphasisStep == null) later(end + 60, () => emphasize(el));
   // 안쪽 요소의 강조(단계 없음)는 이 요소가 나타난 직후에
   $$('[data-emphasis]', el).forEach(d => {
@@ -1985,11 +2176,11 @@ function ensureIds() {
 }
 const newId = () => { let id; do { id = 's-' + Math.random().toString(36).slice(2, 8); } while (deck.querySelector(`[data-id="${id}"]`)); return id; };
 const hasStep = el => el.dataset.step != null && el.dataset.step !== '';
-const isEntrance = el => el.dataset.anim != null || hasStep(el);
+const isEntrance = el => el.dataset.anim != null || hasStep(el) || el.dataset.widget === 'chapter';
 const staggerChildAuto = el => { const p = el.parentElement; return !!p && p.dataset.anim === 'stagger' && !hasStep(el); };
 const stepVal = v => (v == null || v === '' ? NaN : parseFloat(v));
 function motionEls(slide) {
-  return $$('[data-anim],[data-step],[data-emphasis],[data-exit]', slide).filter(el => !el.closest('template,.notes,[data-hz-runtime]'));
+  return $$('[data-anim],[data-step],[data-emphasis],[data-exit],[data-widget="chapter"]', slide).filter(el => !el.closest('template,.notes,[data-hz-runtime]'));
 }
 function stepsOf(slide) {
   const set = new Set();

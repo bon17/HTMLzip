@@ -1,9 +1,9 @@
-// ===== ENGINE v2.2 =====
+// ===== ENGINE v2.3 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·전체 화면·모션·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.2';
+const VERSION = '2.3';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -386,7 +386,7 @@ function finishAll() {
 const isCssAnim = a => ('animationName' in a) || ('transitionProperty' in a);
 
 /* 런타임으로 넣은 것(글자 나누기, 효과 요소, 상태 클래스)을 원래대로 */
-const RUNTIME_CLASSES = ['hz-pre', 'hz-gone', 'hz-struck', 'hz-fx-color', 'hz-fx-rel', 'hz-fx-host', 'hz-flipped', 'hz-correct', 'hz-wrong', 'hz-zoomed'];
+const RUNTIME_CLASSES = ['hz-pre', 'hz-gone', 'hz-struck', 'hz-fx-color', 'hz-fx-rel', 'hz-fx-host', 'hz-flipped', 'hz-correct', 'hz-wrong', 'hz-zoomed', 'hz-typing'];
 function unwrapIn(r) {
   const wraps = $$('[data-hz-wrap]', r).reverse();
   const parents = new Set();
@@ -509,7 +509,7 @@ const ENTER = {
   wipe: [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }]
 };
 const EASE_OF = { pop: EASE_BACK, drop: 'linear', wipe: EASE_IO, 'rotate-in': EASE_BACK };
-const DUR = { pop: 620, drop: 950, 'flip-in': 820, 'blur-in': 900, wipe: 900, 'split-words': 620, 'split-chars': 520, 'count-up': 1600, 'bar-grow': 950, draw: 1300, 'progress-ring': 1500, connect: 900, flow: 700, 'rotate-in': 800 };
+const DUR = { 'hz-chat': 520, pop: 620, drop: 950, 'flip-in': 820, 'blur-in': 900, wipe: 900, 'split-words': 620, 'split-chars': 520, 'count-up': 1600, 'bar-grow': 950, draw: 1300, 'progress-ring': 1500, connect: 900, flow: 700, 'rotate-in': 800 };
 
 const CUSTOM = {
   stagger(el, delay) {
@@ -579,8 +579,103 @@ const CUSTOM = {
     });
     return delay + dur;
   },
-  fallback(el, delay, dur) { anim(el, ENTER.fade, { duration: dur, delay, easing: EASE, fill: 'backwards' }); return delay + dur; }
+  fallback(el, delay, dur) { anim(el, ENTER.fade, { duration: dur, delay, easing: EASE, fill: 'backwards' }); return delay + dur; },
+  // 아래 둘은 위젯 전용(덱에서 data-anim으로 쓰는 이름이 아니다)
+  'hz-chat'(el, delay, dur) {
+    const o = el.dataset.from === 'ai' ? '0% 100%' : '100% 100%';
+    anim(el, [{ opacity: 0, transform: 'translateY(26px) scale(.8)', transformOrigin: o }, { opacity: 1, transform: 'none', transformOrigin: o }],
+      { duration: dur, delay, easing: EASE_BACK, fill: 'backwards' });
+    return delay + dur;
+  },
+  'hz-chapter': (el, delay) => chapterFx(el, delay)
 };
+
+/* ------------------------------------------------------------------ */
+/* 수업 위젯 (docs/PRINCIPLES.md §4.6). 모양은 engine.css, 여기서는 움직임만 */
+/* ------------------------------------------------------------------ */
+const isChatBubble = el => el.hasAttribute('data-from') && !!el.parentElement && el.parentElement.dataset.widget === 'chat';
+const isChapter = el => el.dataset.widget === 'chapter';
+/* chat: AI 답은 '입력 중' 점이 잠깐 보인 뒤 글이 나타난다 */
+function chatTyping(el, delay) {
+  const ms = T(900);
+  el.classList.add('hz-typing');
+  const dots = h('span', { class: 'hz-dots', 'data-hz-runtime': '' }, h('i'), h('i'), h('i'));
+  el.appendChild(dots);
+  later(delay + ms, () => { el.classList.remove('hz-typing'); dots.remove(); });
+  return delay + ms;
+}
+/* chapter: 색 띠가 휩쓸고 지나가며 화면이 열리고, 큰 번호·꼬리표가 튀어나오고,
+   제목 글자가 하나씩 떨어진 뒤 색종이 조각과 도형이 터진다 */
+function chapterFx(el, delay) {
+  const big = strength() === 'rich';
+  const slide = el.closest('.slide') || el.parentElement;
+  const bands = h('div', { class: 'hz-ch-bands', 'data-hz-runtime': '' });
+  ['var(--accent-2, #ffd34d)', 'var(--accent-ink, #fff)', 'var(--fg, #111)', 'var(--accent, #3b6cf6)', 'var(--bg, #fff)'].forEach((c, i) => {
+    const b = h('i', { style: 'background:' + c });
+    bands.appendChild(b);
+    anim(b, [{ transform: 'translateX(0) skewX(-14deg)' }, { transform: 'translateX(560%) skewX(-14deg)' }],
+      { duration: T(950), delay: delay + T(i * 70), easing: 'cubic-bezier(.7, 0, .25, 1)', fill: 'both' });
+  });
+  slide.appendChild(bands);
+  later(delay + T(1300), () => bands.remove());
+
+  const open = delay + T(260);
+  anim(el, [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }], { duration: T(700), delay: open, easing: EASE_IO, fill: 'backwards' });
+  const numOp = getComputedStyle(el, '::before').opacity || '1';
+  anim(el, [{ opacity: 0, transform: 'translateY(180px) scale(.55) rotate(-10deg)' }, { opacity: numOp, transform: 'none' }],
+    { duration: T(950), delay: open + T(340), easing: EASE_BACK, fill: 'backwards', pseudoElement: '::before' });
+  anim(el, [{ opacity: 0, transform: 'translateY(-60px) scale(.6)' }, { opacity: 1, transform: 'none' }],
+    { duration: T(620), delay: open + T(420), easing: EASE_BACK, fill: 'backwards', pseudoElement: '::after' });
+
+  const kids = [...el.children].filter(c => !c.hasAttribute('data-hz-runtime'));
+  const title = kids.find(c => /^H[1-6]$/.test(c.tagName)) || kids[0];
+  let end = open + T(1000), burstAt = end;
+  if (title) {
+    const chars = splitText(title, 'c');
+    const gap = Math.min(55, 900 / Math.max(1, chars.length));
+    const t0 = open + T(520);
+    chars.forEach((c, i) => anim(c, [{ opacity: 0, transform: 'translateY(-1.1em) rotate(-14deg)' }, { opacity: 1, transform: 'none' }],
+      { duration: T(640), delay: t0 + T(i * gap), easing: EASE_BACK, fill: 'backwards' }));
+    burstAt = t0 + T(chars.length * gap * .6 + 200);
+    end = Math.max(end, t0 + T(chars.length * gap + 640));
+  }
+  kids.filter(c => c !== title).forEach((c, i) => {
+    const d = end - T(220) + T(i * 140);
+    anim(c, ENTER['fade-up'], { duration: T(620), delay: d, easing: EASE, fill: 'backwards' });
+    end = Math.max(end, d + T(620));
+  });
+
+  const fx = h('div', { class: 'hz-ch-fx', 'data-hz-runtime': '' });
+  el.appendChild(fx);
+  const ew = el.offsetWidth || W, eh = el.offsetHeight || H;
+  let ox = ew * .45, oy = eh * .5;
+  if (title && scale) {
+    const er = el.getBoundingClientRect(), tr = title.getBoundingClientRect();
+    if (tr.width) { ox = (tr.right - er.left) / scale; oy = (tr.top + tr.height / 2 - er.top) / scale; }
+  }
+  const cols = ['var(--accent-ink, #fff)', 'var(--accent-2, #ffd34d)', 'var(--fg, #111)', 'var(--bg, #fff)'];
+  const nBits = big ? 36 : 14;
+  for (let i = 0; i < nBits; i++) {
+    const a = (i / nBits) * Math.PI * 2 + rand(-.2, .2), dist = rand(260, big ? 760 : 460);
+    const bit = h('i', { class: 'hz-ch-bit', style: `left:${ox}px;top:${oy}px;background:${cols[i % cols.length]}` });
+    fx.appendChild(bit);
+    anim(bit, [
+      { opacity: 1, transform: 'translate(-50%, -50%) rotate(0deg) scale(.4)' },
+      { opacity: 1, transform: `translate(calc(-50% + ${Math.cos(a) * dist * .8}px), calc(-50% + ${Math.sin(a) * dist * .6}px)) rotate(${rand(180, 540)}deg) scale(1)`, offset: .7 },
+      { opacity: 0, transform: `translate(calc(-50% + ${Math.cos(a) * dist}px), calc(-50% + ${Math.sin(a) * dist * .75 + 120}px)) rotate(${rand(540, 900)}deg) scale(.9)` }
+    ], { duration: T(1500), delay: burstAt + T(i % 6 * 25), easing: 'cubic-bezier(.15, .7, .3, 1)', fill: 'both' });
+  }
+  const SH = [[.80, .14, 'ring', 150, 0], [.93, .40, 'dot', 56, 1], [.70, .80, 'plus', 92, 0], [.55, .10, 'dot', 34, 0], [.90, .80, 'ring', 96, 1], [.05, .12, 'plus', 64, 1], [.04, .84, 'ring', 120, 0]];
+  SH.slice(0, big ? SH.length : 4).forEach(([x, y, k, sz, ci], i) => {
+    const s = h('div', { class: 'hz-ch-shape hz-ch-' + k, style: `left:${x * ew - sz / 2}px;top:${y * eh - sz / 2}px;width:${sz}px;height:${sz}px;color:${ci ? 'var(--accent-2, #ffd34d)' : 'var(--accent-ink, #fff)'}` }, h('i'));
+    fx.appendChild(s);
+    anim(s.firstChild, [{ opacity: 0, transform: 'scale(0) rotate(-90deg)' }, { opacity: 1, transform: 'none' }],
+      { duration: T(700), delay: burstAt + T(i * 80), easing: EASE_BACK, fill: 'backwards' });
+    anim(s, [{ transform: 'translateY(0)' }, { transform: `translateY(${i % 2 ? -18 : 18}px)` }],
+      { duration: 3200 + i * 450, delay: burstAt + T(800), iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' });
+  });
+  return Math.max(end, burstAt + T(900));
+}
 function splitAnim(el, delay, dur, mode) {
   const parts = splitText(el, mode);
   const n = parts.length;
@@ -625,7 +720,8 @@ function drawShapes(el, delay, dur, o) {
 
 /* 등장 */
 function enter(el, name, extra = 0) {
-  name = name || el.dataset.anim || 'fade';
+  const chat = isChatBubble(el);
+  name = name || el.dataset.anim || (chat ? 'hz-chat' : isChapter(el) ? 'hz-chapter' : 'fade');
   const st = strength();
   const delay = T(num(el.dataset.delay)) + extra;
   const dur = T(num(el.dataset.duration, DUR[name] || 700));
@@ -642,6 +738,7 @@ function enter(el, name, extra = 0) {
     anim(el, ENTER[name] || ENTER.fade, { duration: dur, delay, easing: EASE_OF[name] || EASE, fill: 'backwards' });
     end = delay + dur;
   }
+  if (chat && el.dataset.from === 'ai' && (st === 'rich' || st === 'default')) end = Math.max(end, chatTyping(el, delay + T(120)));
   if (el.dataset.emphasis && el.dataset.emphasisStep == null) later(end + 60, () => emphasize(el));
   // 안쪽 요소의 강조(단계 없음)는 이 요소가 나타난 직후에
   $$('[data-emphasis]', el).forEach(d => {
@@ -1101,11 +1198,11 @@ function ensureIds() {
 }
 const newId = () => { let id; do { id = 's-' + Math.random().toString(36).slice(2, 8); } while (deck.querySelector(`[data-id="${id}"]`)); return id; };
 const hasStep = el => el.dataset.step != null && el.dataset.step !== '';
-const isEntrance = el => el.dataset.anim != null || hasStep(el);
+const isEntrance = el => el.dataset.anim != null || hasStep(el) || el.dataset.widget === 'chapter';
 const staggerChildAuto = el => { const p = el.parentElement; return !!p && p.dataset.anim === 'stagger' && !hasStep(el); };
 const stepVal = v => (v == null || v === '' ? NaN : parseFloat(v));
 function motionEls(slide) {
-  return $$('[data-anim],[data-step],[data-emphasis],[data-exit]', slide).filter(el => !el.closest('template,.notes,[data-hz-runtime]'));
+  return $$('[data-anim],[data-step],[data-emphasis],[data-exit],[data-widget="chapter"]', slide).filter(el => !el.closest('template,.notes,[data-hz-runtime]'));
 }
 function stepsOf(slide) {
   const set = new Set();

@@ -1,4 +1,4 @@
-/* ===== ENGINE v2.2 ===== */
+/* ===== ENGINE v2.3 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -107,11 +107,105 @@ html.hz-m-off [data-interact="flip"] > * { transition: none; }
 }
 .hz-hint {
   position: absolute; right: -14px; top: -18px; z-index: 7; padding: 6px 14px; border-radius: 99px;
-  background: #111; color: #fff; font: 700 20px/1.2 var(--hz-font); pointer-events: none;
+  background: #111; color: #fff; font-size: 28px; font-weight: 700; line-height: 1.2; pointer-events: none;
   animation: hz-bob 1.6s ease-in-out infinite;
 }
 html.hz-m-off [data-spot], html.hz-m-calm [data-spot],
 html.hz-m-off .hz-hint, html.hz-m-calm .hz-hint, html.hz-m-off .hz-caret { animation: none; }
+
+/* ---------- 수업 위젯 (§4.6) ----------
+   기본 모양은 덱 변수(--bg, --fg, --accent, --accent-2, 있으면 --surface)를 따른다.
+   모두 :where()로 감싸 특이도를 0으로 두었다. 덱 디자인에서 자유롭게 덮어쓴다.
+   모양은 CSS만으로 그려서 저장 파일·썸네일·인쇄에도 그대로 보이고, 엔진은 움직임만 더한다.
+   썸네일·점검(엔진 UI 안)과 무대에서 크기가 같도록 위젯 안쪽은 border-box로 고정한다. */
+[data-widget], [data-widget] *, [data-widget]::before, [data-widget]::after, [data-widget] *::before, [data-widget] *::after { box-sizing: border-box; }
+
+/* chat: AI 채팅 화면 모형. 말풍선(<p data-from="me|ai">)이 단계마다 나온다 */
+:where([data-widget="chat"]) {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
+  padding: 2.7em 1em 3.5em; overflow: hidden;
+  background: var(--surface, #fff); color: var(--fg, #111); border-radius: 1em;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg, #111) 12%, transparent), 0 .5em 1.4em rgba(0, 0, 0, .12);
+  line-height: 1.45;
+}
+:where([data-widget="chat"])::before {
+  content: "AI 채팅"; position: absolute; left: 0; right: 0; top: 0; height: 2.6em; padding: 0 1em 0 2.4em;
+  display: flex; align-items: center; font-size: .78em; font-weight: 700;
+  border-bottom: 2px solid color-mix(in srgb, var(--fg, #111) 10%, transparent);
+  background: radial-gradient(circle at 1.3em 50%, var(--accent, #3b6cf6) .34em, transparent .36em);
+}
+:where([data-widget="chat"][data-title])::before { content: attr(data-title); }
+:where([data-widget="chat"])::after {
+  content: "메시지를 입력하세요"; position: absolute; left: 1em; right: 1em; bottom: 1em; height: 2.6em;
+  display: flex; align-items: center; padding: 0 3.4em 0 1.2em; border-radius: 1.3em; font-size: .78em;
+  color: color-mix(in srgb, var(--fg, #111) 50%, transparent);
+  background:
+    radial-gradient(circle at calc(100% - 1.3em) 50%, var(--accent, #3b6cf6) .9em, transparent .93em),
+    color-mix(in srgb, var(--fg, #111) 5%, var(--surface, #fff));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--fg, #111) 10%, transparent);
+}
+:where([data-widget="chat"]) > :where([data-from]) {
+  position: relative; max-width: 84%; margin: 0; padding: .45em .8em; border-radius: .9em;
+  overflow-wrap: anywhere; word-break: keep-all; transition: color .25s;
+}
+:where([data-widget="chat"]) > :where([data-from="me"]) {
+  align-self: flex-end; background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff); border-bottom-right-radius: .25em;
+}
+:where([data-widget="chat"]) > :where([data-from="ai"]) {
+  background: color-mix(in srgb, var(--fg, #111) 7%, var(--surface, #fff)); border-bottom-left-radius: .25em;
+}
+/* 프로필 자리: 덱의 흔한 초기화(.slide p { margin: 0 })에 지지 않도록 이것만 특이도를 둔다 */
+[data-widget="chat"] > [data-from="ai"] { margin-left: 1.8em; }
+:where([data-widget="chat"]) > :where([data-from="ai"])::before {
+  content: "AI"; position: absolute; left: -3.3em; bottom: 0; width: 2.6em; height: 2.6em; border-radius: 50%;
+  display: grid; place-items: center; font-size: .52em; font-weight: 800; line-height: 1;
+  background: var(--fg, #111); color: var(--bg, #fff);
+}
+/* 파일·사진을 보낸 말풍선: 앞에 문서 아이콘 */
+:where([data-widget="chat"]) > :where([data-kind="doc"]) { padding-left: 2.2em; font-weight: 600; }
+:where([data-widget="chat"]) > :where([data-kind="doc"])::after {
+  content: ""; position: absolute; left: .75em; top: .58em; width: 1em; height: 1.2em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M3 1.5h9.5L18 7v15.5H3z'/%3E%3Cpath d='M12.5 1.5V7H18M6.5 12.5h8M6.5 17h8'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M3 1.5h9.5L18 7v15.5H3z'/%3E%3Cpath d='M12.5 1.5V7H18M6.5 12.5h8M6.5 17h8'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* AI 답: '입력 중' 점이 잠깐 보인 뒤 글이 나타난다 */
+:where([data-widget="chat"]) > .hz-typing { color: transparent !important; min-width: 3.4em; }
+:where([data-widget="chat"]) > .hz-typing > :not(.hz-dots), :where([data-widget="chat"]) > .hz-typing::after { visibility: hidden; }
+.hz-dots { position: absolute; left: .8em; top: .45em; height: 1.45em; display: flex; align-items: center; gap: .26em; }
+.hz-dots > i { width: .36em; height: .36em; border-radius: 50%; background: var(--fg, #111); animation: hz-dot 1s ease-in-out infinite; }
+.hz-dots > i:nth-child(2) { animation-delay: .15s; }
+.hz-dots > i:nth-child(3) { animation-delay: .3s; }
+@keyframes hz-dot { 0%, 60%, 100% { transform: none; opacity: .3; } 30% { transform: translateY(-.25em); opacity: .85; } }
+
+/* chapter: 섹션 시작 화면. data-num(큰 번호), data-part(꼬리표), 안에 제목과 부제 */
+:where([data-widget="chapter"]) {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 30px;
+  padding: 0 160px; overflow: hidden; isolation: isolate;
+  background: var(--accent, #3b6cf6); color: var(--accent-ink, #fff);
+  background-image:
+    radial-gradient(circle at 86% 18%, transparent 70px, color-mix(in srgb, var(--accent-ink, #fff) 30%, transparent) 72px 84px, transparent 86px),
+    radial-gradient(circle at 95% 64%, color-mix(in srgb, var(--accent-2, #ffd34d) 85%, transparent) 0 22px, transparent 24px);
+}
+:where([data-widget="chapter"])::before {
+  content: attr(data-num); position: absolute; right: 70px; bottom: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  font-size: 760px; font-weight: 900; line-height: .82; letter-spacing: -.05em; opacity: .16;
+}
+:where([data-widget="chapter"])::after {
+  content: attr(data-part); order: -1; padding: 10px 30px; border-radius: 99px;
+  background: var(--accent-ink, #fff); color: var(--accent, #3b6cf6); font-size: 34px; font-weight: 800; letter-spacing: .06em;
+}
+:where([data-widget="chapter"]:not([data-part]))::after { display: none; }
+:where([data-widget="chapter"]) > :where(h1, h2) { margin: 0; font-size: 132px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+:where([data-widget="chapter"]) > :where(p) { margin: 0; font-size: 46px; line-height: 1.4; opacity: .92; }
+.hz-ch-bands { position: absolute; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.hz-ch-bands > i { position: absolute; top: -10%; bottom: -10%; left: -32%; width: 24%; }
+.hz-ch-fx { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.hz-ch-fx > * { position: absolute; }
+.hz-ch-fx > .hz-ch-shape > i { display: block; width: 100%; height: 100%; box-sizing: border-box; }
+.hz-ch-ring > i { border: 11px solid currentColor; border-radius: 50%; }
+.hz-ch-dot > i { background: currentColor; border-radius: 50%; }
+.hz-ch-plus > i { background: linear-gradient(currentColor, currentColor) center / 100% 24% no-repeat, linear-gradient(currentColor, currentColor) center / 24% 100% no-repeat; }
+.hz-ch-bit { width: 22px; height: 12px; border-radius: 3px; }
 
 /* ---------- 엔진 UI 공통: 종이 패널 ---------- */
 #hz-ui {
