@@ -1,4 +1,4 @@
-/* ===== ENGINE v2.0 ===== */
+/* ===== ENGINE v2.1 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -299,6 +299,8 @@ html.hz-full.hz-reveal.hz-boarding .hz-boardbar.hz-chrome { display: flex !impor
 .hz-emoji-grid { display: grid; grid-template-columns: repeat(8, 36px); gap: 4px; }
 .hz-emoji-grid button { width: 36px; height: 36px; font-size: 22px; border: 0; background: transparent; border-radius: 8px; cursor: pointer; }
 .hz-emoji-grid button:hover { background: var(--hz-paper-2); }
+.hz-emoji-grid button { display: grid; place-items: center; padding: 0; color: var(--hz-ink); }
+.hz-emoji-grid + h4 { margin-top: 14px; }
 
 .hz-toast {
   position: fixed; z-index: 1100; top: 22px; left: 50%; transform: translate(-50%, -10px); opacity: 0;

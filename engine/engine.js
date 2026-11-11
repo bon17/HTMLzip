@@ -1,9 +1,9 @@
-// ===== ENGINE v2.0 =====
+// ===== ENGINE v2.1 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·전체 화면·모션·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.0';
+const VERSION = '2.1';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -2137,11 +2137,59 @@ async function insertImageFile(file, at) {
 }
 function replaceImage(img) { pickImage(async f => { try { const url = await readImage(f); commit(() => { img.src = url; }); } catch (e) { toast('이미지를 읽지 못했어요'); } }); }
 const EMOJIS = '✅ ❌ ⭐ 💡 🔥 🎯 📌 📝 📚 🧠 💻 🖥️ 📱 🧪 🔬 🌍 ☀️ 🌧️ ☁️ 💧 🌊 ❄️ 🌱 🚀 🎉 👍 👀 ❓ ❗ 🙌 😀 😮 🤔 😎 🏆 ⏰ 🔑 🧩 📈 💬'.split(' ');
+/* 넣을 수 있는 선 아이콘 (24×24, 상자의 글자색을 따름) */
+const LINE_ICONS = [
+  ['체크', '<path d="M5 12.5l4.5 4.5L19 7.5"/>'],
+  ['엑스', '<path d="M6 6l12 12M18 6L6 18"/>'],
+  ['별', '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>'],
+  ['전구', '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>'],
+  ['과녁', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'],
+  ['위치', '<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'],
+  ['책', '<path d="M4 5.5C6.5 4 9.5 4 12 5.5v14c-2.5-1.5-5.5-1.5-8 0zM20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/>'],
+  ['연필', '<path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5zM13.5 7l3 3"/>'],
+  ['노트북', '<rect x="4.5" y="5" width="15" height="10" rx="1.5"/><path d="M2.5 19h19"/>'],
+  ['휴대폰', '<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/>'],
+  ['코드', '<path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/>'],
+  ['반짝', '<path d="M10 3l1.7 4.8L16.5 9.5l-4.8 1.7L10 16l-1.7-4.8L3.5 9.5l4.8-1.7zM18.5 14l1.1 2.9 2.9 1.1-2.9 1.1-1.1 2.9-1.1-2.9-2.9-1.1 2.9-1.1z"/>'],
+  ['지구', '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.5 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.5-3.5-8.5s1-5.9 3.5-8.5z"/>'],
+  ['해', '<circle cx="12" cy="12" r="4"/><path d="M12 2.5V5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>'],
+  ['구름', '<path d="M7.5 18h9.5a3.75 3.75 0 0 0 .4-7.48A5.5 5.5 0 0 0 6.9 9.2 4.4 4.4 0 0 0 7.5 18z"/>'],
+  ['물방울', '<path d="M12 3.5s-6 6.6-6 11a6 6 0 0 0 12 0c0-4.4-6-11-6-11z"/>'],
+  ['새싹', '<path d="M12 21v-8M12 13c0-4 3-7 8-7 0 5-3 8-8 7zM12 15c0-3-2.5-5.5-7-5.5 0 4 2.5 6 7 5.5z"/>'],
+  ['깃발', '<path d="M5 21V4M5 4.5h11l-2 4 2 4H5"/>'],
+  ['물음표', '<circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 16.8v.2"/>'],
+  ['주의', '<path d="M12 4L2.8 19.5h18.4zM12 10v4.5M12 17.2v.2"/>'],
+  ['시계', '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'],
+  ['열쇠', '<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2.5 2.5M14 9l2 2"/>'],
+  ['자물쇠', '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5v-3a3.5 3.5 0 0 1 7 0v3"/>'],
+  ['그래프', '<path d="M4 20h16M7 20v-6M12 20V8M17 20v-9"/>'],
+  ['말풍선', '<path d="M6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4V16h0A2.5 2.5 0 0 1 4 13.5v-7A2.5 2.5 0 0 1 6.5 4z"/>'],
+  ['하트', '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>'],
+  ['사람', '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>'],
+  ['모둠', '<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M15.5 14.2a4.8 4.8 0 0 1 5 4.8"/>'],
+  ['돋보기', '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>'],
+  ['사진', '<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/>'],
+  ['트로피', '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9.5 17h5v3.5h-5z"/>'],
+  ['화살표', '<path d="M4 12h15M13 6l6 6-6 6"/>']
+];
+const emojiOff = () => deck.dataset.emoji === 'off';
 function openEmoji(anchor) {
   emojiPop.innerHTML = '';
-  const g = h('div', { class: 'hz-emoji-grid' });
-  EMOJIS.forEach(em => g.appendChild(h('button', { type: 'button', onclick: () => { closePops(); insertBox(`<div style="left:880px;top:450px;width:180px;font-size:130px;line-height:1.1;text-align:center">${em}</div>`); } }, em)));
-  emojiPop.append(h('h4', {}, '이모지 넣기'), g);
+  const ig = h('div', { class: 'hz-emoji-grid' });
+  LINE_ICONS.forEach(([name, d]) => {
+    const b = h('button', { type: 'button', title: name, 'aria-label': name, onclick: () => {
+      closePops();
+      insertBox(`<div style="left:870px;top:440px;width:180px;height:180px;color:var(--accent, #3b6cf6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${name}" style="display:block;width:100%;height:100%;overflow:visible">${d}</svg></div>`);
+    } });
+    b.innerHTML = `<svg class="hz-i" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+    ig.appendChild(b);
+  });
+  emojiPop.append(h('h4', {}, '선 아이콘 넣기'), ig);
+  if (!emojiOff()) {
+    const g = h('div', { class: 'hz-emoji-grid' });
+    EMOJIS.forEach(em => g.appendChild(h('button', { type: 'button', onclick: () => { closePops(); insertBox(`<div style="left:880px;top:450px;width:180px;font-size:130px;line-height:1.1;text-align:center">${em}</div>`); } }, em)));
+    emojiPop.append(h('h4', {}, '이모지 넣기'), g);
+  }
   closePops(); placePop(emojiPop, anchor);
 }
 function openLayoutMenu(anchor) {
@@ -2298,7 +2346,7 @@ Object.assign(SHORT, { 'e-dup': 'Ctrl+D', 'e-del': 'Delete', 'e-undo': 'Ctrl+Z',
 function buildEditBar() {
   editBar.innerHTML = '';
   editBar.append(btn('e-text', '텍스트', 'text'), btn('e-rect', '사각형', 'rect'), btn('e-circle', '원', 'circle'), btn('e-arrow', '화살표', 'arrow'),
-    btn('e-line', '선', 'line'), btn('e-image', '이미지', 'image'), btn('e-emoji', '이모지', 'smile'), sep(),
+    btn('e-line', '선', 'line'), btn('e-image', '이미지', 'image'), btn('e-emoji', emojiOff() ? '아이콘' : '이모지·아이콘', 'smile'), sep(),
     btn('e-dup', '복제', 'copy'), btn('e-del', '삭제', 'trash'), sep(), btn('e-front', '맨 앞으로', 'front'), btn('e-back', '맨 뒤로', 'back'), sep(),
     btn('e-undo', '되돌리기', 'undo'), btn('e-redo', '다시 하기', 'redo'), sep(), btn('e-preview', '미리보기', 'play'),
     h('span', { class: 'hz-grow' }), btn('e-save', '저장', 'save'), btn('e-done', '편집 끝', 'done'));
@@ -2578,14 +2626,15 @@ function runCheck() {
       if (maxc > 2) issues.push({ i, msg: `한 번에 움직이기 시작하는 요소가 ${maxc}개예요 (2개 이하 권장, data-delay로 나누세요)` });
     }
     const cnt = {};
-    motionEls(s).forEach(el => { if (el.dataset.anim) cnt[el.dataset.anim] = (cnt[el.dataset.anim] || 0) + 1; });
+    // 제목(h1, h2)은 덱 전체에서 같은 효과를 이어 써도 되므로 연속 규칙에서 뺀다 (§4.4)
+    motionEls(s).forEach(el => { if (el.dataset.anim && !el.closest('h1, h2')) cnt[el.dataset.anim] = (cnt[el.dataset.anim] || 0) + 1; });
     let dom = null, best = 0; for (const k in cnt) if (cnt[k] > best) { best = cnt[k]; dom = k; }
     dominant.push(dom);
   });
   meas.remove();
   let run = 1;
   for (let i = 1; i < dominant.length; i++) {
-    if (dominant[i] && dominant[i] === dominant[i - 1]) { run++; if (run === 4) issues.push({ i, msg: `같은 등장 효과(${dominant[i]})가 4장 연속이에요` }); }
+    if (dominant[i] && dominant[i] === dominant[i - 1]) { run++; if (run === 4) issues.push({ i, msg: `같은 등장 효과(${dominant[i]})가 4장 연속이에요 (제목 제외)` }); }
     else run = 1;
   }
   issues.sort((a, b) => a.i - b.i);
