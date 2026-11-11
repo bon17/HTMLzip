@@ -1,4 +1,4 @@
-/* ===== ENGINE v1.0 ===== */
+/* ===== ENGINE v1.1 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 툴바·패널·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -155,8 +155,9 @@ html.hz-pos-right .hz-main { left: auto; right: 12px; }
 html.hz-pos-left .hz-main .hz-sep, html.hz-pos-right .hz-main .hz-sep, .hz-quick .hz-sep { width: 34px; height: 1px; margin: 4px 0; }
 
 /* 우측 빠른 툴바 */
-.hz-quick { flex-direction: column; right: 12px; top: 50%; transform: translateY(-50%); max-height: calc(100vh - 24px); overflow-y: auto; }
+.hz-quick { flex-direction: column; right: 12px; top: 50%; transform: translateY(-50%); max-height: calc(100vh - 24px); overflow-y: auto; animation: hz-quick-in .2s ease-out; }
 html.hz-pos-right .hz-quick, html.hz-quick-off .hz-quick { display: none; }
+html.hz-pos-right .hz-handle-r, html.hz-collapsed .hz-handle-r { display: none; }
 
 /* 가장자리 핸들 */
 .hz-handle {
@@ -442,6 +443,7 @@ html.hz-previewing .hz-sel-layer { display: none; }
 }
 @keyframes hz-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @keyframes hz-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hz-quick-in { from { opacity: 0; translate: 24px 0; } to { opacity: 1; translate: 0 0; } }
 @keyframes hz-slide-up { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @keyframes hz-slide-down { from { opacity: 0; transform: translate(-50%, -16px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @keyframes hz-flash { 0%, 50%, 100% { outline: 0 solid transparent; } 25%, 75% { outline: calc(6px * var(--hz-inv, 1)) solid #facc15; } }

@@ -1,9 +1,9 @@
-// ===== ENGINE v1.0 =====
+// ===== ENGINE v1.1 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·전체 화면·모션·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '1.0';
+const VERSION = '1.1';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -57,9 +57,14 @@ const store = {
 };
 const REDUCE = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 const S = Object.assign({
-  strength: REDUCE ? 'calm' : 'default', speed: 1, pos: 'bottom', quick: true, pageInFull: true,
+  strength: REDUCE ? 'calm' : 'default', speed: 1, pos: 'bottom', quick: false, pageInFull: true,
   timerMin: 10, color: 0, width: 1, eraserMode: 'stroke', eraserSize: 1, theme: null, view: 'basic', collapsed: false
-}, store.get('settings', {}));
+}, (() => {
+  // v1.1부터 빠른 도구는 기본으로 접혀 있다: 예전 설정에 남은 값은 버린다
+  const saved = store.get('settings', {}) || {};
+  if (saved._v !== 2) { delete saved.quick; saved._v = 2; }
+  return saved;
+})());
 const saveSettings = () => store.set('settings', S);
 
 const COLORS = ['#ff3b30', '#ffcc00', '#34c759', '#0a84ff', '#ffffff', '#1c1c1e'];
@@ -243,7 +248,20 @@ function layout() {
   stageX = L + (aw - W * scale) / 2; stageY = T0 + (ah - H * scale) / 2;
   runtimeStyle.textContent = `:root{--hz-x:${stageX}px;--hz-y:${stageY}px;--hz-s:${scale};--hz-inv:${1 / scale};--hz-pcol:${pcol}px}`;
   sizeCanvases();
+  placeHandles();
   if (typeof renderSelBoxes === 'function') renderSelBoxes();
+}
+/* 가장자리 핸들: 펼치면 패널 옆에 붙고 화살표 방향이 바뀐다 */
+function placeHandles() {
+  const qOpen = S.quick && S.pos !== 'right' && !S.collapsed;
+  handleR.style.right = qOpen ? Math.round(quickBar.getBoundingClientRect().width + 12) + 'px' : '0px';
+  handleR.innerHTML = icon(qOpen ? 'next' : 'prev');
+  handleR.title = qOpen ? '빠른 도구 접기' : '빠른 도구 펼치기';
+  handleR.setAttribute('aria-expanded', String(qOpen));
+  const tOpen = root.classList.contains('hz-thumbs-open');
+  handleL.innerHTML = icon(tOpen ? 'prev' : 'next');
+  handleL.title = tOpen ? '슬라이드 목록 닫기' : '슬라이드 목록 열기';
+  handleL.setAttribute('aria-expanded', String(tOpen));
 }
 function toStage(e) { return { x: (e.clientX - stageX) / scale, y: (e.clientY - stageY) / scale }; }
 function stageRect(el) {
