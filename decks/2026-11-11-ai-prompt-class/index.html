@@ -410,7 +410,7 @@ html.hz-edit #hz-pageno{display:none}
   html.hz-ready #deck{position:static;width:1920px;height:auto}
   html.hz-ready #deck > .slide{display:block!important;position:relative!important;transform:none!important;opacity:1!important;clip-path:none!important;page-break-after:always;break-after:page;visibility:visible!important}
   html.hz-ready #deck > .slide[data-hidden]{display:none!important}
-  .hz-pending,.hz-exited{visibility:visible!important}
+  .hz-pending,.hz-exited,html.hz-motion-ready .hz-pending,html.hz-motion-ready .hz-exited{visibility:visible!important}
   .hz-locked{filter:none!important;opacity:1!important}
   .hz-lock,.hz-cover,.hz-hint,.hz-spotlight,.hz-zoom-dim,.hz-tip,.hz-amb-layer,canvas.hz-particles,.hz-chapter-fx{display:none!important}
   html.hz-ready [data-interact="flip"]{display:flex;gap:16px}
