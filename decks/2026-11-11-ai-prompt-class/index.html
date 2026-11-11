@@ -4064,7 +4064,10 @@ ol.steps li{margin:.35em 0}
       if (editing) Edit.stopText();
       finishAll(); restoreAll();
       var deckHTML = cleanHTML(deckEl);
-      var m = /<main\b[^>]*\bid=["']?deck["']?[^>]*>/i.exec(PRISTINE), a = m ? m.index : -1, b = PRISTINE.lastIndexOf('</main>');
+      // 덱 구역의 끝은 엔진 스크립트보다 앞에서 찾는다 (엔진 코드 안에도 같은 글자가 있어서)
+      var m = /<main\b[^>]*\bid=["']?deck["']?[^>]*>/i.exec(PRISTINE), a = m ? m.index : -1;
+      var sc = PRISTINE.indexOf('<script id="hz-engine-script"'), END = '</' + 'main>';
+      var b = sc > a ? PRISTINE.lastIndexOf(END, sc) : PRISTINE.indexOf(END, a);
       if (a < 0 || b < a) throw new Error('덱 구역(<main id="deck">)을 찾지 못했어요');
       return PRISTINE.slice(0, a) + deckHTML + PRISTINE.slice(b + 7);
     },
