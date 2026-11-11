@@ -8,9 +8,20 @@
   - 위젯 구조: 작성한 마크업은 그대로, 엔진이 붙인 겉모양은 `data-hz-runtime="w"`(저장 때 빠지고 인쇄에는 보임). 쉬는 상태는 '모든 단계가 끝난 모습', 앞으로 들어올 때 `init` → `play`.
   - 고친 것: 점검의 글자 넘침 오탐(줄 간격이 좁은 제목, 높이 없는 상자), SVG 상자 위치 점검, `#hz-ui button { color: inherit }`가 진한 버튼·눌린 타일의 흰 글자를 덮던 문제, 저장을 template 안에서 정리(영상·그림 파일을 다시 불러오지 않음), 화면 안 발표자 보기도 '다음 클릭' 단계를 보여 줌.
   - v1.0 버그 3개 확인: `</main>` 잘림은 main 엔진에 없음(DOM으로 저장), 인쇄 숨김은 main에 없음(`!important`), 점검 오탐은 main도 깨끗한 복사본으로 재고 있었음(대신 위 넘침 오탐을 고침).
-- **덱 옮기기 끝**: `decks/2026-11-11-ai-prompt-class/index.html`이 main 표기예요(디자인 구역 `hz-deck-design`, `--accent-2`, 위젯 4종, 뽑기 목록 script, 그림 자리 11곳). 표지 장식 원의 지연만 바꿨어요(동시에 움직이는 것 2개 규칙). 챕터 슬라이드 전환은 `wipe`.
+- **덱 옮기기 끝**: `decks/2026-12-24-ai-prompt-class/index.html`이 main 표기예요(디자인 구역 `hz-deck-design`, `--accent-2`, 위젯 4종, 뽑기 목록 script, 그림 자리 11곳). 표지 장식 원의 지연만 바꿨어요(동시에 움직이는 것 2개 규칙). 챕터 슬라이드 전환은 `wipe`.
 - **검증**: Playwright로 데스크톱 32항목·태블릿(1080×810 터치) 10항목 모두 통과, 점검은 그림 자리 11건만 남음, `sync-engine --check` 통과. 확인 못 한 것: 사파리·엣지, 실제 터치·펜 압력, 파일 직접 저장 창, 영상 재생(파일 없음), 소리를 귀로 듣기, 팝업이 막혔을 때 안내 창.
-- **다음 할 일**: (1) main에 합칠지 선생님 답 받기 → (2) 2단계 미션 슬라이드 구성안 확인받기(이 세션 마지막 답에 초안) → (3) 그림 넣기 → (4) 3단계 제출·투표.
+- **선생님 답 (같은 세션 뒤쪽)**
+  1. main에 합침. 단, 엔진 v2.3은 이 특강 덱에만: 시범 덱 2개는 v2.2로 되돌리고 `data-engine-lock`으로 고정(`sync-engine`이 건너뜀).
+  2. 미션 구성안은 좋다고 하심. ‘비교 보드·학생 결과 모아 보기 화면도 들어 있냐’고 물으셔서 답했어요(아래).
+  3. 실시간 제출·투표는 3단계에서.
+  4. 챕터 화면은 미션마다 넣기.
+  5. 2차 예시: 그림은 선생님이 제미나이로, 예시 글은 Claude가 초안.
+  6. 강의 날짜 2026-12-24 → 덱 폴더를 `decks/2026-12-24-ai-prompt-class/`로 바꾸고 표지 날짜도 고침(덱 id는 그대로).
+  7. 슬라이드 색은 그림 보고 정하라고 하심 → 장식 색만 그림 파스텔로 낮춤(표지 원, 칩, 주황·노랑 막대와 알약, 가리개). 글자색과 진한 바탕(남색 막대, 챕터 파랑·보라, 영상 남색)은 그대로.
+  8. `wip` 정리는 미션까지 다 옮긴 뒤.
+- **받은 그림 (덱 파일 안에 webp로 넣음)**: 표지(손 흔드는 로봇, 학생과 하이파이브 그림 대신), 8번 할루시네이션, 14번 로봇, 15번 왼쪽 고양이, 16번 재료 카드 7장(한 장짜리를 잘라 씀, 잠긴 카드는 흐린 흑백). 원본은 세션 임시 폴더에만 있었어요.
+- **아직 없는 그림 7장**: s04-search, s04-create, s09-doubt, s09-check, s09-safety, s11-prompter, s15-cat-detail(필수). 강의 전까지 선택 그림이 안 오면 그 자리는 선 아이콘으로 되돌려요.
+- **다음 할 일**: (1) 비교 보드 질문 답 받기 → 미션 슬라이드 만들기 → (2) 남은 그림 넣기 → (3) 3단계 제출·투표.
 
 ---
 
@@ -26,7 +37,7 @@
 
 ```bash
 git fetch origin claude/keen-ramanujan-tzzg8b
-git checkout origin/claude/keen-ramanujan-tzzg8b -- decks/2026-11-11-ai-prompt-class wip/ai-prompt-class/CLAUDE.md wip/ai-prompt-class/HANDOFF.md "wip/ai-prompt-class/docs/이미지_프롬프트.md"
+git checkout origin/claude/keen-ramanujan-tzzg8b -- decks/2026-12-24-ai-prompt-class wip/ai-prompt-class/CLAUDE.md wip/ai-prompt-class/HANDOFF.md "wip/ai-prompt-class/docs/이미지_프롬프트.md"
 ```
 
 엔진은 가져오지 말고 참고만 해요.
@@ -39,8 +50,8 @@ git show origin/claude/keen-ramanujan-tzzg8b:engine/engine.js > /tmp/engine-v1-r
 
 | 무엇 | 경로 | 상태 |
 |---|---|---|
-| 도입부 17장 덱 | `decks/2026-11-11-ai-prompt-class/index.html` | 내용·클릭 순서·발표자 노트 완성. **이 브랜치 엔진 v1.0 표기**로 써 있어서 main 표기로 옮겨야 해요. |
-| 영상 자리 | `decks/2026-11-11-ai-prompt-class/assets/README.md`, `.gitignore` | 영상 2개(`video1-macbook.mp4`, `video2-jeongwaja.mp4`)는 저장소에 없어요. |
+| 도입부 17장 덱 | `decks/2026-12-24-ai-prompt-class/index.html` | 내용·클릭 순서·발표자 노트 완성. **이 브랜치 엔진 v1.0 표기**로 써 있어서 main 표기로 옮겨야 해요. |
+| 영상 자리 | `decks/2026-12-24-ai-prompt-class/assets/README.md`, `.gitignore` | 영상 2개(`video1-macbook.mp4`, `video2-jeongwaja.mp4`)는 저장소에 없어요. |
 | 그림 프롬프트 | `wip/ai-prompt-class/docs/이미지_프롬프트.md` | **차분한 파스텔 플랫**으로 다시 썼어요(main에는 옛 원색 버전). |
 | 작업 안내 | `wip/ai-prompt-class/CLAUDE.md` | 옮기면서 정한 것, 선생님 피드백 |
 | 엔진 v1.0 | `engine/engine.js` | **참고용.** main 엔진 v2.2에 아직 없는 기능의 구현이 있어요(아래 3-1). |
