@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap">
 <style id="hz-engine-style">
-/* ===== ENGINE v2.5 ===== */
+/* ===== ENGINE v2.6 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -263,6 +263,9 @@ html.hz-m-off .hz-ac-caret { animation: none; }
 
 .hz-wi { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -.14em; }
 
+/* 그림 자리 (§6.3): 넣은 사진이 찌그러지지 않게 (특이도 0, 덱 디자인에서 바꿀 수 있다) */
+:where(img[data-placeholder]) { object-fit: cover; }
+
 /* 영상 파일이 없을 때 (§6.3) */
 .hz-video-missing {
   position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
@@ -489,6 +492,54 @@ html.hz-full.hz-reveal.hz-boarding .hz-boardbar.hz-chrome { display: flex !impor
 }
 .hz-toast.hz-show { opacity: 1; transform: translate(-50%, 0); }
 html.hz-editing .hz-toast { top: 76px; }
+
+/* 그림 넣기 창 (§6.3) */
+.hz-phbar {
+  position: fixed; z-index: 1050; left: 50%; bottom: 22px; transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 7px 7px 7px 18px; border-radius: 99px;
+  background: var(--hz-paper); color: var(--hz-ink); border: 2px solid var(--hz-ink); box-shadow: var(--hz-shadow);
+  font-size: 14px; font-weight: 800; transition: opacity .2s, transform .2s;
+}
+.hz-phbar.hz-show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.hz-phbar .hz-b { height: 36px; border-radius: 99px; }
+.hz-phbar .hz-x { width: 36px; height: 36px; border-radius: 50%; color: var(--hz-ink); }
+.hz-modal.hz-ph-modal { width: min(900px, 100%); display: flex; flex-direction: column; overflow: hidden; }
+.hz-ph-sum { font-weight: 700; }
+.hz-ph-list { display: grid; gap: 10px; flex: 1 1 auto; min-height: 0; overflow: auto; padding-right: 4px; overscroll-behavior: contain; }
+.hz-ph-row {
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 16px; align-items: start;
+  padding: 12px; border: 1px solid var(--hz-line); border-radius: 16px; background: var(--hz-paper);
+}
+.hz-ph-row.hz-done { background: var(--hz-paper-2); }
+.hz-ph-drop {
+  appearance: none; width: 190px; height: 128px; display: grid; place-content: center; justify-items: center; gap: 6px; padding: 8px;
+  border: 2px dashed #7d849c; border-radius: 12px; background: var(--hz-paper-2); color: var(--hz-sub);
+  font-size: 12.5px; font-weight: 800; line-height: 1.35; text-align: center; cursor: pointer; overflow: hidden;
+}
+.hz-ph-drop .hz-i { width: 30px; height: 30px; }
+.hz-ph-drop:hover, .hz-ph-drop.hz-over { border-color: var(--hz-accent); background: color-mix(in srgb, var(--hz-accent) 14%, var(--hz-paper)); color: var(--hz-ink); }
+.hz-ph-drop.hz-filled { padding: 0; border-style: solid; border-color: var(--hz-line); }
+.hz-ph-drop.hz-filled img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hz-ph-drop.hz-busy { opacity: .5; pointer-events: none; }
+.hz-modal .hz-ph-info p { margin: 0 0 6px; }
+.hz-modal .hz-ph-where { font: 700 12.5px/1.4 ui-monospace, Menlo, Consolas, monospace; color: var(--hz-sub); }
+.hz-modal .hz-ph-desc { font-size: 15px; font-weight: 800; line-height: 1.45; }
+.hz-modal .hz-ph-terms { font-size: 13.5px; color: var(--hz-sub); }
+.hz-ph-links { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
+.hz-ph-links a {
+  font-size: 13px; font-weight: 800; color: var(--hz-ink); text-decoration: none; padding: 6px 12px;
+  border-radius: 99px; border: 1px solid var(--hz-line); background: var(--hz-paper-2);
+}
+.hz-ph-links a:hover { background: var(--hz-paper-3); }
+.hz-ph-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hz-ph-acts .hz-b { height: 34px; padding: 0 14px; font-size: 13px; background: var(--hz-paper); border: 1px solid var(--hz-line); }
+.hz-ph-acts .hz-b:hover { background: var(--hz-paper-3); }
+.hz-modal .hz-ph-note { margin: 14px 0 0; font-size: 13px; color: var(--hz-sub); }
+@media (max-width: 640px) {
+  .hz-ph-row { grid-template-columns: minmax(0, 1fr); }
+  .hz-ph-drop { width: 100%; }
+  .hz-phbar { font-size: 13px; }
+}
 
 .hz-timer {
   position: fixed; z-index: 32; top: 16px; right: 16px; display: none; align-items: center; gap: 2px;
@@ -1224,12 +1275,12 @@ ol.steps li{margin:.35em 0}
 
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v2.5 =====
-// HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·저장·점검
+// ===== ENGINE v2.6 =====
+// HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.5';
+const VERSION = '2.6';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -1403,7 +1454,7 @@ const ictx = inkC.getContext('2d'), lctx = liveC.getContext('2d'), zctx = laserC
 const SHORT = {
   prev: '←', next: '→', hand: 'V', pen: 'P', hl: 'H', eraser: 'E', laser: 'L', color: 'C', undo: 'Ctrl+Z', redo: 'Ctrl+Shift+Z',
   clear: 'X', clearAll: 'Shift+X', board: 'B', edit: 'Shift+E', timer: 'T', celebrate: 'G', toc: 'O', full: 'F', help: '?',
-  pick: 'R', blank: '. 검은 화면 · , 흰 화면', pwin: 'S', sound: 'M'
+  pick: 'R', blank: '. 검은 화면 · , 흰 화면', pwin: 'S', sound: 'M', photos: 'I'
 };
 const tip = (cmd, label) => label + (SHORT[cmd] ? ` (${SHORT[cmd]})` : '');
 /* 편집 도구 막대 버튼 (아이콘 + 이름) */
@@ -1453,7 +1504,7 @@ drMenu.append(
     tile('timer', '타이머', 'timer'), tile('pick', '뽑기', 'dice'), tile('celebrate', '축하', 'party'),
     tile('view', '발표자 보기', 'view'), tile('pwin', '발표자 창', 'pwin'), tile('full', '전체 화면', 'full')),
   section('필기', tile('clear', '이 장 지우기', 'trash'), tile('clearAll', '전체 지우기', 'trashAll'), tile('redo', '다시 하기', 'redo')),
-  section('만들기', tile('edit', '편집', 'edit'), ...(checkHidden() ? [] : [tile('check', '점검', 'check')]), tile('settings', '설정', 'settings'), tile('help', '단축키', 'help')));
+  section('만들기', tile('edit', '편집', 'edit'), tile('photos', '그림 넣기', 'image'), ...(checkHidden() ? [] : [tile('check', '점검', 'check')]), tile('settings', '설정', 'settings'), tile('help', '단축키', 'help')));
 
 const boardBar = h('div', { class: 'hz-boardbar hz-chrome' });
 const timerEl = h('div', { class: 'hz-timer' });
@@ -1466,9 +1517,10 @@ const editBar = h('div', { class: 'hz-editbar' });
 const propsPanel = h('aside', { class: 'hz-props' });
 const confettiC = h('canvas', { class: 'hz-confetti' });
 const blankEl = h('div', { class: 'hz-blank', title: '누르면 돌아와요' });
+const phBar = h('div', { class: 'hz-phbar hz-chrome', role: 'status' });
 
 ui.append(overlay, navPrev, navNext, caseBar, caseMini, menuBtn, boardBar, timerEl, drawer,
-  presenterCol, editBar, propsPanel, colorPop, emojiPop, confettiC, blankEl, toastEl, modalWrap);
+  presenterCol, editBar, propsPanel, colorPop, emojiPop, confettiC, blankEl, phBar, toastEl, modalWrap);
 doc.body.appendChild(ui);
 root.classList.add('hz-on');
 
@@ -3261,7 +3313,7 @@ function openHelp() {
     rows([[K('→ Space PageDown'), '다음 (단계 → 슬라이드)'], [K('← PageUp'), '이전'], [K('Home End'), '처음 / 끝'], ['숫자 + ' + K('Enter'), '번호로 이동'],
       [K('O'), '목차'], [K('F'), '전체 화면'], [K('B'), '슬라이드 ↔ 칠판'], [K('T'), '타이머'], [K('R'), '랜덤 뽑기 (Space·Enter: 다시 뽑기)'],
       [K('.') + ' / ' + K(','), '검은 화면 / 흰 화면 (한 번 더: 돌아오기)'], [K('G'), '축하 효과'], [K('M'), '효과음 켜기·끄기 (타이머·뽑기에만)'],
-      [K('S'), '발표자 창 (새 창에 다음 슬라이드·노트·타이머)'], [K('?'), '이 도움말']]),
+      [K('S'), '발표자 창 (새 창에 다음 슬라이드·노트·타이머)'], [K('I'), '그림 넣기 (그림 자리에 사진 넣기)'], [K('?'), '이 도움말']]),
     h('h3', {}, '필기'),
     rows([[K('V') + ' 또는 ' + K('Esc'), '손'], [K('P'), '펜'], [K('H'), '형광펜'], [K('E'), '지우개 (한 번 더: 획 ↔ 부분)'], [K('L'), '레이저'], [K('C'), '펜 색 바꾸기'],
       [K('Ctrl+Z'), '되돌리기'], [K('Ctrl+Shift+Z'), '다시 하기'], [K('X'), '이 장 지우기'], [K('Shift+X'), '전체 지우기']]),
@@ -3740,6 +3792,8 @@ function updateChrome() {
     b.classList.toggle('hz-warn', checkCount > 0);
     const l = $('.hz-lbl', b); if (l) l.textContent = checkCount > 0 ? `점검 ${checkCount}` : '점검';
   });
+  const phN = phEmptyCount();
+  $$('[data-cmd="photos"] .hz-lbl', ui).forEach(l => { l.textContent = phN ? `그림 넣기 ${phN}` : '그림 넣기'; });
   const showIssue = checkCount > 0 && !checkHidden();
   menuBtn.classList.toggle('hz-has-issue', showIssue);
   menuBtn.title = showIssue ? `메뉴 · 점검할 문제 ${checkCount}개` : '메뉴 (도구·슬라이드·설정)';
@@ -3760,7 +3814,8 @@ function cleanTree(r, keepPh = false) {
       if (o) el.setAttribute('src', o); else el.removeAttribute('src');
     }
     if (el.classList && el.classList.length) {
-      [...el.classList].forEach(c => { if (c.startsWith('hz-') && !(el.tagName === 'TEMPLATE' && c === 'hz-layout')) el.classList.remove(c); });
+      // 덱이 직접 쓰는 hz- 클래스(레이아웃 template, 뽑기 목록 script)는 남긴다
+      [...el.classList].forEach(c => { if (c.startsWith('hz-') && !(el.tagName === 'TEMPLATE' && c === 'hz-layout') && !(el.tagName === 'SCRIPT' && c === 'hz-picker')) el.classList.remove(c); });
       if (!el.classList.length) el.removeAttribute('class');
     }
     if (el.hasAttribute('contenteditable')) el.removeAttribute('contenteditable');
@@ -4079,6 +4134,106 @@ async function insertImageFile(file, at) {
   } catch (e) { toast('이미지를 읽지 못했어요'); }
 }
 function replaceImage(img) { pickImage(async f => { try { const url = await readImage(f); commit(() => { img.removeAttribute('data-hz-src'); img.src = url; }); } catch (e) { toast('이미지를 읽지 못했어요'); } }); }
+/* 그림 넣기 창 (§6.3): 덱의 그림 자리를 한 창에 모아 사진을 넣는다. 편집 모드가 아니어도 된다 */
+function phSlots() { return slides.flatMap((s, i) => $$('img[data-placeholder]', s).map(img => ({ img, i, s }))); }
+function phEmpty(img) { return !img.getAttribute('src') || isPhSrc(img.getAttribute('src')); }
+function phEmptyCount() { return phSlots().filter(x => phEmpty(x.img)).length; }
+// 그림 상자 크기의 두 배(긴 변 최대 1920px)로 줄인다. 투명한 부분이 없으면 JPEG로 바꿔 파일을 가볍게 한다
+async function readImageFit(file, bw, bh) {
+  const url = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); });
+  if (/svg|gif/.test(file.type)) return url;
+  const img = await loadImg(url);
+  const nw = img.naturalWidth, nh = img.naturalHeight;
+  const tw = Math.max(bw || 960, 160) * 2, th = Math.max(bh || 540, 160) * 2;
+  const k = Math.min(1, Math.max(tw / nw, th / nh), 1920 / Math.max(nw, nh));
+  if (k >= 1 && file.size < 900 * 1024) return url;
+  const c = doc.createElement('canvas'); c.width = Math.max(1, Math.round(nw * k)); c.height = Math.max(1, Math.round(nh * k));
+  const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, c.width, c.height);
+  let alpha = false;
+  if (file.type === 'image/png') {
+    const t = doc.createElement('canvas'); t.width = t.height = 48; const tg = t.getContext('2d'); tg.drawImage(c, 0, 0, 48, 48);
+    const d = tg.getImageData(0, 0, 48, 48).data; for (let i = 3; i < d.length; i += 4) if (d[i] < 250) { alpha = true; break; }
+  }
+  return alpha ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85);
+}
+function setPhoto(img, url) {
+  const before = snap();
+  if (img.__hzOrig == null) img.__hzOrig = img.getAttribute('data-hz-src') || '';
+  img.removeAttribute('data-hz-src'); img.setAttribute('src', url);
+  changed(before); if (editing) { renderSelBoxes(); renderProps(); }
+}
+function clearPhoto(img) {
+  const before = snap(), orig = img.__hzOrig || '';
+  img.setAttribute('data-hz-src', orig); img.setAttribute('src', phSvg(img, orig));
+  changed(before); if (editing) { renderSelBoxes(); renderProps(); }
+}
+function phRow(img, i, s, render) {
+  const empty = phEmpty(img);
+  const terms = (img.dataset.search || '').split('|').map(t => t.trim()).filter(Boolean);
+  const link = (href, t) => h('a', { href, target: '_blank', rel: 'noopener' }, t);
+  const links = h('div', { class: 'hz-ph-links' },
+    terms.map(t => link('https://commons.wikimedia.org/w/index.php?title=Special:MediaSearch&type=image&search=' + encodeURIComponent(t), '위키미디어 공용 · ' + t)),
+    terms.length ? link('https://ko.wikipedia.org/w/index.php?search=' + encodeURIComponent(terms[0]), '위키백과 · ' + terms[0]) : null);
+  const drop = h('button', { class: 'hz-ph-drop' + (empty ? '' : ' hz-filled'), type: 'button', title: '사진을 끌어다 놓거나 눌러서 고르기', 'aria-label': `${i + 1}번 슬라이드 그림 넣기` });
+  if (empty) drop.innerHTML = icon('image') + '<span>사진을 끌어다 놓거나<br>눌러서 고르기</span>';
+  else drop.appendChild(h('img', { src: img.getAttribute('src'), alt: '' }));
+  const put = async f => {
+    if (!f || !/^image\//.test(f.type)) { toast('사진 파일만 넣을 수 있어요'); return; }
+    drop.classList.add('hz-busy');
+    try { setPhoto(img, await readImageFit(f, pxOf(img, 'width'), pxOf(img, 'height'))); toast(`${i + 1}번 슬라이드에 사진을 넣었어요`); }
+    catch (e) { toast('사진을 읽지 못했어요'); }
+    render();
+  };
+  drop.addEventListener('click', () => pickImage(put));
+  drop.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('hz-over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('hz-over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); e.stopPropagation(); drop.classList.remove('hz-over');
+    const f = e.dataTransfer && [...e.dataTransfer.files].find(x => /^image\//.test(x.type)); put(f);
+  });
+  return h('div', { class: 'hz-ph-row' + (empty ? '' : ' hz-done') }, drop,
+    h('div', { class: 'hz-ph-info' },
+      h('p', { class: 'hz-ph-where' }, `${i + 1}번 · ${s.dataset.title || ''}` + (empty ? '' : ' · 넣음')),
+      h('p', { class: 'hz-ph-desc' }, img.dataset.placeholder || img.getAttribute('alt') || '그림'),
+      terms.length ? h('p', { class: 'hz-ph-terms' }, '검색어: ' + terms.join(' · ')) : null,
+      terms.length ? links : null,
+      h('div', { class: 'hz-ph-acts' },
+        h('button', { class: 'hz-b', type: 'button', onclick: () => { closeModal(); go(i, { final: true, force: true, instant: true }); } }, '이 장 보기'),
+        empty ? null : h('button', { class: 'hz-b', type: 'button', onclick: () => { clearPhoto(img); render(); } }, '빼기'))));
+}
+function openPhotos() {
+  if (IS_PW) return;
+  if (editingText) stopTextEdit();
+  hidePhBar(); if (!editing) closeDrawer();
+  const sum = h('p', { class: 'hz-ph-sum' });
+  const list = h('div', { class: 'hz-ph-list' });
+  const render = () => {
+    const slots = phSlots(), empty = slots.filter(x => phEmpty(x.img)).length;
+    sum.textContent = !slots.length ? '이 덱에는 그림 자리가 없어요. 그림은 편집 모드(Shift+E)에서 넣을 수 있어요.'
+      : empty ? `그림 자리 ${slots.length}곳 중 ${empty}곳이 비어 있어요. 칸마다 사진을 끌어다 놓거나 눌러서 골라요.`
+        : `그림 자리 ${slots.length}곳을 모두 채웠어요. 저장해야 파일에 남아요.`;
+    list.textContent = '';
+    slots.forEach(({ img, i, s }) => list.appendChild(phRow(img, i, s, render)));
+    updateChrome();
+  };
+  render();
+  openModal('그림 넣기', [sum, list,
+    h('p', { class: 'hz-ph-note' }, '교과서 사진은 우리 수업 안에서만 써요. 위키미디어 사진은 라이선스(퍼블릭 도메인·CC)를 확인하고 출처를 발표자 노트에 적어요. 사진은 그림 상자에 맞게 줄여 파일 안에 넣어요.')],
+  [h('button', { class: 'hz-b', type: 'button', onclick: () => closeModal() }, '닫기'),
+    h('button', { class: 'hz-b hz-primary', type: 'button', onclick: () => save() }, '저장 (Ctrl+S)')], 'hz-ph-modal');
+}
+let phBarT = 0;
+function hidePhBar() { clearTimeout(phBarT); phBar.classList.remove('hz-show'); }
+function showPhBar() {
+  const n = phEmptyCount();
+  if (!n || IS_PW || editing) return;
+  phBar.textContent = '';
+  phBar.append(h('span', {}, `그림 자리 ${n}곳이 비어 있어요`),
+    h('button', { class: 'hz-b hz-primary', type: 'button', onclick: () => openPhotos() }, '그림 넣기'),
+    h('button', { class: 'hz-x', type: 'button', 'aria-label': '닫기', title: '닫기', html: icon('x'), onclick: hidePhBar }));
+  phBar.classList.add('hz-show');
+  clearTimeout(phBarT); phBarT = setTimeout(hidePhBar, 9000);
+}
 const EMOJIS = '✅ ❌ ⭐ 💡 🔥 🎯 📌 📝 📚 🧠 💻 🖥️ 📱 🧪 🔬 🌍 ☀️ 🌧️ ☁️ 💧 🌊 ❄️ 🌱 🚀 🎉 👍 👀 ❓ ❗ 🙌 😀 😮 🤔 😎 🏆 ⏰ 🔑 🧩 📈 💬'.split(' ');
 /* 넣을 수 있는 선 아이콘 (24×24, 상자의 글자색을 따름) */
 const LINE_ICONS = [
@@ -4661,7 +4816,7 @@ const CMD = {
   undo: () => (editing ? editUndo() : inkUndoAct()), redo: () => (editing ? editRedo() : inkRedoAct()),
   clear: clearSurface, clearAll: clearAllInk, board: () => setBoard(!boardMode), view: toggleView, check: openCheck, edit: () => toggleEdit(),
   timer: toggleTimer, celebrate: () => celebrate('confetti', true), toc: openToc, full: () => toggleFull(), settings: openSettings, help: openHelp,
-  pick: openPicker, blank: () => setBlank('black'), pwin: openPW, sound: toggleSound,
+  pick: openPicker, blank: () => setBlank('black'), pwin: openPW, sound: toggleSound, photos: () => openPhotos(),
   menu: () => (drawerOpen() ? closeDrawer() : openDrawer('menu')), closeMenu: () => closeDrawer(),
   fold: () => setCaseFolded(true), unfold: () => setCaseFolded(false),
   'e-text': () => insertBox(SHAPES.text, true), 'e-rect': () => insertBox(SHAPES.rect), 'e-circle': () => insertBox(SHAPES.circle),
@@ -4782,9 +4937,18 @@ doc.addEventListener('paste', e => {
     commit(() => slides[cur].appendChild(el)); selectEls([el]);
   }
 });
-window.addEventListener('dragover', e => { if (editing && e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
+const hasFiles = e => !!(e.dataTransfer && [...e.dataTransfer.types].includes('Files'));
+window.addEventListener('dragover', e => { if (hasFiles(e) && (editing || modalOpen() || phSlots().length)) e.preventDefault(); });
 window.addEventListener('drop', e => {
-  if (!editing || !e.dataTransfer || !e.dataTransfer.files.length) return;
+  if (!e.dataTransfer || !e.dataTransfer.files.length) return;
+  // 편집이 아닐 때 사진을 화면에 놓으면 그림 넣기 창으로 안내한다 (브라우저가 사진을 열지 않게)
+  if (!editing) {
+    if (!modalOpen() && !phSlots().length) return;
+    e.preventDefault();
+    if (!modalOpen()) openPhotos();
+    toast('사진을 넣을 칸 위에 놓아 주세요', 2000);
+    return;
+  }
   e.preventDefault();
   const f = [...e.dataTransfer.files].find(x => x.type.startsWith('image/'));
   if (f) insertImageFile(f, toStage(e));
@@ -4884,6 +5048,7 @@ window.addEventListener('keydown', e => {
       case 'KeyR': openPicker(); break;
       case 'KeyS': openPW(); break;
       case 'KeyM': toggleSound(); break;
+      case 'KeyI': openPhotos(); break;
       case 'Period': if (e.shiftKey) handled = false; else setBlank('black'); break;
       case 'Comma': if (e.shiftKey) handled = false; else setBlank('white'); break;
       case 'Slash': if (e.shiftKey) openHelp(); else handled = false; break;
@@ -4917,6 +5082,7 @@ else {
   window.addEventListener('pagehide', () => { if (pwOpen()) { try { PW.win.postMessage({ hz: 'state-bye', deckId: DECK_ID }, '*'); } catch (e) { /* 무시 */ } } });
   if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => { layout(); runCheckSoon(); });
   window.addEventListener('load', runCheckSoon);
+  setTimeout(showPhBar, 1200);
   runCheckSoon();
   {
     const draft = store.get('draft', null);
@@ -4934,7 +5100,7 @@ else {
 /* 확인·테스트용 공개 API */
 window.HTMLzip = {
   version: VERSION, go: (n, o) => go(n, o), next, prev, save, serialize, check: runCheck, setTool, toggleEdit, toggleFull, replay,
-  picker: openPicker, pick: pkSpin, blank: setBlank, presenterWindow: openPW, sound: toggleSound, presenter: IS_PW,
+  picker: openPicker, pick: pkSpin, blank: setBlank, presenterWindow: openPW, sound: toggleSound, presenter: IS_PW, photos: openPhotos,
   state: () => ({ cur, stepIdx, steps: steps.length, slides: slides.length, editing, tool, boardMode, full: root.classList.contains('hz-full'), dirty, scale,
     blank: blankMode, sound: S.sound !== false, picking: !!PK.ui, pwOpen: pwOpen() })
 };

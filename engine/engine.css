@@ -1,4 +1,4 @@
-/* ===== ENGINE v2.5 ===== */
+/* ===== ENGINE v2.6 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -253,6 +253,9 @@ html.hz-m-off .hz-ac-caret { animation: none; }
 
 .hz-wi { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -.14em; }
 
+/* 그림 자리 (§6.3): 넣은 사진이 찌그러지지 않게 (특이도 0, 덱 디자인에서 바꿀 수 있다) */
+:where(img[data-placeholder]) { object-fit: cover; }
+
 /* 영상 파일이 없을 때 (§6.3) */
 .hz-video-missing {
   position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
@@ -479,6 +482,54 @@ html.hz-full.hz-reveal.hz-boarding .hz-boardbar.hz-chrome { display: flex !impor
 }
 .hz-toast.hz-show { opacity: 1; transform: translate(-50%, 0); }
 html.hz-editing .hz-toast { top: 76px; }
+
+/* 그림 넣기 창 (§6.3) */
+.hz-phbar {
+  position: fixed; z-index: 1050; left: 50%; bottom: 22px; transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 7px 7px 7px 18px; border-radius: 99px;
+  background: var(--hz-paper); color: var(--hz-ink); border: 2px solid var(--hz-ink); box-shadow: var(--hz-shadow);
+  font-size: 14px; font-weight: 800; transition: opacity .2s, transform .2s;
+}
+.hz-phbar.hz-show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.hz-phbar .hz-b { height: 36px; border-radius: 99px; }
+.hz-phbar .hz-x { width: 36px; height: 36px; border-radius: 50%; color: var(--hz-ink); }
+.hz-modal.hz-ph-modal { width: min(900px, 100%); display: flex; flex-direction: column; overflow: hidden; }
+.hz-ph-sum { font-weight: 700; }
+.hz-ph-list { display: grid; gap: 10px; flex: 1 1 auto; min-height: 0; overflow: auto; padding-right: 4px; overscroll-behavior: contain; }
+.hz-ph-row {
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 16px; align-items: start;
+  padding: 12px; border: 1px solid var(--hz-line); border-radius: 16px; background: var(--hz-paper);
+}
+.hz-ph-row.hz-done { background: var(--hz-paper-2); }
+.hz-ph-drop {
+  appearance: none; width: 190px; height: 128px; display: grid; place-content: center; justify-items: center; gap: 6px; padding: 8px;
+  border: 2px dashed #7d849c; border-radius: 12px; background: var(--hz-paper-2); color: var(--hz-sub);
+  font-size: 12.5px; font-weight: 800; line-height: 1.35; text-align: center; cursor: pointer; overflow: hidden;
+}
+.hz-ph-drop .hz-i { width: 30px; height: 30px; }
+.hz-ph-drop:hover, .hz-ph-drop.hz-over { border-color: var(--hz-accent); background: color-mix(in srgb, var(--hz-accent) 14%, var(--hz-paper)); color: var(--hz-ink); }
+.hz-ph-drop.hz-filled { padding: 0; border-style: solid; border-color: var(--hz-line); }
+.hz-ph-drop.hz-filled img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hz-ph-drop.hz-busy { opacity: .5; pointer-events: none; }
+.hz-modal .hz-ph-info p { margin: 0 0 6px; }
+.hz-modal .hz-ph-where { font: 700 12.5px/1.4 ui-monospace, Menlo, Consolas, monospace; color: var(--hz-sub); }
+.hz-modal .hz-ph-desc { font-size: 15px; font-weight: 800; line-height: 1.45; }
+.hz-modal .hz-ph-terms { font-size: 13.5px; color: var(--hz-sub); }
+.hz-ph-links { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
+.hz-ph-links a {
+  font-size: 13px; font-weight: 800; color: var(--hz-ink); text-decoration: none; padding: 6px 12px;
+  border-radius: 99px; border: 1px solid var(--hz-line); background: var(--hz-paper-2);
+}
+.hz-ph-links a:hover { background: var(--hz-paper-3); }
+.hz-ph-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hz-ph-acts .hz-b { height: 34px; padding: 0 14px; font-size: 13px; background: var(--hz-paper); border: 1px solid var(--hz-line); }
+.hz-ph-acts .hz-b:hover { background: var(--hz-paper-3); }
+.hz-modal .hz-ph-note { margin: 14px 0 0; font-size: 13px; color: var(--hz-sub); }
+@media (max-width: 640px) {
+  .hz-ph-row { grid-template-columns: minmax(0, 1fr); }
+  .hz-ph-drop { width: 100%; }
+  .hz-phbar { font-size: 13px; }
+}
 
 .hz-timer {
   position: fixed; z-index: 32; top: 16px; right: 16px; display: none; align-items: center; gap: 2px;
