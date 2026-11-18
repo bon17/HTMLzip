@@ -460,7 +460,8 @@
 
 - 참고할 디자인(이미지, PPT, 미리캔버스 디자인, 이전 덱)이 있으면 그것을 따른다.
 - 없으면 주제와 학생에게 맞게 새로 디자인한다.
-- 같은 시리즈(예: 강의 1회차, 2회차)는 디자인을 이어 쓴다.
+- 같은 시리즈(예: 강의 1회차, 2회차)는 디자인을 이어 쓴다. 글꼴도 쓰던 것을 이어 쓴다.
+- 글꼴은 §5.3에 따라 추천한다. 학교안심 글꼴을 먼저 권한다.
 - 마음에 드는 디자인은 `themes/`에 모아 두고 다른 덱에서 다시 쓸 수 있다. [선택]
 
 ### 5.2 어떤 디자인이든 지킬 것
@@ -482,12 +483,50 @@
   - 손가락으로 누르는 요소(퀴즈 보기, 뒤집기 카드, 가리개, 눌러서 크게 보기)는 무대 기준 가로·세로 90px 이상으로 만들고, 서로 24px 이상 띄운다. 작은 태블릿에서도 손가락 끝(약 48px)보다 크게 보이는 크기다.
   - 그림 위 점(`data-spot`)은 작게 보여도 엔진이 누르는 범위를 100px로 넓혀 준다.
   - 마우스를 올려야만 보이는 내용(`:hover` 효과, `title` 말풍선)에 정보를 담지 않는다. 태블릿에는 마우스 올리기가 없다.
-- **폰트**: 한글 폰트를 쓴다(웹 폰트는 CDN 허용). 불러오지 못할 때를 대비해 `"Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif`를 대체 폰트로 붙인다.
+- **폰트**: 한글 폰트를 쓴다. 고르는 법과 넣는 법은 §5.3을 따른다. 불러오지 못할 때를 대비해 `"Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif`를 대체 폰트로 붙인다.
 - **레이아웃 등록**: 덱 디자인에 맞는 슬라이드 레이아웃(표지, 섹션 구분, 제목+내용, 퀴즈 등)을 `<template class="hz-layout" data-name="표지">`로 정의해 둔다. 그러면 편집 모드의 "레이아웃으로 추가"(§3.7) 목록에 나온다.
 - **라이트·다크**: 디자인이 둘 다 제공하면 `[data-theme="light"]`에서 변수를 다시 정의하고, 설정에서 전환할 수 있게 한다. 하나만 있어도 된다.
 - **이미지**: 사용 권한이 있는 이미지만 쓴다.
 
-### 5.3 엔진 UI의 모양
+### 5.3 글꼴 고르기
+
+글꼴은 **[한글 OFL 폰트 창고](https://maker-ssam.github.io/korean-ofl-fonts/)** 를 참고해서 추천한다. 학교에서 자유롭게 쓰고 나눌 수 있는 OFL 한글 글꼴을 모아 둔 곳이다. 쓰임·굵기·격식 같은 분류와 웹폰트 주소가 함께 있다. 전체 목록과 분류는 [`fonts.json`](https://maker-ssam.github.io/korean-ofl-fonts/fonts.json)에 있다.
+
+- **학교안심 글꼴을 먼저**: 한국교육학술정보원(KERIS)이 학교용으로 만든 ‘학교안심’ 글꼴(이름이 `학교안심 ○○`, 영문 `Hakgyoansim ○○`, 창고에 60여 종)에서 먼저 고른다. 덱의 분위기에 맞는 학교안심 글꼴이 없을 때만 창고의 다른 글꼴을 추천하고, 왜 학교안심이 아닌지 한 줄로 말한다.
+- **구성안에 함께**: 새 덱의 구성안(디자인 방향)에 제목 글꼴과 본문 글꼴을 적어 확인받는다. 조합 2–3개를 보여 주고 그중 하나를 권한다. 선생님이 글꼴을 정해 주면 그것을 따른다.
+- **고르는 기준**: 창고의 분류를 쓴다.
+  - 쓰임: 본문에는 `본문용`이나 `범용`, 제목에는 `제목용`이나 `범용`을 쓴다.
+  - 격식: 교사 연수·안내·고학년 수업은 `격식`이나 `보통`, 저학년·놀이·활동은 `친근`을 고른다.
+  - 굵기: 본문 글꼴은 굵기가 두 개 이상인 것이 좋다. 굵게 강조할 때 글자가 뭉개지지 않는다.
+  - 화면에서 읽히는지: 가는 글꼴과 흘림 손글씨는 본문에 쓰지 않고 짧은 포인트에만 쓴다. 본문 크기(28px 이상, §5.2)로 견본을 보고 고른다.
+- **글꼴 수**: 한 덱에 제목 글꼴 하나, 본문 글꼴 하나를 기본으로 한다. 코드용 고정폭 글꼴이나 손글씨 포인트가 꼭 필요할 때만 하나를 더한다(최대 세 개).
+- **넣는 법**: 창고의 글꼴 카드에서 ‘CSS 주소 복사’로 받은 주소를 덱 디자인 구역 맨 위에 `@import`로 넣는다. 그 CSS에 적힌 `font-family` 이름을 그대로 쓰고, 뒤에 대체 폰트(§5.2)를 붙인다. 학교안심 글꼴의 주소는 `https://maker-ssam.github.io/korean-ofl-fonts/fonts/<id>/<id>.css`이고, `<id>`는 영문 이름을 소문자로 바꾸고 빈칸을 `-`로 이은 것이다(끝의 `TTF`는 뺀다. 예: `Hakgyoansim Allimjang TTF` → `hakgyoansim-allimjang`). 이 주소는 §6.1의 폰트 CDN 예외에 들어간다.
+
+  ```css
+  @import url("https://maker-ssam.github.io/korean-ofl-fonts/fonts/hakgyoansim-godeunjemok/hakgyoansim-godeunjemok.css");
+  @import url("https://maker-ssam.github.io/korean-ofl-fonts/fonts/hakgyoansim-bareondotum/hakgyoansim-bareondotum.css");
+  :root {
+    --font-title: "Hakgyoansim Godeunjemok", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    --font-body: "Hakgyoansim Bareondotum", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  }
+  ```
+
+- **학교 망에서 막힐 때** [선택]: 학교 망이 창고 주소를 막으면 대체 폰트로 보인다. 그 학교에서 꼭 같은 글꼴로 보여야 하면, 쓰는 굵기의 woff2 파일(하나에 150–600KB)을 data URI로 바꿔 디자인 구역의 `@font-face`에 넣는다. OFL은 문서 안에 글꼴을 넣는 것을 허용한다.
+- **라이선스**: 창고의 글꼴은 대부분 SIL OFL 1.1이라 수업 자료·인쇄물·영상에 자유롭게 쓴다. 글꼴 파일 자체를 팔지는 않는다. 창고에서 ‘예외’로 표시한 글꼴은 추천하지 않는다. 네이버 나눔 계열을 쓰면 출처를 README나 발표자 노트에 적는다.
+
+**먼저 보여 줄 학교안심 조합** (창고 분류 기준, 이름은 `font-family` 그대로)
+
+| 분위기 | 제목 | 본문 | 어울리는 덱 |
+|---|---|---|---|
+| 단정하게 | 학교안심 곧은제목 `Hakgyoansim Godeunjemok` | 학교안심 바른돋움 `Hakgyoansim Bareondotum` | 교사 연수, 안내, 중·고등 수업 |
+| 읽을 글이 많을 때 | 학교안심 알림장 `Hakgyoansim Allimjang TTF` | 학교안심 바른바탕 `Hakgyoansim Bareonbatang` (명조) | 국어·역사처럼 긴 글을 읽는 수업 |
+| 활기차게 | 학교안심 포스터 `Hakgyoansim Poster B` | 학교안심 산뜻돋움 `Hakgyoansim Santteutdotumthic` | 과학·정보 같은 일반 수업 |
+| 친근하게 | 학교안심 뜀틀 `Hakgyoansim Ttwimteul` | 학교안심 둥근미소 `Hakgyoansim Dunggeunmiso TTF` | 초등, 놀이·활동, 게임 |
+| 포근하게 | 학교안심 몽글몽글 `Hakgyoansim Monggeulmonggeul` | 학교안심 그림일기 `Hakgyoansim Geurimilgi TTF` | 저학년, 그림책·이야기 |
+
+포인트 글꼴(짧은 말풍선·메모·상장 장면)은 학교안심 가을소풍 `Hakgyoansim Gaeulsopung`(정갈한 손글씨), 학교안심 보드마카 `Hakgyoansim Boadmarker R`(판서 느낌), 학교안심 상장 `Hakgyoansim Sangjang R`(상장·마지막 장)을 먼저 본다.
+
+### 5.4 엔진 UI의 모양
 
 필통, 메뉴 서랍, 편집 도구 같은 엔진 UI는 모든 덱에서 같은 모양이다.
 
@@ -530,7 +569,7 @@ decks/
   - 엔진 CSS의 클래스와 id에는 `hz-` 접두사를 붙여 덱 디자인과 겹치지 않게 한다.
   - 슬라이드 안의 글자 크기, 색, 배경 같은 외형은 넣지 않는다.
   - 모션과 상호작용(뒤집기 카드의 회전 등)이 동작하는 데 필요한 최소 스타일만 넣는다.
-- **외부 라이브러리 없이** 바닐라 HTML/CSS/JS로 만든다. 폰트 CDN만 예외로 허용한다.
+- **외부 라이브러리 없이** 바닐라 HTML/CSS/JS로 만든다. 폰트 CDN(한글 OFL 폰트 창고의 웹폰트 주소 포함, §5.3)만 예외로 허용한다.
 - **이미지는 파일 안에 내장**한다(SVG 인라인 또는 data URI). 파일이 대략 5MB를 넘을 때만 폴더와 `assets/`로 나누고, 폴더째 zip으로 배포한다.
 - **브라우저 저장소 키**는 `htmlzip:<data-deck-id>:<항목>` 형식으로 쓴다. 저장소 접근은 항상 `try/catch`로 감싼다. 사파리 개인정보 보호 모드처럼 저장이 막힌 환경에서도 덱은 정상 동작해야 한다.
 
@@ -574,6 +613,7 @@ decks/
 
 - [ ] 어떤 슬라이드 배경 위에서도 필통, 메뉴, 필기, 편집 UI가 잘 보인다
 - [ ] 본문이 28px 이상이고 글자 대비가 충분하다
+- [ ] 글꼴을 한글 OFL 폰트 창고에서 골랐고(학교안심 먼저, 같은 시리즈는 쓰던 글꼴), 대체 폰트가 붙어 있다 (§5.3)
 - [ ] 덱 디자인이 덱 디자인 구역 안에만 있고 엔진 스타일을 덮어쓰지 않는다
 
 **필기**
