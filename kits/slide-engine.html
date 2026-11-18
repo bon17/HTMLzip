@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>슬라이드 틀</title>
+<title>슬라이드 기능 파일</title>
 <!--
 ==========================================================================
- HTML 슬라이드 엔진 파일 · 작성 안내  (이 파일로 슬라이드를 만드는 AI가 읽는 부분)
+ HTML 슬라이드 기능 파일 · 작성 안내  (이 파일로 슬라이드를 만드는 AI가 읽는 부분)
 ==========================================================================
 ■ 이 파일은 무엇인가
 이 파일은 디자인 틀이 아니다. 발표·필기·편집 기능(엔진 v2.5)과 그 기능을 쓰는 법을 담은 "부품 + 설명서"다.
@@ -131,6 +131,7 @@
     <div data-widget="autocomplete" data-step="1" data-words="오늘 학교에서 친구랑" data-pool="그리고 나는 근데"></div>
 - unlock: 잠금 카드 묶음. 단계가 있는 카드는 그 단계에 열리고, data-open 카드는 열린 채, 나머지는 잠긴 채로 있다.
     <div data-widget="unlock"><div data-card data-open>얻은 카드</div><div data-card data-step="1">열릴 카드</div></div>
+  카드 모양(크기, 색, 글자)은 디자인 구역에서 .slide [data-widget="unlock"] > [data-card] 로 정한다.
 - 위젯 모양은 덱 변수(--bg --fg --accent --accent-2 --surface)를 따른다. 콘셉트에 맞게
   .slide [data-widget="chat"] 처럼 디자인 구역에서 덮어써 다듬는다.
 
@@ -912,174 +913,220 @@ html.hz-pw, html.hz-pw body { background: #e9e4d8; }
 </style>
 <style id="hz-deck-design">
 /* ===== DECK DESIGN ===== */
-/* 보기 디자인: 깨끗한 종이 + 남색 글자 + 주황 강조. 새 덱에서는 이 구역을 새로 쓴다. */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+/* 기능 시연용 회색 도면. 디자인 보기가 아니다.
+   새 덱에서는 이 구역을 통째로 지우고, 그 덱만의 디자인을 백지에서 새로 쓴다. 여기 있는 클래스 이름도 가져가지 않는다. */
 :root {
-  --bg: #fbfaf6; --surface: #ffffff; --fg: #1f2433; --muted: #5b6275; --line: #e3e0d6;
-  --accent: #e4572e; --accent-2: #2f6fec; --accent-ink: #ffffff; --highlight: rgba(255, 206, 0, .5);
-  --font: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --bg: #e8eaee; --surface: #ffffff; --fg: #22262d; --muted: #555c68; --line: #a3aab5;
+  --accent: #4a5464; --accent-2: #858e9e; --accent-ink: #ffffff; --highlight: rgba(133, 142, 158, .42);
+  --cover-bg: #4a5464;
+  --demo-font: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --demo-mono: ui-monospace, Menlo, Consolas, "Malgun Gothic", monospace;
 }
-body { font-family: var(--font); color: var(--fg); }
-.slide { font-family: var(--font); color: var(--fg); background: var(--bg); font-size: 36px; line-height: 1.5; }
-.slide h1, .slide h2, .slide p, .slide ul, .slide ol { margin: 0; }
+body { font-family: var(--demo-font); color: var(--fg); }
+.slide {
+  font-family: var(--demo-font); color: var(--fg); font-size: 34px; line-height: 1.5;
+  background-color: var(--bg);
+  background-image: linear-gradient(rgba(34, 38, 45, .06) 2px, transparent 2px), linear-gradient(90deg, rgba(34, 38, 45, .06) 2px, transparent 2px);
+  background-size: 120px 120px;
+}
+.slide h1, .slide h2, .slide p, .slide ul { margin: 0; }
 .slide svg { display: block; overflow: visible; }
-.slide::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 24px; background: var(--accent); }
 
-.tag { display: inline-block; padding: 10px 26px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); font-size: 30px; font-weight: 800; }
-.title { font-size: 104px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; }
-.title em { font-style: normal; color: var(--accent); }
-.h2 { font-size: 64px; line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; }
-.lead { font-size: 40px; line-height: 1.55; color: var(--muted); }
+.demo-tag { font: 700 28px/1 var(--demo-mono); color: var(--muted); letter-spacing: .02em; }
+.demo-tag b { color: var(--fg); }
+.demo-h { font-size: 56px; line-height: 1.25; font-weight: 800; }
+.demo-hero { font-size: 92px; line-height: 1.18; font-weight: 800; letter-spacing: -.01em; }
+.demo-text { font-size: 34px; line-height: 1.55; color: var(--muted); }
+.demo-box { border: 3px dashed var(--line); border-radius: 14px; background: rgba(255, 255, 255, .62); padding: 28px 32px; }
+.demo-code { font: 500 28px/1.5 var(--demo-mono); color: var(--muted); }
+.demo-code code { background: rgba(255, 255, 255, .75); border: 2px solid #d3d7de; border-radius: 8px; padding: 2px 10px; white-space: nowrap; }
+.demo-num { font-size: 150px; line-height: 1; font-weight: 800; }
 
-.list { padding: 0; list-style: none; }
-.list li { position: relative; padding: 0 0 0 54px; margin: 0 0 30px; font-size: 40px; line-height: 1.45; }
-.list li::before { content: ""; position: absolute; left: 0; top: 14px; width: 28px; height: 28px; border-radius: 8px; background: var(--accent-2); }
+.demo-steps .demo-box { height: 100%; }
+.demo-bars { display: flex; align-items: flex-end; gap: 30px; }
+.demo-bars i { flex: 1; background: var(--accent-2); border-radius: 8px 8px 0 0; }
 
-.card { background: var(--surface); border: 3px solid var(--line); border-radius: 28px; padding: 40px 44px; box-shadow: 0 14px 34px rgba(31, 36, 51, .08); }
-.flip-card .front, .flip-card .back {
-  display: grid; place-items: center; padding: 50px; border-radius: 28px; text-align: center;
-  font-size: 46px; font-weight: 800; line-height: 1.4;
-}
-.flip-card .front { background: var(--accent-2); color: #fff; }
-.flip-card .back { background: var(--surface); color: var(--fg); border: 3px solid var(--accent-2); }
-
-.quiz { display: grid; gap: 28px; }
-.quiz .opt {
-  min-height: 130px; display: flex; align-items: center; gap: 28px; padding: 0 40px;
-  background: var(--surface); border: 3px solid var(--line); border-radius: 26px; font-size: 42px; font-weight: 700; cursor: pointer;
-}
-.quiz .opt b { display: grid; place-items: center; flex: none; width: 70px; height: 70px; border-radius: 50%; background: var(--fg); color: #fff; font-size: 36px; }
-.quiz .opt.hz-correct { border-color: #1f9d55; background: #e8f7ee; }
-.quiz .opt.hz-wrong { border-color: var(--accent); background: #fdece7; }
-.q { font-size: 40px; line-height: 1.4; font-weight: 800; }
-.answer { display: grid; align-content: center; gap: 18px; }
-.answer .big { font-size: 56px; font-weight: 800; color: var(--accent-2); }
-.answer .sub { font-size: 34px; color: var(--muted); }
-.photo { border-radius: 24px; object-fit: cover; }
+.demo-quiz { display: grid; gap: 28px; }
+.demo-opt { min-height: 120px; display: flex; align-items: center; gap: 24px; padding: 0 32px; border: 3px dashed var(--line); border-radius: 14px; background: var(--surface); font-size: 34px; font-weight: 700; }
+.demo-opt span { flex: none; width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%; background: var(--fg); color: #fff; font-size: 30px; }
+.demo-flip .front, .demo-flip .back { display: grid; place-items: center; padding: 36px; border-radius: 14px; text-align: center; font-size: 40px; font-weight: 800; line-height: 1.35; }
+.demo-flip .front { background: var(--accent); color: #fff; }
+.demo-flip .back { background: var(--surface); border: 3px solid var(--accent); }
+.slide [data-widget="unlock"] > [data-card] { flex: 1; display: grid; place-items: center; border: 3px dashed var(--line); border-radius: 14px; background: var(--surface); font-size: 40px; font-weight: 800; }
+.demo-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 28px; }
+.demo-keys div { display: flex; align-items: center; gap: 18px; font-size: 32px; }
+.demo-keys kbd { flex: none; min-width: 78px; height: 78px; display: grid; place-items: center; padding: 0 14px; border: 3px solid var(--line); border-bottom-width: 7px; border-radius: 12px; background: var(--surface); font: 800 32px/1 var(--demo-mono); }
 </style>
 </head>
 <body>
-<main id="deck" data-deck-id="slide-template" data-transition="fade" data-check="off">
-
-  <!-- ===== 레이아웃 (편집 모드의 "레이아웃으로 추가") ===== -->
-  <template class="hz-layout" data-name="표지">
-    <section class="slide" data-title="표지" data-transition="circle" data-ambient="particles">
-      <p style="left:160px;top:300px;width:900px" data-anim="pop"><span class="tag">○학년 ○○ · ○단원</span></p>
-      <h1 class="title" style="left:160px;top:400px;width:1500px" data-anim="split-words" data-delay="200">제목을 입력하세요</h1>
-      <p class="lead" style="left:160px;top:660px;width:1300px" data-anim="fade-up" data-delay="900">부제를 입력하세요</p>
-    </section>
-  </template>
-  <template class="hz-layout" data-name="섹션 구분">
-    <section class="slide" data-title="섹션" data-transition="wipe" data-ambient="drift">
-      <p style="left:160px;top:380px;width:600px" data-anim="pop"><span class="tag">PART 1</span></p>
-      <h2 class="title" style="left:160px;top:470px;width:1600px" data-anim="split-chars" data-delay="200">섹션 제목</h2>
-    </section>
-  </template>
-  <template class="hz-layout" data-name="섹션 구분 (챕터 위젯)">
-    <section class="slide" data-title="섹션" data-transition="wipe">
-      <div data-widget="chapter" data-part="PART 1" data-num="1" style="left:0;top:0;width:1920px;height:1080px"><h2>섹션 제목</h2><p>부제를 입력하세요</p></div>
-    </section>
-  </template>
-  <template class="hz-layout" data-name="제목 + 목록">
-    <section class="slide" data-title="새 슬라이드">
-      <h2 class="h2" style="left:160px;top:120px;width:1600px" data-anim="split-words">제목을 입력하세요</h2>
-      <ul class="list" style="left:160px;top:320px;width:1500px">
-        <li data-anim="fade-up" data-step="1">첫 번째 내용</li>
-        <li data-anim="fade-up" data-step="2">두 번째 내용</li>
-        <li data-anim="fade-up" data-step="3">세 번째 내용</li>
-      </ul>
-    </section>
-  </template>
-  <template class="hz-layout" data-name="퀴즈 (보기 3개)">
-    <section class="slide" data-title="퀴즈" data-transition="zoom">
-      <h2 class="h2" style="left:160px;top:120px;width:1600px" data-anim="pop">질문을 입력하세요</h2>
-      <div class="quiz" style="left:160px;top:330px;width:1600px" data-interact="quiz" data-anim="stagger" data-delay="300">
-        <div class="opt" data-option><b>1</b>보기 1</div>
-        <div class="opt" data-option data-correct><b>2</b>보기 2 (정답)</div>
-        <div class="opt" data-option><b>3</b>보기 3</div>
-      </div>
-    </section>
-  </template>
+<main id="deck" data-deck-id="slide-engine" data-transition="fade" data-check="off">
 
   <!-- ===== 뽑기 목록 (R): 첫 묶음이 처음에 뜬다. 학급에 맞게 고쳐 쓴다 ===== -->
-  <script type="application/json" class="hz-picker">{"번호 1~30": ["1번","2번","3번","4번","5번","6번","7번","8번","9번","10번","11번","12번","13번","14번","15번","16번","17번","18번","19번","20번","21번","22번","23번","24번","25번","26번","27번","28번","29번","30번"], "모둠 1~6": ["1모둠","2모둠","3모둠","4모둠","5모둠","6모둠"]}</script>
+  <script type="application/json" class="hz-picker">{"모둠": ["1모둠", "2모둠", "3모둠"], "번호": ["1번", "2번", "3번"]}</script>
 
-  <!-- ===== 예시 슬라이드: 중학교 역사 '훈민정음 창제' (새 덱에서는 지우고 새로 쓴다) ===== -->
-  <section class="slide" data-id="cover" data-title="표지" data-transition="circle" data-ambient="particles">
-    <p style="left:160px;top:290px;width:900px" data-anim="pop"><span class="tag">중학교 역사 · 조선의 성립과 발전</span></p>
-    <h1 class="title" style="left:160px;top:390px;width:1160px" data-anim="split-words" data-delay="200">세종, <em>백성을 위한</em> 글자를 만들다</h1>
-    <p class="lead" style="left:160px;top:680px;width:1100px" data-anim="fade-up" data-delay="1000">훈민정음은 왜, 어떻게 만들어졌을까?</p>
-    <div style="left:1380px;top:280px;width:380px;height:520px" data-anim="rotate-in" data-delay="500" data-ambient="float">
-      <svg viewBox="0 0 380 520" width="380" height="520" aria-label="훈민정음 자음 기본자 ㄱ ㄴ ㅁ ㅅ ㅇ">
-        <rect x="10" y="10" width="360" height="500" rx="28" style="fill:var(--surface);stroke:var(--line);stroke-width:4"/>
-        <g style="font-family:var(--font);font-weight:800;text-anchor:middle;fill:var(--fg)">
-          <text x="190" y="205" style="font-size:170px;fill:var(--accent)">ㄱ</text>
-          <text x="110" y="340" style="font-size:96px">ㄴ</text>
-          <text x="270" y="340" style="font-size:96px">ㅁ</text>
-          <text x="110" y="465" style="font-size:96px">ㅅ</text>
-          <text x="270" y="465" style="font-size:96px">ㅇ</text>
-        </g>
+  <!-- ===== 기능 시연 장 (회색 도면). 새 덱에서는 모두 지우고, 디자인과 배치는 백지에서 새로 쓴다 ===== -->
+  <section class="slide" data-id="intro" data-title="기능 파일 안내" data-transition="circle" data-ambient="particles">
+    <p class="demo-tag" style="left:120px;top:110px;width:1200px">슬라이드 기능 파일 · 엔진 v2.5 · <b>기능 시연 1/11</b></p>
+    <h1 class="demo-hero" style="left:120px;top:250px;width:1500px" data-anim="split-words" data-delay="200">디자인은 비어 있어요.<br>기능만 들어 있어요.</h1>
+    <p class="demo-text" style="left:120px;top:540px;width:1420px" data-anim="fade-up" data-delay="1000">이 파일은 디자인 틀이 아니에요. 회색 장들은 기능이 어떻게 움직이는지 보여 주는 시연이에요. 새 덱의 콘셉트·색·글꼴·화면 배치는 수업 내용에서 출발해 백지에서 새로 만들어요.</p>
+    <p class="demo-code" style="left:120px;top:820px;width:1680px" data-anim="fade" data-delay="1600"><code>data-transition="circle"</code> <code>data-ambient="particles"</code> <code>data-anim="split-words"</code></p>
+    <aside class="notes">기능 시연 1: 원이 커지며 열리는 전환(circle), 입자 배경(particles), 단어별 제목 등장(split-words). → 또는 Space로 다음 장.</aside>
+  </section>
+
+  <section class="slide" data-id="steps" data-title="단계 등장과 강조" data-transition="slide">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 2/11 · <b>단계 등장과 강조</b></p>
+    <p class="demo-h" style="left:120px;top:160px;width:1680px" data-anim="fade-up">"다음"을 누를 때마다 하나씩 나와요</p>
+    <div class="demo-box" style="left:120px;top:320px;width:520px;height:420px" data-anim="fade-up" data-step="1">
+      <p class="demo-num">1</p>
+      <p class="demo-text" style="margin:18px 0 22px">아래에서 위로</p>
+      <p class="demo-code"><code>data-anim="fade-up"</code><br><code>data-step="1"</code></p>
+    </div>
+    <div class="demo-box" style="left:700px;top:320px;width:520px;height:420px" data-anim="pop" data-step="2" data-emphasis="pulse" data-emphasis-step="4">
+      <p class="demo-num">2</p>
+      <p class="demo-text" style="margin:18px 0 22px">툭 튀어나오기</p>
+      <p class="demo-code"><code>data-anim="pop"</code><br><code>data-step="2"</code></p>
+    </div>
+    <div class="demo-box" style="left:1280px;top:320px;width:520px;height:420px" data-anim="slide-left" data-step="3">
+      <p class="demo-num">3</p>
+      <p class="demo-text" style="margin:18px 0 22px">옆에서 밀려 들어오기</p>
+      <p class="demo-code"><code>data-anim="slide-left"</code><br><code>data-step="3"</code></p>
+    </div>
+    <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="blur-in" data-step="4">4번째 "다음": 가운데 상자가 두근 → <code>data-emphasis="pulse"</code> <code>data-emphasis-step="4"</code> (강조는 한 화면에 한 곳)</p>
+    <aside class="notes">기능 시연 2: data-step 순서대로 등장, 4단계에서 가운데 상자 강조(pulse). 뒤로 돌아오면 모든 단계가 끝난 모습.</aside>
+  </section>
+
+  <section class="slide" data-id="charts" data-title="숫자와 도식" data-transition="push">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 3/11 · <b>숫자와 도식</b></p>
+    <div class="demo-box" style="left:120px;top:190px;width:520px;height:560px" data-anim="scale-in">
+      <p class="demo-text">숫자가 올라가요</p>
+      <p class="demo-num" style="margin:40px 0 46px" data-anim="count-up" data-to="1446" data-delay="300">1446</p>
+      <p class="demo-code"><code>data-anim="count-up"</code><br><code>data-to="1446"</code></p>
+    </div>
+    <div class="demo-box" style="left:700px;top:190px;width:520px;height:560px" data-anim="fade-up" data-step="1">
+      <p class="demo-text">막대가 자라요</p>
+      <div class="demo-bars" style="height:250px;margin:24px 0 30px" data-anim="bar-grow" data-axis="y" data-step="1">
+        <i style="height:40%"></i><i style="height:75%"></i><i style="height:100%"></i><i style="height:60%"></i>
+      </div>
+      <p class="demo-code"><code>data-anim="bar-grow"</code><br><code>data-axis="y"</code></p>
+    </div>
+    <div class="demo-box" style="left:1280px;top:190px;width:520px;height:560px" data-anim="fade-up" data-step="2">
+      <p class="demo-text">선이 그려져요</p>
+      <svg viewBox="0 0 456 250" width="456" height="250" style="margin:24px 0 30px" aria-label="왼쪽 아래에서 오른쪽 위로 이어지는 꺾은선과 화살표" data-anim="draw" data-step="2">
+        <path d="M20 220 L140 150 L250 180 L420 40" style="fill:none;stroke:var(--fg);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/>
+        <path d="M380 40 L420 40 L412 80" style="fill:none;stroke:var(--fg);stroke-width:8;stroke-linecap:round;stroke-linejoin:round"/>
       </svg>
+      <p class="demo-code"><code>data-anim="draw"</code><br>(SVG 선에 붙여요)</p>
     </div>
-    <aside class="notes">표지: 원이 커지며 열리는 전환(circle), 입자 배경, 단어별 제목 등장. 오른쪽은 자음 기본자 다섯 글자.</aside>
+    <p class="demo-code" style="left:120px;top:820px;width:1680px" data-anim="fade-down" data-delay="600">도식용 모션: <code>draw</code> <code>connect</code> <code>flow</code> <code>progress-ring</code> · 지도·연표·그래프는 인라인 SVG로 직접 그려요</p>
+    <aside class="notes">기능 시연 3: count-up(들어오면 자동), bar-grow(1단계), draw(2단계).</aside>
   </section>
 
-  <section class="slide" data-id="why" data-title="훈민정음을 만든 까닭" data-transition="slide">
-    <h2 class="h2" style="left:160px;top:120px;width:1600px" data-anim="split-words">세종은 왜 새 글자를 만들었을까?</h2>
-    <ul class="list" style="left:160px;top:300px;width:900px">
-      <li data-anim="fade-up" data-step="1">우리말과 중국 글자(한자)가 서로 잘 맞지 않았어요</li>
-      <li data-anim="fade-up" data-step="2" data-emphasis="highlight" data-emphasis-step="4">백성이 하고 싶은 말을 글로 펴지 못했어요</li>
-      <li data-anim="fade-up" data-step="3">누구나 쉽게 익혀 날마다 쓰도록 28자를 만들었어요</li>
-    </ul>
-    <div class="card" style="left:1120px;top:300px;width:640px;height:520px" data-anim="draw" data-step="3">
-      <svg viewBox="0 0 552 432" width="552" height="432" aria-label="연표: 1443년 훈민정음 창제, 1446년 반포">
-        <path d="M100 70 V360" style="fill:none;stroke:var(--fg);stroke-width:8;stroke-linecap:round"/>
-        <circle cx="100" cy="100" r="26" style="fill:var(--surface);stroke:var(--accent-2);stroke-width:10"/>
-        <circle cx="100" cy="330" r="26" style="fill:var(--surface);stroke:var(--accent);stroke-width:10"/>
-        <g style="font-family:var(--font);fill:var(--fg)">
-          <text x="160" y="96" style="font-size:52px;font-weight:800">1443년</text>
-          <text x="160" y="146" style="font-size:34px;fill:var(--muted)">훈민정음 창제</text>
-          <text x="160" y="326" style="font-size:52px;font-weight:800">1446년</text>
-          <text x="160" y="376" style="font-size:34px;fill:var(--muted)">훈민정음 반포</text>
-        </g>
+  <section class="slide" data-id="quiz" data-title="학생 참여: 퀴즈와 가리개" data-transition="zoom">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 4/11 · <b>학생 참여 ① 퀴즈와 가리개</b></p>
+    <p class="demo-h" style="left:120px;top:160px;width:1680px" data-anim="pop">Q. 이 파일에서 한 글자도 바꾸지 않는 곳은?</p>
+    <div class="demo-quiz" style="left:120px;top:310px;width:1000px" data-interact="quiz" data-anim="stagger" data-delay="300">
+      <div class="demo-opt" data-option><span>1</span>디자인 구역 (hz-deck-design)</div>
+      <div class="demo-opt" data-option data-correct><span>2</span>엔진 구역 (hz-engine-style · script)</div>
+      <div class="demo-opt" data-option><span>3</span>슬라이드 구역 (main id="deck")</div>
+    </div>
+    <div class="demo-box" style="left:1200px;top:310px;width:600px;height:420px" data-interact="reveal" data-cover-text="눌러서 확인" data-anim="fade-left" data-step="1">
+      <p class="demo-h" style="font-size:44px">엔진은 코드로 복사만</p>
+      <p class="demo-text" style="margin-top:18px">디자인과 슬라이드는 통째로 새로 써요.</p>
+    </div>
+    <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="fade" data-step="1"><code>data-interact="quiz"</code> + 보기 <code>data-option</code> · 정답 <code>data-correct</code> │ <code>data-interact="reveal"</code> <code>data-cover-text="눌러서 확인"</code></p>
+    <aside class="notes">기능 시연 4: 보기를 누르면 정답은 초록 테두리와 색종이, 오답은 흔들리고 흐려짐(엔진 기본 모양. 디자인 구역에서 .내보기.hz-correct로 다듬는다). 오른쪽은 가리개.</aside>
+  </section>
+
+  <section class="slide" data-id="cards" data-title="학생 참여: 뒤집기, 그림 위 점, 크게 보기" data-transition="flip">
+    <p class="demo-tag" style="left:120px;top:90px;width:1400px">기능 시연 5/11 · <b>학생 참여 ② 뒤집기 · 그림 위 점 · 크게 보기</b></p>
+    <div class="demo-flip" style="left:120px;top:190px;width:520px;height:480px" data-interact="flip" data-anim="flip-in">
+      <div class="front">Q. 시안은<br>몇 장일까?</div>
+      <div class="back">표지 + 대표 장 2장<br>모두 3장</div>
+    </div>
+    <div class="demo-box" style="left:700px;top:190px;width:640px;height:480px;padding:0" data-interact="hotspot" data-anim="scale-in" data-step="1">
+      <svg viewBox="0 0 634 474" width="634" height="474" aria-label="발표 화면 도면: 왼쪽 위 메뉴 버튼, 왼쪽 아래 필통, 오른쪽 아래 페이지 꼬리표">
+        <rect x="40" y="40" width="554" height="394" rx="12" style="fill:var(--surface);stroke:var(--line);stroke-width:4"/>
+        <rect x="64" y="64" width="54" height="54" rx="12" style="fill:var(--line)"/>
+        <rect x="64" y="378" width="220" height="36" rx="18" style="fill:var(--line)"/>
+        <rect x="480" y="384" width="90" height="30" rx="8" style="fill:var(--line)"/>
+        <path d="M170 160 H500 M170 210 H440 M170 260 H470" style="stroke:#d5d9df;stroke-width:16;stroke-linecap:round"/>
       </svg>
+      <span data-spot data-tip="메뉴 버튼: 나머지 기능이 모두 여기에" style="left:14%;top:19%"></span>
+      <span data-spot data-tip="필통: 펜, 형광펜, 지우개, 레이저" style="left:27%;top:83%"></span>
+      <span data-spot data-tip="페이지 꼬리표: 지금 몇 번째 장인지" style="left:83%;top:84%"></span>
     </div>
-    <aside class="notes">훈민정음 서문의 뜻을 풀어 설명. 1~3: 한 줄씩 → 3에서 연표가 그려짐 → 4: 둘째 줄 형광펜.</aside>
+    <div class="demo-box" style="left:1400px;top:190px;width:400px;height:480px" data-interact="zoom" data-anim="fade-left" data-step="2">
+      <p class="demo-text">눌러서 크게 보기</p>
+      <p class="demo-code" style="margin-top:20px">사진·코드·도표처럼 자세히 볼 것에 붙여요. 다시 누르면 돌아와요.</p>
+    </div>
+    <p class="demo-code" style="left:120px;top:760px;width:1680px" data-anim="blur-in" data-step="2"><code>data-interact="flip"</code> + <code>.front</code> <code>.back</code> │ <code>data-interact="hotspot"</code> + <code>data-spot data-tip="…"</code> │ <code>data-interact="zoom"</code></p>
+    <aside class="notes">기능 시연 5: 카드를 누르면 뒤집힘, 그림 위 점을 누르면 설명, 오른쪽 상자는 눌러서 크게.</aside>
   </section>
 
-  <section class="slide" data-id="quiz" data-title="확인 문제" data-transition="zoom">
-    <h2 class="h2" style="left:160px;top:120px;width:1600px" data-anim="pop">확인 문제: 훈민정음을 반포한 해는?</h2>
-    <div class="quiz" style="left:160px;top:310px;width:1600px" data-interact="quiz" data-anim="stagger" data-step="1">
-      <div class="opt" data-option><b>1</b>1443년</div>
-      <div class="opt" data-option data-correct><b>2</b>1446년</div>
-      <div class="opt" data-option><b>3</b>1592년</div>
-    </div>
-    <aside class="notes">정답은 2번(1446년 반포). 1443년은 만든 해, 1592년은 임진왜란이 일어난 해.</aside>
+  <section class="slide" data-id="chapter" data-title="위젯: 챕터" data-transition="wipe">
+    <div data-widget="chapter" data-part="위젯 1" data-num="1" style="left:0;top:0;width:1920px;height:1080px"><h2>챕터 위젯</h2><p>data-widget="chapter" · 섹션 시작을 크게 연출해요</p></div>
+    <aside class="notes">기능 시연 6: 챕터 위젯. 색 띠가 휩쓸고 큰 번호와 제목 글자가 떨어진다. 모양은 덱 변수(--accent, --accent-2)를 따른다.</aside>
   </section>
 
-  <section class="slide" data-id="think" data-title="글자를 만든 원리" data-transition="flip">
-    <h2 class="h2" style="left:160px;top:120px;width:1600px" data-anim="split-words">글자 모양은 무엇을 본떴을까?</h2>
-    <div class="flip-card" style="left:160px;top:300px;width:760px;height:560px" data-interact="flip" data-anim="flip-in">
-      <div class="front">Q. 자음 ㄱ은<br>무엇을 본떴을까?</div>
-      <div class="back">혀뿌리가 목구멍을<br>막는 모양이에요</div>
+  <section class="slide" data-id="chat" data-title="위젯: 채팅과 자동완성" data-transition="cover">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 7/11 · <b>위젯: 채팅과 자동완성</b></p>
+    <div data-widget="chat" data-title="AI 채팅" style="left:120px;top:160px;width:760px;height:760px" data-anim="fade-right">
+      <p data-from="me" data-step="1">교과서 PDF로 구성안을 짜 줘</p>
+      <p data-from="ai" data-step="2">콘셉트 3가지와 슬라이드 표를 정리했어요.</p>
+      <p data-from="me" data-step="3">2안으로 시안부터 보여 줘</p>
     </div>
-    <p class="q" style="left:1000px;top:300px;width:760px" data-anim="fade-left" data-delay="300">Q. 모음 ㆍ ㅡ ㅣ는 무엇을 본떴을까?</p>
-    <div class="card answer" style="left:1000px;top:400px;width:760px;height:460px" data-interact="reveal" data-cover-text="눌러서 확인" data-anim="slide-left" data-delay="500">
-      <p class="big">하늘(ㆍ), 땅(ㅡ), 사람(ㅣ)</p>
-      <p class="sub">세 글자를 서로 합쳐 ㅗ ㅏ ㅜ ㅓ 같은 모음을 만들었어요.</p>
-    </div>
-    <aside class="notes">왼쪽은 뒤집기 카드, 오른쪽은 가리개. 학생이 먼저 예상해 말하게 한 뒤 누르기.</aside>
+    <div data-widget="autocomplete" data-step="4" data-words="오늘 수업은 지도를 크게 보여 주자" data-pool="그리고 나는 근데 너무 혹시" style="left:980px;top:160px;width:820px;height:560px"></div>
+    <p class="demo-code" style="left:980px;top:770px;width:820px" data-anim="fade-up" data-delay="400"><code>data-widget="chat"</code> + <code>data-from="me|ai"</code><br><code>data-widget="autocomplete"</code> + <code>data-words</code></p>
+    <aside class="notes">기능 시연 7: 말풍선이 단계마다 하나씩(1~3), 4단계에 자동완성이 문장을 만든다.</aside>
   </section>
 
-  <section class="slide" data-id="end" data-title="마무리" data-transition="wipe" data-ambient="gradient" data-celebrate="confetti">
-    <h2 class="title" style="left:160px;top:200px;width:1600px" data-anim="split-chars">오늘 배운 것</h2>
-    <ul class="list" style="left:160px;top:440px;width:1080px" data-anim="stagger" data-delay="600">
-      <li>훈민정음은 백성을 위해 만든 글자예요</li>
-      <li>1443년에 만들고 1446년에 반포했어요</li>
-      <li>자음은 발음 기관, 모음은 하늘·땅·사람을 본떴어요</li>
-    </ul>
-    <img class="photo" alt="훈민정음 해례본" data-placeholder="그림: 교과서 ○쪽 훈민정음 해례본 사진" style="left:1300px;top:440px;width:460px;height:340px" data-anim="pop" data-delay="1200">
-    <aside class="notes">마지막 장은 색종이로 마무리. 오른쪽은 그림 자리표시 예시(편집 모드 → 이미지 바꾸기로 사진 넣기).</aside>
+  <section class="slide" data-id="unlock" data-title="위젯: 잠금 카드와 그림 자리표시" data-transition="push">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 8/11 · <b>잠금 카드와 그림 자리표시</b></p>
+    <div data-widget="unlock" style="left:120px;top:180px;width:1000px;height:560px" data-anim="scale-in">
+      <div data-card data-open>엔진</div>
+      <div data-card data-step="1">콘셉트</div>
+      <div data-card data-step="2">시안</div>
+      <div data-card data-step="3">완성</div>
+    </div>
+    <img alt="그림 자리표시 예시" data-placeholder="그림: 교과서 ○쪽 ○○ 사진 (편집 모드 → 이미지 바꾸기)" style="left:1200px;top:180px;width:600px;height:560px" data-anim="wipe" data-delay="400">
+    <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="fade-down" data-delay="700"><code>data-widget="unlock"</code> + <code>data-card</code> <code>data-open</code> <code>data-step</code> │ <code>&lt;img data-placeholder="…"&gt;</code> 사진은 선생님이 나중에 넣어요</p>
+    <aside class="notes">기능 시연 8: 단계마다 카드가 열린다. 오른쪽은 그림 자리표시(점검의 '아직 넣지 않은 그림'에 뜬다).</aside>
+  </section>
+
+  <section class="slide" data-id="morph-a" data-title="모프 (앞 장)" data-transition="slide">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 9/11 · <b>모프 ①</b></p>
+    <div class="demo-box" style="left:120px;top:260px;width:420px;height:420px;display:grid;place-items:center" data-morph="map" data-anim="rotate-in">
+      <p class="demo-h">지도</p>
+    </div>
+    <p class="demo-h" style="left:660px;top:300px;width:1140px" data-anim="fade-left" data-delay="300">다음 장에서 이 상자가<br>커지며 자리를 옮겨요</p>
+    <p class="demo-code" style="left:660px;top:520px;width:1140px" data-anim="fade" data-delay="700">두 장의 상자에 같은 <code>data-morph="map"</code><br>다음 장에 <code>data-transition="morph"</code></p>
+    <aside class="notes">기능 시연 9: 다음 장으로 넘기면 같은 data-morph 값을 가진 상자가 위치·크기를 이어서 바꾼다.</aside>
+  </section>
+
+  <section class="slide" data-id="morph-b" data-title="모프 (뒷 장)" data-transition="morph">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 10/11 · <b>모프 ②</b></p>
+    <div class="demo-box" style="left:620px;top:160px;width:1180px;height:760px;display:grid;place-items:center" data-morph="map">
+      <p class="demo-hero">지도</p>
+    </div>
+    <p class="demo-text" style="left:120px;top:300px;width:440px" data-anim="fade-right" data-delay="500">같은 지도를 확대하거나 옮겨 가며 설명할 때 좋아요</p>
+    <aside class="notes">기능 시연 10: 모프 전환의 뒷 장.</aside>
+  </section>
+
+  <section class="slide" data-id="end" data-title="발표 도구와 마무리" data-transition="wipe" data-ambient="gradient" data-celebrate="confetti">
+    <p class="demo-tag" style="left:120px;top:90px;width:1200px">기능 시연 11/11 · <b>발표 도구와 마지막 장</b></p>
+    <h2 class="demo-hero" style="left:120px;top:170px;width:1680px" data-anim="split-chars">이제 디자인은 백지에서!</h2>
+    <div class="demo-keys" style="left:120px;top:420px;width:1680px" data-anim="stagger" data-delay="700">
+      <div><kbd>R</kbd>랜덤 뽑기</div>
+      <div><kbd>.</kbd>검은 화면</div>
+      <div><kbd>,</kbd>흰 화면</div>
+      <div><kbd>S</kbd>발표자 창</div>
+      <div><kbd>T</kbd>타이머</div>
+      <div><kbd>B</kbd>칠판</div>
+      <div><kbd>G</kbd>축하 색종이</div>
+      <div><kbd>M</kbd>효과음</div>
+    </div>
+    <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="blur-in" data-delay="1400">발표 도구는 엔진에 들어 있으니 만들지 않아요 │ 마지막 장 <code>data-celebrate="confetti"</code> <code>data-ambient="gradient"</code></p>
+    <aside class="notes">기능 시연 11: 들어오면 색종이. 발표 도구 단축키 모음.</aside>
   </section>
 
 </main>
