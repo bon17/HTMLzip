@@ -27,6 +27,13 @@ id가 hz-engine-style인 style 구역과 id가 hz-engine-script인 script 구역
 - :root에 --bg(배경) --fg(글자) --muted(흐린 글자) --accent(강조)를 꼭 정한다.
   강조색이 밝으면 --accent-ink(강조색 위 글자색), 형광펜 색은 --highlight로 정한다.
 - 선택자는 .slide와 클래스로 쓴다. #deck은 쓰지 않는다.
+- 글꼴은 '한글 OFL 폰트 창고'(https://maker-ssam.github.io/korean-ofl-fonts/)를 참고해 추천하고,
+  '학교안심' 글꼴(KERIS가 학교용으로 만든 글꼴, 영문 이름 Hakgyoansim ○○)을 먼저 권한다.
+  제목 글꼴 하나 + 본문 글꼴 하나면 충분하다. 맞는 학교안심 글꼴이 없을 때만 창고의 다른 글꼴을 쓴다.
+    단정하게: 제목 Hakgyoansim Godeunjemok(곧은제목) + 본문 Hakgyoansim Bareondotum(바른돋움)
+    친근하게: 제목 Hakgyoansim Ttwimteul(뜀틀) + 본문 Hakgyoansim Dunggeunmiso TTF(둥근미소)
+  주소: https://maker-ssam.github.io/korean-ofl-fonts/fonts/<id>/<id>.css
+  <id>는 영문 이름을 소문자로, 빈칸을 -로 바꾸고 끝의 TTF는 뺀 것 (예: hakgyoansim-bareondotum)
 - 웹 글꼴은 디자인 구역 맨 위에 @import로 넣고, 뒤에
   "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif 를 붙인다.
 - 본문 28px 이상(강당·큰 화면은 44px 이상), 글자와 배경 대비 4.5:1 이상.
