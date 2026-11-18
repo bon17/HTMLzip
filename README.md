@@ -25,8 +25,8 @@
 
 | 파일 | 내용 |
 |---|---|
-| [kits/slide-template.html](kits/slide-template.html) | 슬라이드 틀(엔진 v2.5). 이 파일을 복사해 디자인·슬라이드 구역만 바꿔 새 덱을 만든다. 맨 위 작성 안내를 AI가 읽는다. 선생님 메뉴에는 점검이 보이지 않는다(`data-check="off"`). 엔진을 바꾸면 `node tools/sync-engine.mjs kits/slide-template.html`로 따로 갱신한다. |
-| [kits/textbook-slides-guide.html](kits/textbook-slides-guide.html) | 교사 연수 때 나눠 주는 안내 파일. 교과서 PDF로 슬라이드 만들기(틀 파일 내려받기 포함), 수업 게임 A·B 글, 주소로 나눠 주기(Vercel), 그림이 있는 게임 만들기 글. 프롬프트마다 복사 버튼이 있어요. |
+| [kits/slide-engine.html](kits/slide-engine.html) | 슬라이드 **기능 파일**(엔진 v2.5, 예전 이름 `slide-template.html`). 디자인 틀이 아니다. 엔진, AI가 읽는 작성 안내, 디자인 없는 회색 기능 시연 11장이 들어 있다. AI는 이 파일을 복사해 엔진은 그대로 두고 디자인·슬라이드 구역을 백지에서 새로 쓴다. 선생님 메뉴에는 점검이 보이지 않는다(`data-check="off"`). |
+| [kits/textbook-slides-guide.html](kits/textbook-slides-guide.html) | 교사 연수 때 나눠 주는 안내 파일. 교과서 PDF로 슬라이드 만들기(구성안 → 시안 → 전체 3단계, 기능 파일 내려받기 포함), 수업 게임 A·B 글, 주소로 나눠 주기(Vercel), 그림이 있는 게임 만들기 글. 프롬프트마다 복사 버튼이 있어요. 안에 기능 파일 사본이 들어 있다(`#hz-engine-file`). |
 
 ## 모든 덱에 들어가는 기능
 
@@ -62,7 +62,7 @@ engine/engine.css       엔진 스타일 (디자인 없음)
 engine/engine.js        엔진 기능
 tools/sync-engine.mjs   엔진을 덱 파일에 넣고 갱신하는 도구
 decks/                  완성된 슬라이드 (각 파일에 엔진이 들어 있음)
-kits/                   연수 때 나눠 주는 안내 파일 (덱이 아니라서 엔진 갱신 대상이 아님)
+kits/                   연수 키트: 기능 파일(slide-engine.html)과 안내 파일
 themes/                 다시 쓰고 싶은 디자인 모음 (선택, 아직 없음)
 wip/                    원칙이 생기기 전의 작업본 (옮기는 중)
 ```
@@ -75,7 +75,7 @@ wip/                    원칙이 생기기 전의 작업본 (옮기는 중)
 node tools/sync-engine.mjs
 ```
 
-덱이 최신 엔진인지 확인만 하려면 `--check`를 붙입니다. 엔진 구역에 `data-engine-lock`을 붙인 덱은 지금 엔진 그대로 두고 건너뜁니다(시범 덱 2개와 교사 연수 덱은 v2.3으로 고정).
+이때 기능 파일(`kits/slide-engine.html`)과 키트 안내 파일 속 기능 파일 사본도 함께 갱신됩니다. 덱이 최신 엔진인지 확인만 하려면 `--check`를 붙입니다. 엔진 구역에 `data-engine-lock`을 붙인 덱은 지금 엔진 그대로 두고 건너뜁니다(시범 덱 2개와 교사 연수 덱은 v2.3으로 고정).
 
 ```bash
 node tools/sync-engine.mjs --check

@@ -1166,7 +1166,7 @@ body { font-family: var(--font); color: var(--fg); }
       <h2>슬라이드부터 맡겨 두기</h2>
       <p>만드는 데 몇 분 걸려요. 지금 시켜 두고 기다리는 동안 배워요.</p>
     </div>
-    <aside class="notes">[4분] PART 1은 설명 3분, 실습 7분. 오늘은 구성안을 오래 고치지 말고 바로 “만들어 줘”까지 가는 게 목표예요.</aside>
+    <aside class="notes">[4분] PART 1은 설명 3분, 실습 7분. 오늘은 구성안을 오래 고치지 말고 바로 시안(2단계)까지 가는 게 목표예요. 전체 만들기(3단계)는 실습 ②에서 시안을 열어 본 뒤 보내요.</aside>
   </section>
 
   <section class="slide" data-id="demo" data-title="완성본 먼저 보기" data-transition="zoom">
@@ -1189,26 +1189,27 @@ body { font-family: var(--font); color: var(--fg); }
       <li data-anim="fade-left" data-step="4">펜으로 바로 필기해요</li>
       <li data-anim="fade-left" data-step="5">글자는 두 번 눌러 고쳐요</li>
     </ul>
-    <p class="tip" style="left:1290px;top:850px;width:470px" data-anim="pop" data-step="6">여러분 교과서로도 곧 이렇게 나와요</p>
-    <aside class="notes">틀 파일에 든 중학교 역사 ‘훈민정음’ 예시예요. 큰 화면을 누르면 확대돼요. 지금은 그림으로만 짧게 보고(1분), 실제 파일을 열어 보는 시연은 PART 2 끝 ‘받은 파일 쓰는 법’에서 해요.</aside>
+    <p class="tip" style="left:1290px;top:850px;width:470px" data-anim="pop" data-step="6">디자인은 단원마다 AI가 새로 만들어요</p>
+    <aside class="notes">보기로 만든 중학교 역사 ‘훈민정음’ 슬라이드예요. 기능 파일(slide-engine.html)에는 이 디자인이 들어 있지 않아요. 기능 파일은 디자인 틀이 아니라 기능(넘기기·퀴즈·필기·편집)과 쓰는 법만 담은 파일이라, 디자인은 단원마다 AI가 새로 만들어요. 큰 화면을 누르면 확대돼요. 지금은 그림으로만 짧게 보고(1분), 실제 파일을 열어 보는 시연은 PART 2 끝 ‘받은 파일 쓰는 법’에서 해요.</aside>
   </section>
 
-  <section class="slide" data-id="slide-steps" data-title="따라 하기: 세 번이면 끝" data-transition="slide">
-    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">따라 하기: 세 번이면 끝</h2>
+  <section class="slide" data-id="slide-steps" data-title="따라 하기: 글 세 개면 끝" data-transition="slide">
+    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">따라 하기: 글 세 개면 끝</h2>
     <ol class="big-steps" style="left:160px;top:270px;width:740px">
-      <li data-anim="fade-right" data-step="1"><span class="n">1</span><h3>파일 2개 올리기</h3><p>교과서 PDF(단원 쪽만)와 틀 파일</p></li>
-      <li data-anim="fade-right" data-step="2"><span class="n">2</span><h3>1단계 글 붙여 넣기</h3><p><mark>노란 곳</mark>만 우리 반에 맞게 바꿔요</p></li>
-      <li data-anim="fade-right" data-step="4"><span class="n">3</span><h3>“만들어 줘”</h3><p>구성안을 보고 2단계 글을 붙여 넣어요</p></li>
+      <li data-anim="fade-right" data-step="1"><span class="n">1</span><h3>구성안 받기</h3><p>PDF와 기능 파일을 올리고 1단계 글</p></li>
+      <li data-anim="fade-right" data-step="3"><span class="n">2</span><h3>시안 보기</h3><p>2단계 글: 표지와 대표 장 2장만 먼저</p></li>
+      <li data-anim="fade-right" data-step="5"><span class="n">3</span><h3>전체 만들기</h3><p>시안이 마음에 들면 3단계 글</p></li>
     </ol>
     <p class="tip" style="left:160px;top:830px;width:740px" data-anim="fade-up" data-delay="900"><b>Claude</b>는 ‘파일 만들기’가 켜져 있어야 해요. 다음 장에서 확인해요.</p>
-    <div class="sm" data-widget="chat" data-title="AI와 대화" style="left:960px;top:236px;width:800px;height:790px" data-anim="fade-left" data-delay="300">
-      <p data-from="me" data-kind="doc" data-step="1">교과서-3단원.pdf<br>slide-template.html</p>
-      <p data-from="me" data-step="2">첨부한 PDF는 <mark>[중2 역사]</mark> <mark>[3단원]</mark>이에요. 구성안만 보여 주세요 …</p>
-      <p data-from="ai" data-step="3">구성안이에요. 표지 → 학습 목표 → … 디자인은 1안·2안 중 골라 주세요.</p>
-      <p data-from="me" data-step="4">좋아요. <mark>2안</mark>으로 만들어 줘.</p>
-      <p data-from="ai" data-kind="doc" data-step="5">history-3-1.html 완성!</p>
+    <div class="sm" data-widget="chat" data-title="AI와 대화" style="left:960px;top:200px;width:800px;height:840px" data-anim="fade-left" data-delay="300">
+      <p data-from="me" data-kind="doc" data-step="1">교과서-3단원.pdf<br>slide-engine.html</p>
+      <p data-from="ai" data-step="2">구성안이에요. 디자인 콘셉트는 ① 호외 신문 ② 탐정 수첩 ③ 박물관 전시실</p>
+      <p data-from="me" data-step="3"><mark>2안</mark>으로 시안부터 보여 주세요.</p>
+      <p data-from="ai" data-kind="doc" data-step="4">시안.html (표지와 대표 장 2장)</p>
+      <p data-from="me" data-step="5">좋아요. 전체를 만들어 주세요.</p>
+      <p data-from="ai" data-kind="doc" data-step="6">history-3-1.html 완성!</p>
     </div>
-    <aside class="notes">글은 키트에서 복사 버튼으로 가져와요. 1: 새 대화에 파일 2개 올리기. 2: 1단계 글(구성안 받기) 붙여 넣기. 노란 [ ] 부분만 바꿔요. 슬라이드 수는 [6~8장]으로. 3: AI가 구성안을 보여 줘요. 4: 오늘은 고치지 말고 바로 2단계 글(“만들어 줘”). 5: 몇 분 뒤 HTML 파일이 나와요. ChatGPT는 앱의 대화(Chat)에서 똑같이 해요. 1단계 글의 ‘화면’에는 “선생님 노트북을 교실 TV·빔프로젝터에 연결해서 띄워요”가 기본으로 들어 있어요. ‘교실 TV’나 ‘빔프로젝터’라고만 쓰면 AI가 전자칠판(화면을 직접 만지는 수업)용으로 만들 때가 있어서예요.</aside>
+    <aside class="notes">글은 키트에서 복사 버튼으로 가져와요. 1: 새 대화에 교과서 PDF와 기능 파일(slide-engine.html)을 올리고 1단계 글(구성안 받기) 붙여 넣기. 노란 [ ] 부분만 바꿔요. 슬라이드 수는 [6~8장]으로. 2: AI가 구성안과 디자인 콘셉트 3가지를 보여 줘요. 3: 오늘은 구성안을 고치지 말고, 마음에 드는 콘셉트로 2단계 글(시안 보기). 4: 1~2분 뒤 표지와 대표 장 2장짜리 시안이 나와요. 5: 시안이 마음에 들면 3단계 글(전체 만들기). 오늘은 실습 ②에서 시안을 열어 본 뒤 보내요. 6: 몇 분 뒤 HTML 파일이 나와요. 기능 파일은 디자인 틀이 아니라서 디자인은 AI가 단원에 맞게 새로 만들어요. 글로만 고르기 어려운 디자인을 시안에서 눈으로 골라야 전체도 좋게 나와요. ChatGPT는 앱의 대화(Chat)에서 똑같이 해요. 1단계 글의 ‘화면’에는 “선생님 노트북을 교실 TV·빔프로젝터에 연결해서 띄워요”가 기본으로 들어 있어요. ‘교실 TV’나 ‘빔프로젝터’라고만 쓰면 AI가 전자칠판(화면을 직접 만지는 수업)용으로 만들 때가 있어서예요.</aside>
   </section>
 
   <section class="slide" data-id="claude-setting" data-title="Claude: 파일 만들기 켜기" data-transition="push">
@@ -1238,16 +1239,16 @@ body { font-family: var(--font); color: var(--fg); }
     <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 교과서로 슬라이드 맡겨 두기</h2>
     <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
       <li>Claude 쓰는 분: 파일 만들기 켜져 있나 확인<small>설정 → 기능</small></li>
-      <li>교과서 PDF(단원 쪽만)와 틀 파일 준비</li>
+      <li>교과서 PDF(단원 쪽만)와 기능 파일 준비</li>
       <li>1단계 글 붙여 넣고 노란 곳 바꾸기<small>슬라이드 수는 [6~8장]</small></li>
-      <li>구성안이 나오면 2단계 글로 “만들어 줘”</li>
+      <li>구성안이 나오면 2단계 글로 시안 부탁</li>
       <li>AI가 만드는 동안 앞을 봐 주세요!</li>
     </ul>
     <div class="clock" style="left:1340px;top:280px;width:420px;height:420px" data-anim="progress-ring" data-delay="400">
       <svg viewBox="0 0 420 420" width="420" height="420" aria-label="7분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">7</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
     </div>
-    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">구성안은 오늘 고치지 말고 바로 “만들어 줘”</p>
-    <aside class="notes">[7~14분] T를 눌러 타이머(7분)를 켜요. 모두 “만들어 줘”까지 보냈는지 확인하고 PART 2로 넘어가요. 자주 막히는 곳: Claude의 ‘파일 생성 및 편집’ 설정이 꺼져 있음(앞 장), PDF가 너무 큼(단원 쪽만 자르기).</aside>
+    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">구성안은 오늘 고치지 말고 바로 시안까지</p>
+    <aside class="notes">[7~14분] T를 눌러 타이머(7분)를 켜요. 모두 2단계 글(시안 보기)까지 보냈는지 확인하고 PART 2로 넘어가요. 3단계(전체 만들기)는 실습 ②에서 보내요. 자주 막히는 곳: Claude의 ‘파일 생성 및 편집’ 설정이 꺼져 있음(앞 장), PDF가 너무 큼(단원 쪽만 자르기).</aside>
   </section>
 
   <!-- ===================== PART 2 기다리는 동안 ===================== -->
@@ -1370,7 +1371,7 @@ body { font-family: var(--font); color: var(--fg); }
   </section>
 
   <section class="slide" data-id="use-file" data-title="받은 파일 쓰는 법" data-transition="fade">
-    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">다 됐나요? 받은 파일은 이렇게 써요</h2>
+    <h2 class="h2" style="left:160px;top:110px;width:1600px" data-anim="split-words">시안이 나왔나요? 받은 파일은 이렇게 써요</h2>
     <div class="screen" style="left:160px;top:260px;width:1080px;height:640px" data-anim="scale-in">
       <div class="in">
         <span class="s-h">세종은 왜 새 글자를 만들었을까?</span>
@@ -1387,28 +1388,28 @@ body { font-family: var(--font); color: var(--fg); }
     <ul class="keys" style="left:1300px;top:280px;width:460px">
       <li data-anim="fade-left" data-step="1"><kbd>→</kbd>누르면 다음</li>
       <li data-anim="fade-left" data-step="2"><kbd>P</kbd>필통의 펜으로 필기</li>
-      <li data-anim="fade-left" data-step="3"><kbd>☰</kbd>메뉴: 점검·고치기</li>
+      <li data-anim="fade-left" data-step="3"><kbd>☰</kbd>메뉴: 뽑기·편집</li>
       <li data-anim="fade-left" data-step="4"><kbd>F</kbd>전체 화면</li>
     </ul>
     <p class="tip" style="left:160px;top:912px;width:1600px" data-anim="fade-up" data-step="5">움직임이 많다고 느끼면 메뉴 → 설정 → 모션 강도를 ‘보통’으로 낮춰요.</p>
-    <aside class="notes">[25분 무렵] 여기서 키트의 틀 파일(slide-template.html) 또는 먼저 완성된 선생님의 파일을 크롬으로 열어 직접 시연해요. 시연 순서: → 넘기기 / 퀴즈 눌러 보기(정답 색종이) / 카드 뒤집기 / P 펜으로 한 줄 / 메뉴 → 점검 / Shift+E 편집에서 글자 두 번 눌러 고치기. 크롬이나 엣지로 열어요(미리보기 앱은 기능이 안 돼요).</aside>
+    <aside class="notes">[25분 무렵] 여기서 먼저 나온 선생님의 시안이나 키트의 기능 파일(slide-engine.html, 회색 기능 시연 11장)을 크롬으로 열어 직접 시연해요. 시연 순서: → 넘기기 / 퀴즈 눌러 보기(정답 색종이) / 카드 뒤집기 / P 펜으로 한 줄 / R 뽑기 / Shift+E 편집에서 글자 두 번 눌러 고치기. 크롬이나 엣지로 열어요(미리보기 앱은 기능이 안 돼요).</aside>
   </section>
 
-  <section class="slide" data-id="practice2" data-title="실습 ② 내 슬라이드 열어 보기" data-transition="cover">
+  <section class="slide" data-id="practice2" data-title="실습 ② 시안 보고 전체 맡기기" data-transition="cover">
     <p style="left:160px;top:100px;width:600px" data-anim="pop"><span class="tag">실습 ② · 5분</span></p>
-    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">내 슬라이드 열어 보기</h2>
+    <h2 class="h2" style="left:160px;top:180px;width:1100px" data-anim="split-words" data-delay="200">시안 보고 전체 맡기기</h2>
     <ul class="check" style="left:160px;top:330px;width:1080px" data-anim="stagger" data-delay="700">
-      <li>받은 파일 내려받기</li>
+      <li>받은 시안 파일 내려받기</li>
       <li>크롬이나 엣지로 열기<small>더블클릭이 안 되면 브라우저 창에 끌어다 놓기</small></li>
       <li>→ 키로 넘겨 보고, F로 전체 화면</li>
-      <li>메뉴 → 점검 눌러 보기</li>
-      <li>고칠 곳은 같은 대화에 “3번 장 고쳐 줘”</li>
+      <li>마음에 들면 3단계 글로 전체 만들기</li>
+      <li>고칠 곳은 같은 대화에 “제목을 더 크게”</li>
     </ul>
     <div class="clock" style="left:1340px;top:280px;width:420px;height:420px" data-anim="progress-ring" data-delay="400">
       <svg viewBox="0 0 420 420" width="420" height="420" aria-label="5분"><circle class="bg" cx="210" cy="210" r="170"/><circle class="fg" cx="210" cy="210" r="170" transform="rotate(-90 210 210)"/><text class="num" x="210" y="232" text-anchor="middle">5</text><text class="unit" x="210" y="296" text-anchor="middle">분</text></svg>
     </div>
-    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">아직 안 나왔어도 괜찮아요. 게임 만드는 동안 마저 나와요.</p>
-    <aside class="notes">[25~30분] T로 타이머 5분. 먼저 된 분의 슬라이드를 한두 개 빔프로젝터로 띄워 보여 주면 분위기가 살아나요.</aside>
+    <p class="tip" style="left:1300px;top:760px;width:460px" data-anim="fade-up" data-delay="1400">전체 파일은 게임 만드는 동안 나와요.</p>
+    <aside class="notes">[25~30분] T로 타이머 5분. 시안이 마음에 들면 바로 3단계 글을 보내요. 오늘은 시안을 오래 고치지 않아요. 먼저 나온 분의 시안을 한두 개 빔프로젝터로 띄워, 단원마다 디자인이 다르게 나오는 걸 같이 보면 분위기가 살아나요.</aside>
   </section>
 
   <!-- ===================== PART 3 내 수업 게임 ===================== -->
