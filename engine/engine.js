@@ -1,9 +1,9 @@
-// ===== ENGINE v2.4 =====
+// ===== ENGINE v2.5 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.4';
+const VERSION = '2.5';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -212,6 +212,8 @@ menuBtn.innerHTML = icon('menu') + '<span class="hz-dot"></span>';
 const navPrev = h('button', { class: 'hz-nav hz-nav-l hz-chrome', type: 'button', 'data-cmd': 'prev', title: '이전 (←)', 'aria-label': '이전', html: icon('prev') });
 const navNext = h('button', { class: 'hz-nav hz-nav-r hz-chrome', type: 'button', 'data-cmd': 'next', title: '다음 (→)', 'aria-label': '다음', html: icon('next') });
 /* 메뉴 서랍 */
+// 점검 숨기기 (§3.8): main에 data-check="off"면 메뉴의 점검 타일과 메뉴 버튼의 점을 숨긴다. HTMLzip.check()는 그대로 동작한다
+const checkHidden = () => deck.dataset.check === 'off';
 const drawer = h('aside', { class: 'hz-drawer', 'aria-label': '메뉴 서랍' });
 const drTabs = h('div', { class: 'hz-dr-tabs', role: 'tablist' });
 const drMenu = h('div', { class: 'hz-dr-body', 'data-tab': 'menu' });
@@ -225,7 +227,7 @@ drMenu.append(
     tile('timer', '타이머', 'timer'), tile('pick', '뽑기', 'dice'), tile('celebrate', '축하', 'party'),
     tile('view', '발표자 보기', 'view'), tile('pwin', '발표자 창', 'pwin'), tile('full', '전체 화면', 'full')),
   section('필기', tile('clear', '이 장 지우기', 'trash'), tile('clearAll', '전체 지우기', 'trashAll'), tile('redo', '다시 하기', 'redo')),
-  section('만들기', tile('edit', '편집', 'edit'), tile('check', '점검', 'check'), tile('settings', '설정', 'settings'), tile('help', '단축키', 'help')));
+  section('만들기', tile('edit', '편집', 'edit'), ...(checkHidden() ? [] : [tile('check', '점검', 'check')]), tile('settings', '설정', 'settings'), tile('help', '단축키', 'help')));
 
 const boardBar = h('div', { class: 'hz-boardbar hz-chrome' });
 const timerEl = h('div', { class: 'hz-timer' });
@@ -2512,8 +2514,9 @@ function updateChrome() {
     b.classList.toggle('hz-warn', checkCount > 0);
     const l = $('.hz-lbl', b); if (l) l.textContent = checkCount > 0 ? `점검 ${checkCount}` : '점검';
   });
-  menuBtn.classList.toggle('hz-has-issue', checkCount > 0);
-  menuBtn.title = checkCount > 0 ? `메뉴 · 점검할 문제 ${checkCount}개` : '메뉴 (도구·슬라이드·설정)';
+  const showIssue = checkCount > 0 && !checkHidden();
+  menuBtn.classList.toggle('hz-has-issue', showIssue);
+  menuBtn.title = showIssue ? `메뉴 · 점검할 문제 ${checkCount}개` : '메뉴 (도구·슬라이드·설정)';
   pwSendSoon();
 }
 

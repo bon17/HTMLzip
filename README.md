@@ -16,7 +16,7 @@
 | 폴더 | 내용 | 상태 |
 |---|---|---|
 | [decks/2026-11-11-vibe-coding-teacher-training.html](decks/2026-11-11-vibe-coding-teacher-training.html) | 교사 연수 “바이브코딩 첫걸음: 말로 만드는 수업 도구” | 엔진 v2.3 고정 |
-| [decks/2026-12-24-ai-prompt-class/](decks/2026-12-24-ai-prompt-class/index.html) | 중2 프롬프트 특강 “AI 잘 쓰면, 나도 잘 된다!” (영상 때문에 폴더형) | 도입부 17장 완성 · 엔진 v2.4(이 덱에만) · 챕터·채팅·자동완성·잠금 카드 위젯, 뽑기 목록 · 그림 모두 넣음, 영상은 `assets/`에 따로 |
+| [decks/2026-12-24-ai-prompt-class/](decks/2026-12-24-ai-prompt-class/index.html) | 중2 프롬프트 특강 “AI 잘 쓰면, 나도 잘 된다!” (영상 때문에 폴더형) | 도입부 17장 완성 · 엔진 v2.5 · 챕터·채팅·자동완성·잠금 카드 위젯, 뽑기 목록 · 그림 모두 넣음, 영상은 `assets/`에 따로 |
 
 두 덱은 디자인이 전혀 다르지만 필통·메뉴·필기·편집 기능은 똑같이 동작합니다.
 
@@ -24,6 +24,7 @@
 
 | 파일 | 내용 |
 |---|---|
+| [kits/slide-template.html](kits/slide-template.html) | 슬라이드 틀(엔진 v2.5). 이 파일을 복사해 디자인·슬라이드 구역만 바꿔 새 덱을 만든다. 맨 위 작성 안내를 AI가 읽는다. 선생님 메뉴에는 점검이 보이지 않는다(`data-check="off"`). 엔진을 바꾸면 `node tools/sync-engine.mjs kits/slide-template.html`로 따로 갱신한다. |
 | [kits/textbook-slides-guide.html](kits/textbook-slides-guide.html) | 교사 연수 때 나눠 주는 안내 파일. 교과서 PDF로 슬라이드 만들기(틀 파일 내려받기 포함), 수업 게임 A·B 글, 주소로 나눠 주기(Vercel), 그림이 있는 게임 만들기 글. 프롬프트마다 복사 버튼이 있어요. |
 
 ## 모든 덱에 들어가는 기능
