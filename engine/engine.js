@@ -1,4 +1,4 @@
-// ===== ENGINE v2.6 =====
+// ===== ENGINE v2.8 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
@@ -214,6 +214,8 @@ const navNext = h('button', { class: 'hz-nav hz-nav-r hz-chrome', type: 'button'
 /* 메뉴 서랍 */
 // 점검 숨기기 (§3.8): main에 data-check="off"면 메뉴의 점검 타일과 메뉴 버튼의 점을 숨긴다. HTMLzip.check()는 그대로 동작한다
 const checkHidden = () => deck.dataset.check === 'off';
+// 힌트 배지 숨기기 (§4.2): main에 data-hints="off"면 상호작용 요소의 힌트 배지(눌러서 뒤집기 등)를 붙이지 않는다. 교사가 강의로 진행하는 덱에 쓴다
+const hintsHidden = () => deck.dataset.hints === 'off';
 const drawer = h('aside', { class: 'hz-drawer', 'aria-label': '메뉴 서랍' });
 const drTabs = h('div', { class: 'hz-dr-tabs', role: 'tablist' });
 const drMenu = h('div', { class: 'hz-dr-body', 'data-tab': 'menu' });
@@ -981,7 +983,7 @@ function armInteractions(slide) {
     el.classList.remove('hz-flipped');
     if (t === 'quiz') $$('[data-option]', el).forEach(o => o.classList.remove('hz-correct', 'hz-wrong'));
     if (t === 'reveal') { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }
-    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off') { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
+    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off' && !hintsHidden()) { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
   });
 }
 const dropHint = el => $$(':scope > .hz-hint', el).forEach(n => n.remove());
