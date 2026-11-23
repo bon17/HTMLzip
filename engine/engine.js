@@ -1,4 +1,4 @@
-// ===== ENGINE v2.9 =====
+// ===== ENGINE v3.0 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
@@ -982,6 +982,8 @@ function armInteractions(slide) {
     const t = el.dataset.interact;
     el.classList.remove('hz-flipped');
     if (t === 'quiz') $$('[data-option]', el).forEach(o => o.classList.remove('hz-correct', 'hz-wrong'));
+    // 점 숨김 (§4.2): data-spots="tap"이면 처음엔 그림만 보이고, 그림을 한 번 누르면 점이 나타난다
+    if (t === 'hotspot') el.classList.toggle('hz-spots-hidden', el.dataset.spots === 'tap' && strength() !== 'off');
     if (t === 'reveal') { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }
     if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off' && !hintsHidden()) { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
   });
@@ -1003,7 +1005,7 @@ function handleInteract(target) {
     const t = it.dataset.interact;
     if (t === 'flip') { it.classList.toggle('hz-flipped'); dropHint(it); }
     else if (t === 'zoom') toggleZoom(it);
-    else if (t === 'hotspot') hideTips();
+    else if (t === 'hotspot') { if (it.classList.contains('hz-spots-hidden')) it.classList.remove('hz-spots-hidden'); else hideTips(); }
     return true;
   }
   return !!target.closest('a[href],button,input,select,textarea,label,video,audio,summary,.hz-video-missing');
