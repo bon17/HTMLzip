@@ -1,4 +1,4 @@
-/* ===== ENGINE v3.0 ===== */
+/* ===== ENGINE v3.1 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -113,6 +113,14 @@ html.hz-m-off [data-interact="flip"] > * { transition: none; }
 [data-spot] { transition: opacity .35s, scale .35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .hz-spots-hidden [data-spot] { opacity: 0; scale: .2; pointer-events: none; }
 .hz-spots-hidden { cursor: pointer; }
+.hz-spot-zoom {
+  position: absolute; right: 12px; bottom: 12px; z-index: 3; width: 64px; height: 64px; border-radius: 50%;
+  border: 3px solid #fff; background: rgba(17, 17, 17, .72); color: #fff; font: 700 34px/1 system-ui, sans-serif;
+  display: grid; place-items: center; cursor: zoom-in; padding: 0;
+}
+.hz-spot-zoom::before { content: ""; position: absolute; inset: -18px; }
+.hz-zoomed .hz-spot-zoom { display: none; }
+@media print { .hz-spot-zoom { display: none; } }
 @media print { .hz-spots-hidden [data-spot] { opacity: 1; scale: 1; } }
 html.hz-m-off [data-spot], html.hz-m-calm [data-spot],
 html.hz-m-off .hz-hint, html.hz-m-calm .hz-hint, html.hz-m-off .hz-caret { animation: none; }
