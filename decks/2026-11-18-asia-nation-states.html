@@ -11,7 +11,7 @@
  교과서 그림은 저작권 때문에 저장소판에는 자리표시(data-placeholder)만 있다. 선생님 컴퓨터용 파일에만 그림을 넣는다.
 -->
 <style id="hz-engine-style">
-/* ===== ENGINE v3.1 ===== */
+/* ===== ENGINE v3.2 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -1424,7 +1424,7 @@ svg.ic { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: ro
 </section>
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v3.1 =====
+// ===== ENGINE v3.2 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
@@ -1529,6 +1529,7 @@ const P = {
   check: '<path d="M20 6L9 17l-5-5"/>',
   edit: '<path d="M12 20h9"/><path d="M16.4 3.6a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
   timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   party: '<path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
   toc: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
   full: '<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>',
@@ -1603,7 +1604,7 @@ const ictx = inkC.getContext('2d'), lctx = liveC.getContext('2d'), zctx = laserC
 const SHORT = {
   prev: '←', next: '→', hand: 'V', pen: 'P', hl: 'H', eraser: 'E', laser: 'L', color: 'C', undo: 'Ctrl+Z', redo: 'Ctrl+Shift+Z',
   clear: 'X', clearAll: 'Shift+X', board: 'B', edit: 'Shift+E', timer: 'T', celebrate: 'G', toc: 'O', full: 'F', help: '?',
-  pick: 'R', blank: '. 검은 화면 · , 흰 화면', pwin: 'S', sound: 'M', photos: 'I'
+  pick: 'R', covers: 'A', blank: '. 검은 화면 · , 흰 화면', pwin: 'S', sound: 'M', photos: 'I'
 };
 const tip = (cmd, label) => label + (SHORT[cmd] ? ` (${SHORT[cmd]})` : '');
 /* 편집 도구 막대 버튼 (아이콘 + 이름) */
@@ -1652,7 +1653,7 @@ drawer.append(h('div', { class: 'hz-dr-head' }, drTabs, drClose), drMenu, drSlid
 const section = (title, ...tiles) => h('div', { class: 'hz-dr-sec' }, h('h4', {}, title), h('div', { class: 'hz-tiles' }, ...tiles));
 drMenu.append(
   section('수업', tile('toc', '목차', 'toc'), tile('board', '칠판', 'board'), tile('blank', '가리기', 'blank'),
-    tile('timer', '타이머', 'timer'), tile('pick', '뽑기', 'dice'), tile('celebrate', '축하', 'party'),
+    tile('timer', '타이머', 'timer'), tile('pick', '뽑기', 'dice'), tile('celebrate', '축하', 'party'), tile('covers', '가리개', 'eye'),
     tile('view', '발표자 보기', 'view'), tile('pwin', '발표자 창', 'pwin'), tile('full', '전체 화면', 'full')),
   section('필기', tile('clear', '이 장 지우기', 'trash'), tile('clearAll', '전체 지우기', 'trashAll'), tile('redo', '다시 하기', 'redo')),
   section('만들기', tile('edit', '편집', 'edit'), tile('photos', '그림 넣기', 'image'), ...(checkHidden() ? [] : [tile('check', '점검', 'check')]), tile('settings', '설정', 'settings'), tile('help', '단축키', 'help')));
@@ -2456,6 +2457,14 @@ function answer(quiz, opt) {
     opt.classList.add('hz-wrong');
     if (strength() !== 'off') anim(opt, EMPH.shake.k, { duration: T(520), easing: 'ease-in-out', composite: 'add' });
   }
+}
+// 가리개 모두 열기·닫기 (§3.4): 지금 장의 가리개를 한꺼번에 열거나 다시 덮는다
+function toggleCovers() {
+  const sl = slides[cur]; if (!sl || boardMode) return;
+  const rv = $$('[data-interact="reveal"]', sl); if (!rv.length) { toast('이 장에는 가리개가 없어요'); return; }
+  const covers = $$('.hz-cover', sl);
+  if (covers.length) { covers.forEach(c => uncover(c)); toast('가리개 모두 열기'); }
+  else { rv.forEach(el => { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }); toast('가리개 모두 가리기'); }
 }
 function uncover(cover) {
   const host = cover.parentElement;
@@ -3487,7 +3496,7 @@ function openHelp() {
     h('h3', {}, '발표'),
     rows([[K('→ Space PageDown'), '다음 (단계 → 슬라이드)'], [K('← PageUp'), '이전'], [K('Home End'), '처음 / 끝'], ['숫자 + ' + K('Enter'), '번호로 이동'],
       [K('O'), '목차'], [K('F'), '전체 화면'], [K('B'), '슬라이드 ↔ 칠판'], [K('T'), '타이머'], [K('R'), '랜덤 뽑기 (Space·Enter: 다시 뽑기)'],
-      [K('.') + ' / ' + K(','), '검은 화면 / 흰 화면 (한 번 더: 돌아오기)'], [K('G'), '축하 효과'], [K('M'), '효과음 켜기·끄기 (타이머·뽑기에만)'],
+      [K('.') + ' / ' + K(','), '검은 화면 / 흰 화면 (한 번 더: 돌아오기)'], [K('G'), '축하 효과'], [K('A'), '가리개 모두 열기·가리기 (지금 장)'], [K('M'), '효과음 켜기·끄기 (타이머·뽑기에만)'],
       [K('S'), '발표자 창 (새 창에 다음 슬라이드·노트·타이머)'], [K('I'), '그림 넣기 (그림 자리에 사진 넣기)'], [K('?'), '이 도움말']]),
     h('h3', {}, '필기'),
     rows([[K('V') + ' 또는 ' + K('Esc'), '손'], [K('P'), '펜'], [K('H'), '형광펜'], [K('E'), '지우개 (한 번 더: 획 ↔ 부분)'], [K('L'), '레이저'], [K('C'), '펜 색 바꾸기'],
@@ -4991,7 +5000,7 @@ const CMD = {
   color: b => { if (colorPop.classList.contains('hz-show')) return closePops(); closePops(); renderColorPop(); placePop(colorPop, b); },
   undo: () => (editing ? editUndo() : inkUndoAct()), redo: () => (editing ? editRedo() : inkRedoAct()),
   clear: clearSurface, clearAll: clearAllInk, board: () => setBoard(!boardMode), view: toggleView, check: openCheck, edit: () => toggleEdit(),
-  timer: toggleTimer, celebrate: () => celebrate('confetti', true), toc: openToc, full: () => toggleFull(), settings: openSettings, help: openHelp,
+  timer: toggleTimer, celebrate: () => celebrate('confetti', true), covers: toggleCovers, toc: openToc, full: () => toggleFull(), settings: openSettings, help: openHelp,
   pick: openPicker, blank: () => setBlank('black'), pwin: openPW, sound: toggleSound, photos: () => openPhotos(),
   menu: () => (drawerOpen() ? closeDrawer() : openDrawer('menu')), closeMenu: () => closeDrawer(),
   fold: () => setCaseFolded(true), unfold: () => setCaseFolded(false),
@@ -5221,6 +5230,7 @@ window.addEventListener('keydown', e => {
       case 'KeyF': toggleFull(); break;
       case 'KeyO': openToc(); break;
       case 'KeyG': celebrate('confetti', true); break;
+      case 'KeyA': toggleCovers(); break;
       case 'KeyR': openPicker(); break;
       case 'KeyS': openPW(); break;
       case 'KeyM': toggleSound(); break;
