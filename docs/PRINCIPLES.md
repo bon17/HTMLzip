@@ -286,7 +286,7 @@
 | 종류 | 마크업 |
 |---|---|
 | `flip` | 안에 `<div class="front">`(앞면)와 `<div class="back">`(뒷면)을 둔다. 상자에 `height`가 있어야 한다. |
-| `reveal` | 내용을 그대로 쓰면 엔진이 가리개를 덮는다. 가리개 글자는 `data-cover-text`로 바꾼다. |
+| `reveal` | 내용을 그대로 쓰면 엔진이 가리개를 덮는다. 가리개 글자는 `data-cover-text`로 바꾼다. 가리개의 색과 글자 크기는 덱 디자인에서 `--cover-bg`, `--cover-fg`, `--cover-size`(기본 40px) 변수로 정한다. |
 | `quiz` | 보기마다 `data-option`, 정답에 `data-correct`를 붙인다(정답이 여러 개여도 된다). |
 | `zoom` | 아무 상자에나 붙인다. |
 | `hotspot` | 안에 `<span data-spot data-tip="설명" style="left:30%;top:40%"></span>`을 원하는 만큼 둔다. |
