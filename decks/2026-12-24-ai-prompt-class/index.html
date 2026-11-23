@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap">
 <style id="hz-engine-style">
-/* ===== ENGINE v2.8 ===== */
+/* ===== ENGINE v2.9 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -1275,7 +1275,7 @@ ol.steps li{margin:.35em 0}
 
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v2.8 =====
+// ===== ENGINE v2.9 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
@@ -1338,7 +1338,7 @@ const REDUCE = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: redu
 const S = Object.assign({
   strength: REDUCE ? 'calm' : 'rich', speed: 1, caseVertical: false, caseAt: null, caseFolded: false, navArrows: true, pageInFull: true,
   timerMin: 10, color: 0, width: 1, eraserMode: 'stroke', eraserSize: 1, theme: null, view: 'basic',
-  sound: true, pickList: null, pickSet: null, pickRemove: false
+  sound: true, laserTrail: true, pickList: null, pickSet: null, pickRemove: false
 }, (() => {
   // v2.0부터 툴바 대신 필통·메뉴 서랍을 쓴다: 예전 툴바 설정은 버린다
   const saved = store.get('settings', {}) || {};
@@ -3009,26 +3009,39 @@ function laserMove(p) {
   if (!laserRaf) laserRaf = requestAnimationFrame(laserFrame);
 }
 function laserFrame(now) {
-  const life = 380;
-  laserPts = laserPts.filter(q => now - q.t < life);
+  // 레이저: 빨간 점 하나 + 매끈하게 가늘어지는 꼬리 한 줄 (§3.2). 설정에서 꼬리를 끌 수 있다
+  const life = 200, trail = S.laserTrail !== false;
+  laserPts = trail ? laserPts.filter(q => now - q.t < life) : [];
   zctx.setTransform(1, 0, 0, 1, 0, 0); zctx.clearRect(0, 0, laserC.width, laserC.height);
   zctx.setTransform(inkR, 0, 0, inkR, 0, 0); zctx.lineCap = 'round'; zctx.lineJoin = 'round';
-  for (let i = 1; i < laserPts.length; i++) {
-    const a = laserPts[i - 1], b = laserPts[i], k = 1 - (now - b.t) / life;
-    zctx.strokeStyle = `rgba(255,40,40,${(k * 0.75).toFixed(3)})`; zctx.lineWidth = 3 + 9 * k;
-    zctx.beginPath(); zctx.moveTo(a.x, a.y); zctx.lineTo(b.x, b.y); zctx.stroke();
+  const pts = laserPts.length > 1 ? laserPts : [];
+  if (pts.length > 1) {
+    // 왼쪽·오른쪽 가장자리를 구해 하나의 채운 도형으로 그린다 (막대를 겹쳐 그리지 않아 점이 생기지 않는다)
+    const L = [], R = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+      let dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+      const w = 7 * (i / (pts.length - 1));
+      L.push([pts[i].x - dy * w, pts[i].y + dx * w]); R.push([pts[i].x + dy * w, pts[i].y - dx * w]);
+    }
+    const g = zctx.createLinearGradient(pts[0].x, pts[0].y, pts[pts.length - 1].x, pts[pts.length - 1].y);
+    g.addColorStop(0, 'rgba(255,40,40,0)'); g.addColorStop(1, 'rgba(255,40,40,.7)');
+    zctx.fillStyle = g; zctx.beginPath(); zctx.moveTo(L[0][0], L[0][1]);
+    for (let i = 1; i < L.length; i++) zctx.lineTo(L[i][0], L[i][1]);
+    for (let i = R.length - 1; i >= 0; i--) zctx.lineTo(R[i][0], R[i][1]);
+    zctx.closePath(); zctx.fill();
   }
-  const idle = now - laserLast, show = laserHead && tool === 'laser' && idle < 2600;
+  const idle = now - laserLast, show = laserHead && tool === 'laser' && idle < 1300;
   if (show) {
-    zctx.globalAlpha = idle > 2000 ? 1 - (idle - 2000) / 600 : 1;
-    zctx.shadowColor = 'rgba(255,30,30,.9)'; zctx.shadowBlur = 26; zctx.fillStyle = '#ff2a2a';
-    zctx.beginPath(); zctx.arc(laserHead.x, laserHead.y, 11, 0, 6.283); zctx.fill();
-    zctx.shadowBlur = 0; zctx.fillStyle = 'rgba(255,255,255,.9)';
-    zctx.beginPath(); zctx.arc(laserHead.x, laserHead.y, 4, 0, 6.283); zctx.fill(); zctx.globalAlpha = 1;
+    zctx.globalAlpha = idle > 1000 ? 1 - (idle - 1000) / 300 : 1;
+    zctx.shadowColor = 'rgba(255,30,30,.75)'; zctx.shadowBlur = 18; zctx.fillStyle = '#ff2a2a';
+    zctx.beginPath(); zctx.arc(laserHead.x, laserHead.y, 9, 0, 6.283); zctx.fill();
+    zctx.shadowBlur = 0; zctx.globalAlpha = 1;
   }
   if (laserPts.length || show) laserRaf = requestAnimationFrame(laserFrame);
   else { laserRaf = 0; zctx.setTransform(1, 0, 0, 1, 0, 0); zctx.clearRect(0, 0, laserC.width, laserC.height); }
 }
+
 
 input.addEventListener('pointerdown', e => {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -3341,6 +3354,7 @@ function openSettings() {
       h('button', { class: 'hz-b', type: 'button', onclick: () => { S.caseAt = null; S.caseFolded = false; saveSettings(); applyCase(); toast('필통을 처음 위치로 옮겼어요'); } }, '처음 위치로')),
     segRow('넘김 화살표', '마우스를 움직이면 화면 양옆에 나와요', [[true, '보이기'], [false, '숨기기']], S.navArrows !== false, v => { S.navArrows = v; saveSettings(); applyNav(); }),
     segRow('전체 화면 페이지 꼬리표', '', [[true, '보이기'], [false, '숨기기']], S.pageInFull, v => { S.pageInFull = v; saveSettings(); root.classList.toggle('hz-nopage', !v); }),
+    segRow('레이저 꼬리', '레이저를 움직일 때 짧게 따라오는 꼬리', [[true, '켜기'], [false, '끄기']], S.laserTrail !== false, v => { S.laserTrail = v; saveSettings(); }),
     segRow('효과음', '타이머가 끝날 때와 랜덤 뽑기에만 소리가 나요 (M)', [[true, '켜기'], [false, '끄기']], S.sound !== false, v => { S.sound = v; saveSettings(); }),
     segRow('카운트다운 기본 시간', '', [[5, '5분'], [10, '10분'], [15, '15분'], [30, '30분'], [50, '50분']], S.timerMin, v => { S.timerMin = v; saveSettings(); renderTimer(); })
   ];
