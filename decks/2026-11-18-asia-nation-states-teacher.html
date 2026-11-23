@@ -131,7 +131,7 @@ id가 hz-engine-style인 style 구역과 id가 hz-engine-script인 script 구역
 ==========================================================================
 -->
 <style id="hz-engine-style">
-/* ===== ENGINE v2.6 ===== */
+/* ===== ENGINE v2.7 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -914,14 +914,15 @@ html.hz-pw, html.hz-pw body { background: #e9e4d8; }
 /* ===== DECK DESIGN ===== */
 /* 호외 신문: 누런 신문지 + 먹 글자 + 호외 빨강(중국) · 잉크 남색(일본). 모서리는 각지게, 괘선은 이중선 */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;900&display=swap");
+@import url("https://maker-ssam.github.io/korean-ofl-fonts/fonts/hakgyoansim-bareondotum/hakgyoansim-bareondotum.css");
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 :root {
-  --bg: #F2EBDB; --surface: #FBF7EE; --fg: #1C1A17; --muted: #5A5244; --line: #CBBE9F;
+  --bg: #F2EBDB; --surface: #FBF7EE; --fg: #1C1A17; --muted: #3F382F; --line: #CBBE9F;
   --accent: #B3261E; --accent-2: #1F4E79; --accent-ink: #FFFFFF; --highlight: rgba(255, 204, 51, .62);
   --cn: #B3261E; --jp: #1F4E79; --cn-soft: #F2DAD3; --jp-soft: #D8E2EC;
   --land: #E6DCC2; --sea: #D5DED8; --river: #4F7BA0;
   --serif: "Noto Serif KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", serif;
-  --sans: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --sans: "Hakgyoansim Bareondotum", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
 }
 body { font-family: var(--sans); color: var(--fg); }
 .slide { font-family: var(--sans); color: var(--fg); background: var(--bg); font-size: 38px; line-height: 1.5; word-break: keep-all; overflow-wrap: break-word; }
@@ -942,22 +943,22 @@ body { font-family: var(--sans); color: var(--fg); }
 .slide.bare::before, .slide.bare::after { display: none; }
 
 /* 글자 */
-.h2 { font: 900 80px/1.2 var(--serif); letter-spacing: -.01em; }
+.h2 { font: 900 88px/1.18 var(--serif); letter-spacing: -.01em; }
 .h2 em, .title em { font-style: normal; color: var(--accent); }
 .title { font: 900 112px/1.14 var(--serif); letter-spacing: -.02em; }
-.lead { font-size: 44px; line-height: 1.5; color: var(--muted); }
-.body { font-size: 56px; line-height: 1.55; }
+.lead { font-size: 46px; font-weight: 500; line-height: 1.5; color: var(--muted); }
+.body { font-size: 60px; font-weight: 600; line-height: 1.55; }
 .slide b { color: var(--accent); font-weight: 800; }
 .list { list-style: none; padding: 0; }
-.list li { position: relative; padding-left: 60px; margin-bottom: 36px; font-size: 56px; line-height: 1.3; }
+.list li { position: relative; padding-left: 64px; margin-bottom: 36px; font-size: 60px; line-height: 1.3; font-weight: 600; }
 .list[style*="font-size:64px"] li { font-size: 64px; padding-left: 70px; margin-bottom: 44px; }
 .list li::before { content: ""; position: absolute; left: 2px; top: .42em; width: 26px; height: 26px; background: var(--accent); }
 .list.xs li { font-size: 40px; margin-bottom: 18px; padding-left: 50px; }
 .list.sm li { font-size: 56px; margin-bottom: 40px; }
 .yr { font: 900 150px/1 var(--serif); color: var(--accent); letter-spacing: -.02em; }
 .big-hanja { font: 900 190px/1.05 var(--serif); color: var(--accent); }
-.gloss { font-size: 36px; line-height: 1.4; color: var(--muted); }
-.cap { font-size: 32px; line-height: 1.4; color: var(--muted); }
+.gloss { font-size: 40px; font-weight: 500; line-height: 1.4; color: var(--muted); }
+.cap { font-size: 34px; font-weight: 500; line-height: 1.4; color: var(--muted); }
 .cap b { color: var(--fg); }
 
 /* 상자 */
@@ -1078,10 +1079,15 @@ svg.ic { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: ro
 .dia .lab { font-size: 32px; text-anchor: middle; }
 .dia text.lab-cn { font-size: 34px; text-anchor: middle; fill: var(--cn); }
 .dia text.lab-jp { font-size: 34px; text-anchor: middle; fill: var(--jp); }
+
+/* 가독성: 줄 길이 고르게, 본문 굵기 */
+.slide { font-weight: 500; }
+.slide .h2, .slide .body, .slide .lead, .slide .list li, .slide .bubble, .slide .q, .slide .tile p, .slide .flip-card span { text-wrap: balance; }
+.list.sm li { font-size: 60px; }
 </style>
 </head>
 <body>
-<main id="deck" data-deck-id="2026-11-18-asia-nation-states" data-transition="fade" data-emoji="off" data-check="off">
+<main id="deck" data-deck-id="2026-11-18-asia-nation-states" data-transition="fade" data-emoji="off" data-check="off" data-hints="off">
   <!-- ===== 레이아웃 (편집 모드의 "레이아웃으로 추가") ===== -->
   <template class="hz-layout" data-name="표지">
     <section class="slide" data-title="표지" data-transition="circle" data-ambient="particles">
@@ -1505,7 +1511,7 @@ svg.ic { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: ro
 </section>
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v2.6 =====
+// ===== ENGINE v2.7 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
@@ -1721,6 +1727,8 @@ const navNext = h('button', { class: 'hz-nav hz-nav-r hz-chrome', type: 'button'
 /* 메뉴 서랍 */
 // 점검 숨기기 (§3.8): main에 data-check="off"면 메뉴의 점검 타일과 메뉴 버튼의 점을 숨긴다. HTMLzip.check()는 그대로 동작한다
 const checkHidden = () => deck.dataset.check === 'off';
+// 힌트 배지 숨기기 (§4.2): main에 data-hints="off"면 상호작용 요소의 힌트 배지(눌러서 뒤집기 등)를 붙이지 않는다. 교사가 강의로 진행하는 덱에 쓴다
+const hintsHidden = () => deck.dataset.hints === 'off';
 const drawer = h('aside', { class: 'hz-drawer', 'aria-label': '메뉴 서랍' });
 const drTabs = h('div', { class: 'hz-dr-tabs', role: 'tablist' });
 const drMenu = h('div', { class: 'hz-dr-body', 'data-tab': 'menu' });
@@ -2488,7 +2496,7 @@ function armInteractions(slide) {
     el.classList.remove('hz-flipped');
     if (t === 'quiz') $$('[data-option]', el).forEach(o => o.classList.remove('hz-correct', 'hz-wrong'));
     if (t === 'reveal') { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }
-    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off') { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
+    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off' && !hintsHidden()) { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
   });
 }
 const dropHint = el => $$(':scope > .hz-hint', el).forEach(n => n.remove());
