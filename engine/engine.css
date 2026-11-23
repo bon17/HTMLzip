@@ -1,4 +1,4 @@
-/* ===== ENGINE v2.9 ===== */
+/* ===== ENGINE v3.0 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -110,6 +110,10 @@ html.hz-m-off [data-interact="flip"] > * { transition: none; }
   background: #111; color: #fff; font-size: 28px; font-weight: 700; line-height: 1.2; pointer-events: none;
   animation: hz-bob 1.6s ease-in-out infinite;
 }
+[data-spot] { transition: opacity .35s, scale .35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.hz-spots-hidden [data-spot] { opacity: 0; scale: .2; pointer-events: none; }
+.hz-spots-hidden { cursor: pointer; }
+@media print { .hz-spots-hidden [data-spot] { opacity: 1; scale: 1; } }
 html.hz-m-off [data-spot], html.hz-m-calm [data-spot],
 html.hz-m-off .hz-hint, html.hz-m-calm .hz-hint, html.hz-m-off .hz-caret { animation: none; }
 
