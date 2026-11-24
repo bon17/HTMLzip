@@ -1,9 +1,9 @@
-// ===== ENGINE v3.2 =====
+// ===== ENGINE v3.3 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.6';
+const VERSION = '3.3';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 

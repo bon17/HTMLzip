@@ -26,6 +26,13 @@ if (/<\/style/i.test(css) || /<\/script/i.test(js)) {
   process.exit(2);
 }
 const version = (js.match(/ENGINE v([\d.]+)/) || [])[1] || '?';
+// 버전 표시 맞추기: 엔진 머리 표시(ENGINE vX.Y), 엔진 스타일 머리, 설정 창에 보이는 VERSION이 모두 같아야 한다
+const cssVersion = (css.match(/ENGINE v([\d.]+)/) || [])[1] || '?';
+const jsConst = (js.match(/const VERSION = '([\d.]+)'/) || [])[1] || '?';
+if (cssVersion !== version || jsConst !== version) {
+  console.error(`엔진 버전 표시가 서로 달라요: engine.js 머리 v${version} · engine.css 머리 v${cssVersion} · VERSION '${jsConst}'. 셋을 같게 맞춘 뒤 다시 돌리세요.`);
+  process.exit(2);
+}
 
 const KIT_ENGINE = join(ROOT, 'kits/slide-engine.html');
 const KIT_GUIDE = join(ROOT, 'kits/textbook-slides-guide.html');

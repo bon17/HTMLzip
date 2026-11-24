@@ -9,7 +9,8 @@
  HTML 슬라이드 기능 파일 · 작성 안내  (이 파일로 슬라이드를 만드는 AI가 읽는 부분)
 ==========================================================================
 ■ 이 파일은 무엇인가
-이 파일은 디자인 틀이 아니다. 발표·필기·편집 기능(엔진 v2.6)과 그 기능을 쓰는 법을 담은 "부품 + 설명서"다.
+이 파일은 디자인 틀이 아니다. 발표·필기·편집 기능(엔진)과 그 기능을 쓰는 법을 담은 "부품 + 설명서"다.
+엔진 버전은 엔진 구역 첫 줄(ENGINE vX.Y)에 적혀 있다.
 엔진은 디자인을 정하지 않는다. 어떤 모양의 슬라이드에 넣어도 같은 기능이 동작한다.
 그러니 디자인과 화면 배치는 이 파일에서 가져오지 말고, 수업 내용에서 출발해 백지에서 새로 만든다.
 
@@ -91,6 +92,7 @@
 - main의 data-deck-id는 파일 이름(.html 뺀 것)으로, data-transition은 덱 기본 전환으로 정한다.
   data-check="off"는 지우지 않는다(선생님 메뉴에서 점검 표시를 숨기는 표시. HTMLzip.check()는 그대로 동작한다).
   이모지를 쓰지 않는 덱은 main에 data-emoji="off"를 붙인다.
+  선생님이 화면을 조작하며 강의하는 덱은 main에 data-hints="off"를 붙인다(아래 ■ 화면).
 - 레이아웃 등록: 다 만든 뒤 이 덱에서 다시 쓸 만한 장 3~5개를 골라 글만 비우고,
   template 태그(class="hz-layout", data-name="이름") 안에 넣어 main 안에 둔다. (편집 모드 "레이아웃으로 추가" 목록)
 
@@ -113,12 +115,17 @@
 - quiz: 상자 안 보기마다 data-option, 정답에 data-correct
 - flip: 상자에 height를 주고, 안에 class="front"(질문)와 class="back"(답) div 두 개
 - reveal: 가릴 내용을 그대로 쓰고 data-cover-text="눌러서 확인"
+  가리개가 여러 개인 장(연표 빈칸, 정리 표)도 좋다. 선생님이 A 키로 그 장의 가리개를 한꺼번에 열고, 다시 누르면 모두 가린다.
 - hotspot: 상자 안에 span 태그(data-spot, data-tip="설명", style="left:30%;top:40%")를 원하는 만큼
+  상자에 data-spots="tap"을 붙이면 처음엔 그림만 보이고, 그림을 누를 때마다 점이 나타났다 사라진다.
+  구석의 '크게 보기' 단추를 누르면 점 없이 원본 그림만 크게 보인다. 풍자화·사료 그림처럼 그림 전체를 먼저 보여 줄 때 쓴다.
 - zoom: 아무 상자에나 붙인다
 - 엔진은 동작만 맡고 모양은 디자인 구역에서 정한다. 엔진이 붙이는 상태로 모양을 다듬는다.
   정답 보기 .hz-correct(엔진 기본은 초록 테두리), 오답 보기 .hz-wrong(엔진 기본은 흐려짐), 뒤집힌 카드 .hz-flipped
   → 보기 클래스와 함께 .내보기.hz-correct 처럼 쓴다.
-  front·back 면의 색·글자·모서리, 가리개 색(변수 --cover-bg, --cover-fg), 그림 위 점 색(--accent)
+  front·back 면의 색·글자·모서리, 가리개 색과 글자 크기(변수 --cover-bg, --cover-fg, --cover-size 기본 40px), 그림 위 점 색(--accent)
+- 엔진은 뒤집기·퀴즈·크게 보기 상자에 작은 힌트 배지(눌러서 뒤집기, 골라 보세요, 눌러서 크게 보기)를 붙인다.
+  main에 data-hints="off"를 붙이면 붙이지 않는다.
 
 [수업 위젯: data-widget]
 엔진이 구조와 움직임을 만든다. 단계(data-step)와 모션 강도 설정을 그대로 따른다.
@@ -136,7 +143,8 @@
   .slide [data-widget="chat"] 처럼 디자인 구역에서 덮어써 다듬는다.
 
 [발표 도구: 엔진에 들어 있으니 따로 만들지 않는다]
-- 랜덤 뽑기(R), 화면 가리기(. 검은 화면 / , 흰 화면), 효과음(M), 발표자 창(S), 타이머(T), 칠판(B), 축하(G), 그림 넣기(I).
+- 랜덤 뽑기(R), 화면 가리기(. 검은 화면 / , 흰 화면), 가리개 모두 열기·가리기(A), 효과음(M), 발표자 창(S),
+  타이머(T), 칠판(B), 축하(G), 그림 넣기(I).
 - 뽑기 목록 묶음은 main 안에 둔다(한 묶음에 항목을 학급 인원만큼). 첫 묶음이 처음에 뜬다.
     <script type="application/json" class="hz-picker">{"모둠": ["1모둠", "2모둠", "3모둠"], "번호": ["1번", "2번", "3번"]}</script>
 
@@ -173,6 +181,9 @@
 ■ 화면
 - 보통 선생님 노트북을 교실 TV나 빔프로젝터에 연결해 띄운다. 전자칠판처럼 화면을 직접 만지는 수업이 아니다.
 - 넘기기는 노트북 키보드·마우스(또는 발표용 리모컨)로 하고, 퀴즈·카드 같은 참여 요소도 선생님이 마우스로 누른다.
+- 이렇게 선생님이 화면을 조작하며 강의하는 덱은 화면에 '눌러 보세요' 같은 조작 지시 문구를 쓰지 않는다.
+  조작 방법은 발표자 노트에 적고(예: [조작] 그림을 누르면 점이 나와요), main에 data-hints="off"를 붙여 힌트 배지도 끈다.
+  학생이 각자 태블릿으로 보며 직접 누르는 덱이면 힌트 배지를 그대로 둔다.
 - 교실 뒷자리에서도 읽히게 쓴다(본문 28px 이상, 핵심 문구는 더 크게).
 - 태블릿에서도 열리니 파일은 가볍게 한다: 그림은 SVG로, 사진은 작게.
 
@@ -187,7 +198,7 @@
 ==========================================================================
 -->
 <style id="hz-engine-style">
-/* ===== ENGINE v3.2 ===== */
+/* ===== ENGINE v3.3 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -1020,7 +1031,7 @@ body { font-family: var(--demo-font); color: var(--fg); }
 .demo-flip .front { background: var(--accent); color: #fff; }
 .demo-flip .back { background: var(--surface); border: 3px solid var(--accent); }
 .slide [data-widget="unlock"] > [data-card] { flex: 1; display: grid; place-items: center; border: 3px dashed var(--line); border-radius: 14px; background: var(--surface); font-size: 40px; font-weight: 800; }
-.demo-keys { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px 28px; }
+.demo-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 28px; }
 .demo-keys div { display: flex; align-items: center; gap: 18px; font-size: 32px; }
 .demo-keys kbd { flex: none; min-width: 78px; height: 78px; display: grid; place-items: center; padding: 0 14px; border: 3px solid var(--line); border-bottom-width: 7px; border-radius: 12px; background: var(--surface); font: 800 32px/1 var(--demo-mono); }
 </style>
@@ -1033,7 +1044,7 @@ body { font-family: var(--demo-font); color: var(--fg); }
 
   <!-- ===== 기능 시연 장 (회색 도면). 새 덱에서는 모두 지우고, 디자인과 배치는 백지에서 새로 쓴다 ===== -->
   <section class="slide" data-id="intro" data-title="기능 파일 안내" data-transition="circle" data-ambient="particles">
-    <p class="demo-tag" style="left:120px;top:110px;width:1200px">슬라이드 기능 파일 · 엔진 v2.6 · <b>기능 시연 1/11</b></p>
+    <p class="demo-tag" style="left:120px;top:110px;width:1200px">슬라이드 기능 파일 · <b>기능 시연 1/11</b></p>
     <h1 class="demo-hero" style="left:120px;top:250px;width:1500px" data-anim="split-words" data-delay="200">디자인은 비어 있어요.<br>기능만 들어 있어요.</h1>
     <p class="demo-text" style="left:120px;top:540px;width:1420px" data-anim="fade-up" data-delay="1000">이 파일은 디자인 틀이 아니에요. 회색 장들은 기능이 어떻게 움직이는지 보여 주는 시연이에요. 새 덱의 콘셉트·색·글꼴·화면 배치는 수업 내용에서 출발해 백지에서 새로 만들어요.</p>
     <p class="demo-code" style="left:120px;top:820px;width:1680px" data-anim="fade" data-delay="1600"><code>data-transition="circle"</code> <code>data-ambient="particles"</code> <code>data-anim="split-words"</code></p>
@@ -1100,8 +1111,8 @@ body { font-family: var(--demo-font); color: var(--fg); }
       <p class="demo-h" style="font-size:44px">엔진은 코드로 복사만</p>
       <p class="demo-text" style="margin-top:18px">디자인과 슬라이드는 통째로 새로 써요.</p>
     </div>
-    <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="fade" data-step="1"><code>data-interact="quiz"</code> + 보기 <code>data-option</code> · 정답 <code>data-correct</code> │ <code>data-interact="reveal"</code> <code>data-cover-text="눌러서 확인"</code></p>
-    <aside class="notes">기능 시연 4: 보기를 누르면 정답은 초록 테두리와 색종이, 오답은 흔들리고 흐려짐(엔진 기본 모양. 디자인 구역에서 .내보기.hz-correct로 다듬는다). 오른쪽은 가리개.</aside>
+    <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="fade" data-step="1"><code>data-interact="quiz"</code> + 보기 <code>data-option</code> · 정답 <code>data-correct</code> │ <code>data-interact="reveal"</code> <code>data-cover-text="눌러서 확인"</code><br>가리개 글자 크기 <code>--cover-size</code> · 이 장의 가리개를 한꺼번에 열고 가리기 <code>A</code> 키</p>
+    <aside class="notes">기능 시연 4: 보기를 누르면 정답은 초록 테두리와 색종이, 오답은 흔들리고 흐려짐(엔진 기본 모양. 디자인 구역에서 .내보기.hz-correct로 다듬는다). 오른쪽은 가리개. A 키를 누르면 이 장의 가리개가 모두 열리고, 다시 누르면 모두 가려진다.</aside>
   </section>
 
   <section class="slide" data-id="cards" data-title="학생 참여: 뒤집기, 그림 위 점, 크게 보기" data-transition="flip">
@@ -1110,7 +1121,7 @@ body { font-family: var(--demo-font); color: var(--fg); }
       <div class="front">Q. 시안은<br>몇 장일까?</div>
       <div class="back">표지 + 대표 장 2장<br>모두 3장</div>
     </div>
-    <div class="demo-box" style="left:700px;top:190px;width:640px;height:480px;padding:0" data-interact="hotspot" data-anim="scale-in" data-step="1">
+    <div class="demo-box" style="left:700px;top:190px;width:640px;height:480px;padding:0" data-interact="hotspot" data-spots="tap" data-anim="scale-in" data-step="1">
       <svg viewBox="0 0 634 474" width="634" height="474" aria-label="발표 화면 도면: 왼쪽 위 메뉴 버튼, 왼쪽 아래 필통, 오른쪽 아래 페이지 꼬리표">
         <rect x="40" y="40" width="554" height="394" rx="12" style="fill:var(--surface);stroke:var(--line);stroke-width:4"/>
         <rect x="64" y="64" width="54" height="54" rx="12" style="fill:var(--line)"/>
@@ -1126,8 +1137,8 @@ body { font-family: var(--demo-font); color: var(--fg); }
       <p class="demo-text">눌러서 크게 보기</p>
       <p class="demo-code" style="margin-top:20px">사진·코드·도표처럼 자세히 볼 것에 붙여요. 다시 누르면 돌아와요.</p>
     </div>
-    <p class="demo-code" style="left:120px;top:760px;width:1680px" data-anim="blur-in" data-step="2"><code>data-interact="flip"</code> + <code>.front</code> <code>.back</code> │ <code>data-interact="hotspot"</code> + <code>data-spot data-tip="…"</code> │ <code>data-interact="zoom"</code></p>
-    <aside class="notes">기능 시연 5: 카드를 누르면 뒤집힘, 그림 위 점을 누르면 설명, 오른쪽 상자는 눌러서 크게.</aside>
+    <p class="demo-code" style="left:120px;top:760px;width:1680px" data-anim="blur-in" data-step="2"><code>data-interact="flip"</code> + <code>.front</code> <code>.back</code> │ <code>data-interact="zoom"</code><br><code>data-interact="hotspot"</code> + <code>data-spot data-tip="…"</code> · <code>data-spots="tap"</code>: 그림을 누를 때마다 점 보이기·숨기기, 구석 단추로 원본 크게 보기</p>
+    <aside class="notes">기능 시연 5: 카드를 누르면 뒤집힘. 가운데 그림은 data-spots="tap"이라 처음엔 그림만 보이고, 그림을 누르면 점이 나타나고 점을 누르면 설명이 뜬다. 구석 단추는 점 없이 원본 그림 크게 보기. 오른쪽 상자는 눌러서 크게.</aside>
   </section>
 
   <section class="slide" data-id="chapter" data-title="위젯: 챕터" data-transition="wipe">
@@ -1186,12 +1197,14 @@ body { font-family: var(--demo-font); color: var(--fg); }
       <div><kbd>R</kbd>랜덤 뽑기</div>
       <div><kbd>.</kbd>검은 화면</div>
       <div><kbd>,</kbd>흰 화면</div>
+      <div><kbd>A</kbd>가리개 모두 열기</div>
       <div><kbd>S</kbd>발표자 창</div>
       <div><kbd>T</kbd>타이머</div>
       <div><kbd>B</kbd>칠판</div>
       <div><kbd>G</kbd>축하 색종이</div>
       <div><kbd>M</kbd>효과음</div>
       <div><kbd>I</kbd>그림 넣기</div>
+      <div><kbd>F</kbd>전체 화면</div>
       <div><kbd>?</kbd>단축키</div>
     </div>
     <p class="demo-code" style="left:120px;top:800px;width:1680px" data-anim="blur-in" data-delay="1400">발표 도구는 엔진에 들어 있으니 만들지 않아요 │ 마지막 장 <code>data-celebrate="confetti"</code> <code>data-ambient="gradient"</code></p>
@@ -1200,12 +1213,12 @@ body { font-family: var(--demo-font); color: var(--fg); }
 
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v3.2 =====
+// ===== ENGINE v3.3 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '2.6';
+const VERSION = '3.3';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
