@@ -3,7 +3,7 @@
 다음 대화는 이 파일을 먼저 읽고 이어서 작업한다. (마지막 갱신: 2026-11-23)
 
 ## 대상
-- 파일: `decks/2026-11-18-asia-nation-states-teacher.html` (78장, 엔진 **v3.2**, 약 5.7MB)
+- 파일: `decks/2026-11-18-asia-nation-states-teacher.html` (78장, 엔진 **v3.3**, 약 5.7MB)
 - 브랜치: `claude/elegant-davinci-rho7tp` → 매번 PR로 **main에 합침**(마지막: bon17/htmlzip#25). 시작할 때 `git fetch origin main` 후 합치고 작업.
 - 기준 파일: 선생님이 편집 모드로 직접 고친 파일을 올려 그것을 새 기준으로 삼은 적이 있다. 선생님이 파일을 다시 올리면 **그 파일을 기준**으로 덮어쓰고, 엔진 sync·그림 재압축만 다시 한다.
 - 저장소의 `decks/2026-11-18-asia-nation-states.html`(학생용)은 손대지 않음.
