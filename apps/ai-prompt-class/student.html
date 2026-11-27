@@ -106,6 +106,20 @@ summary{font-family:'Jua',sans-serif;font-size:19px;cursor:pointer;color:#1E5BD8
 /* 알림 */
 #toast{position:fixed;left:50%;bottom:24px;-webkit-transform:translateX(-50%);transform:translateX(-50%);background:#1C2340;color:#fff;border-radius:999px;padding:12px 22px;font-size:18px;z-index:60;opacity:0;pointer-events:none;-webkit-transition:opacity .25s;transition:opacity .25s;max-width:90%;text-align:center}
 #toast.on{opacity:1}
+body.docked #toast{bottom:150px}
+.btn.go{display:block;width:100%;margin:12px 0 0;background:#1E5BD8;font-size:24px;padding:14px 18px}
+.btn.go .ico{width:1.2em;height:1.2em;vertical-align:-.22em;margin-right:4px}
+.subbtns{display:flex;justify-content:center;margin-top:6px}
+.subbtns button,.subbtns a{background:none;border:0;color:#1E5BD8;font-size:16px;text-decoration:underline;margin:0 10px;padding:8px 4px;cursor:pointer;font-weight:700}
+#dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:3px solid #1C2340;box-shadow:0 -6px 18px rgba(28,35,64,.18);padding:10px 16px 12px;display:none}
+#dock.on{display:block}
+#dock .in{max-width:780px;margin:0 auto;display:flex;align-items:center}
+#dock .pv{flex:1;min-width:0;font-size:15px;line-height:1.4;max-height:2.8em;overflow:hidden;margin-right:12px;color:#1C2340}
+#dock .pv b{display:block;font-family:'Jua',sans-serif;font-weight:400;font-size:15px;color:#C2410C}
+#dock .btn{margin:0;flex:none;background:#1E5BD8;font-size:20px;padding:10px 16px;min-height:48px}
+.flash{-webkit-animation:fl 1.2s ease 2;animation:fl 1.2s ease 2}
+@-webkit-keyframes fl{50%{box-shadow:0 0 0 6px #FFE58A}}
+@keyframes fl{50%{box-shadow:0 0 0 6px #FFE58A}}
 .wait{text-align:center;padding:40px 0}
 .wait .big{font-size:40px;margin:10px 0}
 .spin{display:inline-block;width:46px;height:46px;border:6px solid #DDE1EC;border-top-color:#C2410C;border-radius:50%;-webkit-animation:sp 1s linear infinite;animation:sp 1s linear infinite}
@@ -155,6 +169,7 @@ summary{font-family:'Jua',sans-serif;font-size:19px;cursor:pointer;color:#1E5BD8
 </main>
 
 <div class="modal" id="modal"><div class="box"><button class="x" id="modal-x" aria-label="닫기">&times;</button><div id="modal-body"></div></div></div>
+<div id="dock"><div class="in"><div class="pv" id="dock-pv"></div><button class="btn" id="dock-go">복사하고 제미나이</button></div></div>
 <div id="toast"></div>
 
 <script>
@@ -270,6 +285,7 @@ function toast(msg, ms) {
 }
 var ICON = {
   dice: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+  go: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
   check: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 };
 
@@ -332,6 +348,7 @@ function show(id) {
   var all = ['scr-join', 'scr-wait', 'scr-mission', 'scr-final'];
   for (var i = 0; i < all.length; i++) $(all[i]).className = 'scr' + (all[i] === id ? ' on' : '');
   window.scrollTo(0, 0);
+  if (typeof updateDock === 'function') updateDock();
 }
 function renderWho() {
   $('who').innerHTML = S.cls ? esc(S.cls + '반 ' + S.num + '번') + '<a id="who-change">바꾸기</a>' : '';
@@ -457,6 +474,7 @@ function build(m, tpl) {
 
 function openMission(m) {
   if (!MISSIONS[m]) return;
+  if (lastGo && lastGo.m !== m) lastGo = null;
   view = m;
   ensureSel(m);
   show('scr-mission');
@@ -489,12 +507,12 @@ function renderMission(m) {
   h += '<p class="hint">먼저 평소처럼 짧게 시켜 봐요. 결과를 Before로 올려요.</p>';
   if (subj) h += '<div class="slot"><div class="slot-l">' + esc(subj.l) + ' 고르기</div>' + chipsHtml(m, subj, si) + '</div>';
   h += '<div class="oneline" id="one">' + esc(one.plain) + '</div>';
-  h += '<div class="row2"><button class="btn" data-copy="before">복사하기</button><a class="btn blue" href="' + GEMINI + '" target="_blank" rel="noopener">제미나이 열기</a></div>';
+  h += goHtml('before');
   h += uploadHtml(m, 'before') + '</div>';
 
   /* ② 재료 넣어서 */
   h += '<div class="card" id="c2"><h2 class="d"><span class="n">2</span>재료를 넣어서 다시</h2>';
-  h += '<div class="dice"><p>너만의 추천 조합이 골라져 있어요.<br>마음에 안 들면 바꿔도 돼요!' + (subj ? '<br>' + esc(subj.l) + '은 1번에서 고른 그대로예요.' : '') + '</p><button class="btn" id="btn-roll">' + ICON.dice + ' 다른 조합</button></div>';
+  h += '<div class="dice"><p>너만의 추천 조합이 골라져 있어요.<br>마음에 안 들면 바꿔도 돼요!' + (subj ? '<br>' + esc(subj.l) + josa(subj.l, '은/는') + ' 1번에서 고른 그대로예요.' : '') + '</p><button class="btn" id="btn-roll">' + ICON.dice + ' 다른 조합</button></div>';
   for (var k = 0; k < M.slots.length; k++) {
     var sl = M.slots[k];
     if (sl.k === M.subject) continue;
@@ -511,7 +529,7 @@ function renderMission(m) {
   }
   if (M.safe) h += '<label class="safe"><input type="checkbox" id="safe-in"' + (ms.safe ? ' checked' : '') + '><span><b>보너스 재료 ‘안전장치’</b><br>' + esc(M.safe) + '</span></label>';
   h += '<div class="prompt" id="prompt"></div>';
-  h += '<div class="row2"><button class="btn" data-copy="after">복사하기</button><a class="btn blue" href="' + GEMINI + '" target="_blank" rel="noopener">제미나이 열기</a></div>';
+  h += goHtml('after');
   if (M.tips || M.more) {
     h += '<details><summary>막혔을 때 · 더 해 보기</summary><ul class="tips">';
     var t; for (t = 0; t < (M.tips || []).length; t++) h += '<li>' + esc(M.tips[t]) + '</li>';
@@ -563,10 +581,12 @@ function bindMission(m) {
   for (i = 0; i < st.length; i++) st[i].oninput = function () { ms.story = ms.story || {}; ms.story[this.getAttribute('data-story')] = this.value; save(); updatePrompt(m); };
   var cps = root.querySelectorAll('[data-copy]');
   for (i = 0; i < cps.length; i++) cps[i].onclick = function () {
-    var kind = this.getAttribute('data-copy');
-    if (kind === 'before') copyText(build(m, M.before).plain, $('one'));
-    else { var b = build(m, M.tpl); if (b.missing.length) toast('아직 안 고른 재료: ' + b.missing.join(', '), 3000); copyText(b.plain, $('prompt')); }
+    var p = promptOf(m, this.getAttribute('data-copy'));
+    if (p.missing.length) toast('아직 안 고른 재료: ' + p.missing.join(', '), 3000);
+    copyText(p.text, p.el, function (ok) { if (ok) toast('복사했어요! 제미나이 입력칸에 붙여 넣어요'); });
   };
+  var gos = root.querySelectorAll('[data-go]');
+  for (i = 0; i < gos.length; i++) gos[i].onclick = function () { copyAndGo(m, this.getAttribute('data-go')); };
   var tx = root.querySelectorAll('[data-text]');
   for (i = 0; i < tx.length; i++) tx[i].oninput = function () { ms.drafts = ms.drafts || {}; ms.drafts[this.getAttribute('data-text')] = this.value; save(); };
   var fs = root.querySelectorAll('[data-file]');
@@ -584,6 +604,54 @@ function bindMission(m) {
   for (i = 0; i < sends.length; i++) sends[i].onclick = function () { send(m, this.getAttribute('data-send'), this); };
 }
 
+function goHtml(kind) {
+  return '<button class="btn go" data-go="' + kind + '">' + ICON.go + '복사하고 제미나이 열기</button>' +
+    '<div class="subbtns"><button data-copy="' + kind + '">복사만 하기</button><a href="' + GEMINI + '" target="_blank" rel="noopener">제미나이만 열기</a></div>';
+}
+function promptOf(m, kind) {
+  var M = MISSIONS[m];
+  if (kind === 'before') return { text: build(m, M.before).plain, el: $('one'), missing: [] };
+  var b = build(m, M.tpl);
+  return { text: b.plain, el: $('prompt'), missing: b.missing };
+}
+var lastGo = null; // 제미나이에 다녀온 단계 ('before'/'after')
+/* 복사하고 제미나이 열기: 복사가 되면 바로 새 탭으로 열고, 막히면 열지 않고 길게 눌러 복사하라고 알려요 */
+function copyAndGo(m, kind) {
+  var p = promptOf(m, kind);
+  if (p.missing.length) { toast('먼저 골라 주세요: ' + p.missing.join(', '), 3200); return; }
+  copyText(p.text, p.el, function (ok) {
+    if (!ok) return;
+    lastGo = { m: m, kind: kind };
+    var w = null;
+    try { w = window.open(GEMINI, '_blank'); } catch (e) { w = null; }
+    if (w) toast('복사했어요! 제미나이 입력칸을 길게 눌러 ‘붙여넣기’', 3500);
+    else toast('복사했어요! 아래 ‘제미나이만 열기’를 눌러 붙여 넣어요', 4000);
+  });
+}
+/* 2번 칸을 보는 동안 완성된 프롬프트와 단추를 화면 아래에 붙여 둬요 */
+var dockM = 0;
+function updateDock() {
+  var d = $('dock'), c2 = $('c2'), pr = $('prompt');
+  var show = false;
+  if (view && c2 && pr && $('scr-mission').className.indexOf('on') >= 0) {
+    var r2 = c2.getBoundingClientRect(), rp = pr.getBoundingClientRect(), vh = window.innerHeight || document.documentElement.clientHeight;
+    var inCard = r2.top < vh * 0.6 && r2.bottom > vh * 0.4;
+    var promptSeen = rp.top < vh - 150 && rp.bottom > 60;
+    show = inCard && !promptSeen;
+  }
+  if (show) {
+    var p = promptOf(view, 'after');
+    $('dock-pv').innerHTML = '<b>완성된 프롬프트' + (p.missing.length ? ' · 아직 안 고름: ' + esc(p.missing.join(', ')) : '') + '</b>' + esc(p.text);
+    dockM = view;
+  }
+  d.className = show ? 'on' : '';
+  document.body.className = show ? 'docked' : '';
+}
+$('dock-go').onclick = function () { if (dockM) copyAndGo(dockM, 'after'); };
+var dockTimer = null;
+window.addEventListener('scroll', function () { if (dockTimer) return; dockTimer = setTimeout(function () { dockTimer = null; updateDock(); }, 120); });
+window.addEventListener('resize', updateDock);
+
 function renderMissionKeepScroll(m) {
   var y = window.pageYOffset;
   renderMission(m);
@@ -593,6 +661,7 @@ function updatePrompt(m) {
   var M = MISSIONS[m], b = build(m, M.tpl), one = $('one'), p = $('prompt');
   if (p) p.innerHTML = b.html;
   if (one) one.textContent = build(m, M.before).plain;
+  updateDock();
 }
 
 /* 다른 조합: 슬롯머신처럼 돌다가 멈춰요 */
@@ -624,7 +693,16 @@ function updateChipsOnly(m) {
 }
 
 /* 복사: 막힌 기기에서는 글자를 골라 두고 길게 눌러 복사하라고 알려요 */
-function copyText(text, el) {
+function copyText(text, el, done) {
+  done = done || function (ok) { if (ok) toast('복사했어요! 제미나이 입력칸에 붙여 넣어요'); };
+  function manual() {
+    if (el && window.getSelection) {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+    toast('복사가 막혔어요. 파란 글자를 길게 눌러 ‘복사’해 주세요.', 4500);
+    done(false);
+  }
   function fallback() {
     var ok = false, ta = document.createElement('textarea');
     ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '0'; ta.style.opacity = '0';
@@ -632,20 +710,15 @@ function copyText(text, el) {
     try { ta.setSelectionRange(0, 99999); } catch (e) {}
     try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
     document.body.removeChild(ta);
-    if (ok) { toast('복사했어요! 제미나이 입력칸에 붙여 넣어요'); return; }
-    if (el && window.getSelection) {
-      var r = document.createRange(); r.selectNodeContents(el);
-      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-    }
-    toast('복사가 막혔어요. 파란 글자를 길게 눌러 복사해 주세요.', 4000);
+    return ok;
   }
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { toast('복사했어요! 제미나이 입력칸에 붙여 넣어요'); }, fallback);
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { if (fallback()) done(true); else manual(); });
       return;
     }
   } catch (e) {}
-  fallback();
+  if (fallback()) done(true); else manual();
 }
 
 /* 사진 줄이기: 원본은 긴 변 1280px, 작은 그림은 320px */
@@ -831,6 +904,16 @@ function pollLoop() {
 document.addEventListener('visibilitychange', function () {
   // 제미나이에 다녀오면 바로 새 상태를 확인해요
   if (document.visibilityState === 'visible' && S.cls) call('getState', [], function (st) { applyState(st, false); }, function () {});
+  if (document.visibilityState === 'visible' && lastGo && view === lastGo.m) {
+    var k = lastGo.kind, box = $('up-' + k); lastGo = null;
+    if (box && !(mine[view] && mine[view][k])) {
+      setTimeout(function () {
+        if (box.scrollIntoView) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        box.className = 'upload flash';
+        toast('결과를 받았으면 여기에서 ' + (k === 'before' ? 'Before' : 'After') + ' 올리기!', 3500);
+      }, 300);
+    }
+  }
 });
 
 /* ---------------- 시작 ---------------- */

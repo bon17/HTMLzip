@@ -13,6 +13,7 @@ const ctx = makeContext();
 ctx.setup();
 const CODE = ctx.__props.code, KEY = ctx.__props.teacherKey;
 const errors = [];
+const RESULT = {};
 let calls = 0;
 
 const SHIM = `
@@ -134,10 +135,40 @@ function fakeThumb() {
   await st.screenshot({ path: path.join(OUT, 's6-m2.png'), fullPage: true });
   await board.screenshot({ path: path.join(OUT, 'b4-m2.png') });
 
+  // 미션 4: 재료 고르고 ‘복사하고 제미나이 열기’ → 복사된 글자, 새 탭, 고정 막대, 돌아오면 올리기 칸
+  await sctx.route('https://gemini.google.com/**', r => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>Gemini</title>gemini' }));
+  await board.click('#tbar [data-m="4"]'); await wait(800);
+  await st.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))); await wait(1500);
+  await st.tap('#c1 .chip >> text=아편 전쟁'); await wait(300);
+  await st.tap('#c2 .chip >> text=OX 퀴즈 5개'); await wait(300);
+  await st.evaluate(() => { const c = document.querySelector('#c2 .slot'); window.scrollTo(0, c.getBoundingClientRect().top + window.pageYOffset - 100); window.dispatchEvent(new Event('scroll')); }); await wait(500);
+  const dockOn = await st.evaluate(() => document.getElementById('dock').className === 'on');
+  const dockText = await st.textContent('#dock-pv');
+  await st.screenshot({ path: path.join(OUT, 's9-m4-dock.png') });
+  const popP = sctx.waitForEvent('page', { timeout: 4000 }).catch(() => null);
+  await st.tap(dockOn ? '#dock-go' : '[data-go="after"]'); const pop = await popP; await wait(600);
+  const copied = await st.evaluate(() => navigator.clipboard.readText().catch(() => '(읽기 막힘)'));
+  const popUrl = pop ? pop.url() : null;
+  if (pop) await pop.close();
+  await st.bringToFront();
+  await st.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))); await wait(1200);
+  const flashed = await st.evaluate(() => document.getElementById('up-after').className);
+  await st.screenshot({ path: path.join(OUT, 's10-m4-back.png') });
+  await st.evaluate(() => window.scrollTo(0, 0)); await wait(300);
+  const popP2 = sctx.waitForEvent('page', { timeout: 4000 }).catch(() => null);
+  await st.tap('[data-go="before"]'); const pop2 = await popP2; await wait(500);
+  const copiedBefore = await st.evaluate(() => navigator.clipboard.readText().catch(() => '(읽기 막힘)'));
+  if (pop2) await pop2.close();
+  RESULT.m4 = { dockOn, dockText, copied, popUrl, flashed, copiedBefore, beforeTab: !!pop2 };
+
   // 미션 6 화면 (내 이야기)
   await board.click('#tbar [data-m="6"]'); await wait(800);
   await st.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))); await wait(1500);
   const p6a = await st.textContent('#prompt');
+  await st.evaluate(() => { const c = document.querySelector('#c2 .slot'); window.scrollTo(0, c.getBoundingClientRect().top + window.pageYOffset - 80); window.dispatchEvent(new Event('scroll')); }); await wait(500);
+  RESULT.m6dock = await st.evaluate(() => [document.getElementById('dock').className, document.getElementById('dock-pv').textContent.slice(0, 80)]);
+  await st.screenshot({ path: path.join(OUT, 's7b-m6-dock.png') });
+  await st.evaluate(() => window.scrollTo(0, 0)); await wait(300);
   await st.fill('[data-story="when"]', '초등학교 6학년 운동회'); await wait(300);
   const p6b = await st.textContent('#prompt');
   await st.screenshot({ path: path.join(OUT, 's7-m6.png'), fullPage: true });
@@ -161,7 +192,7 @@ function fakeThumb() {
   console.log(JSON.stringify({
     code: CODE, wrongCodeMsg: msg, missionTitle: mtitle, promptBefore: p1, promptAfterRoll: p2, clipboard: clip,
     voteCards: cards, selfVote, m2, p6a, p6b, finalCards: fcards, afterReload: after,
-    sheets: Object.keys(ctx.__ss.sheets), drive: ctx.__files.length, calls, finalists: ctx.__props.finalists
+    sheets: Object.keys(ctx.__ss.sheets), drive: ctx.__files.length, calls, finalists: ctx.__props.finalists, ...RESULT
   }, null, 1));
   console.log('ERRORS', JSON.stringify(errors, null, 1));
   await browser.close();
