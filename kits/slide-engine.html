@@ -129,6 +129,8 @@
   상자 하나만 빼려면 그 상자에 data-hint="off"를 붙인다(예: 배지가 가리면 안 되는 작은 QR 코드).
 - 발표용 리모컨(다음·이전 키만 있음)으로 강의하는 덱은 뒤집기·가리개·크게 보기 상자에 data-interact-step="단계 번호"를 붙인다.
   그 번째 '다음'에서 저절로 뒤집히거나 열린다. 영상(video)에 붙이면 그 단계에 재생된다.
+- 실시간 결과판 같은 웹 화면은 상자에 data-embed="https://주소"를 붙이면 그 슬라이드를 보는 동안에만 상자 안에 열린다.
+  상자 안의 원래 내용은 인터넷이 없을 때·인쇄·썸네일에 보이는 대체 화면이다. 주소의 {이름}은 처음 한 번 입력받아 브라우저에만 저장된다.
 
 [수업 위젯: data-widget]
 엔진이 구조와 움직임을 만든다. 단계(data-step)와 모션 강도 설정을 그대로 따른다.
@@ -201,7 +203,7 @@
 ==========================================================================
 -->
 <style id="hz-engine-style">
-/* ===== ENGINE v3.5 ===== */
+/* ===== ENGINE v3.6 ===== */
 /* HTMLzip 슬라이드 엔진 스타일
    - 필통·메뉴·필기·편집 UI와 모션 동작에 필요한 최소 스타일만 담는다.
    - 슬라이드의 외형(글자·색·배경)은 덱 디자인이 정한다.
@@ -976,6 +978,18 @@ html.hz-pw, html.hz-pw body { background: #e9e4d8; }
 @keyframes hz-flash { 0%, 50%, 100% { outline: 0 solid transparent; } 25%, 75% { outline: calc(6px * var(--hz-inv, 1)) solid #facc15; } }
 
 /* ---------- 인쇄·PDF ---------- */
+/* 웹 화면 넣기 (§6.4): 슬라이드를 보는 동안에만 상자 안을 덮는다. 인쇄·썸네일에서는 대체 화면 */
+.hz-embed { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: inherit; background: #fff; z-index: 3; }
+.hz-embed-form { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: inherit;
+  background: #FFFCF6; color: #1F2A4A; font: 600 22px/1.3 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; text-align: center; }
+/* 덱 디자인의 글자 규칙(예: .상자 small)이 끼어들지 않게 클래스 두 개로 쓴다 */
+.hz-embed-form .hz-ef-t { display: block; margin: 0; font-size: 22px; font-weight: 700; line-height: 1.25; color: #1F2A4A; }
+.hz-embed-form .hz-ef-s { display: block; margin: 0; font-size: 15px; font-weight: 500; line-height: 1.3; color: #1F2A4A; opacity: .8; }
+.hz-embed-form .hz-ef-row { display: flex; gap: 6px; align-items: center; max-width: 100%; }
+.hz-embed-form .hz-ef-row input { width: 180px; min-width: 0; flex: 1 1 auto; margin: 0; font: inherit; font-size: 20px; padding: 6px 10px; border: 2px solid #1F2A4A; border-radius: 10px; background: #fff; color: #1F2A4A; }
+.hz-embed-form .hz-ef-row .hz-b { flex: none; height: auto; font-size: 18px; padding: 8px 14px; background: #1F2A4A; color: #fff; }
+.hz-embed-form.hz-small { gap: 8px; padding: 8px 12px; overflow: hidden; }
+.hz-embed-form.hz-small .hz-ef-t { font-size: 20px; }
 @media print {
   @page { size: 1920px 1080px; margin: 0; }
   html.hz-on, html.hz-on body { height: auto; overflow: visible; background: none; }
@@ -1216,12 +1230,12 @@ body { font-family: var(--demo-font); color: var(--fg); }
 
 </main>
 <script id="hz-engine-script">
-// ===== ENGINE v3.5 =====
+// ===== ENGINE v3.6 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '3.5';
+const VERSION = '3.6';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -2796,6 +2810,63 @@ function cleanupSlide(slide) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 웹 화면 넣기 (§6.4): data-embed="https://주소"인 상자는 그 슬라이드를 보는 동안에만 웹 화면(iframe)을 연다  */
+/* 주소 속 {이름}은 처음 한 번 입력받아 이 브라우저에만 저장한다(파일에는 남지 않는다)                     */
+/* ------------------------------------------------------------------ */
+const embedNames = url => [...new Set((url.match(/\{([^}]+)\}/g) || []).map(s => s.slice(1, -1)))];
+function closeEmbeds() { $$('#deck .hz-embed, #deck .hz-embed-form').forEach(n => n.remove()); }
+function openEmbeds(slide) {
+  closeEmbeds();
+  if (!slide || IS_PW || editing || navigator.onLine === false) return;
+  $$('[data-embed]', slide).forEach(box => {
+    const url = box.dataset.embed || '';
+    if (!/^https:\/\//.test(url)) return;
+    const sec = store.get('secrets', {}) || {};
+    const miss = embedNames(url).filter(n => !sec[n]);
+    ensureHost(box);
+    if (miss.length) { box.appendChild(embedForm(miss[0], box.offsetHeight < 240 || box.offsetWidth < 420)); return; }
+    const src = url.replace(/\{([^}]+)\}/g, (m, n) => encodeURIComponent(sec[n]));
+    box.appendChild(h('iframe', { class: 'hz-embed', 'data-hz-runtime': '', src, title: box.dataset.embedTitle || '웹 화면', allow: 'clipboard-write' }));
+  });
+}
+function embedForm(name, small) {
+  const inp = h('input', { type: 'password', placeholder: name, autocomplete: 'off', 'aria-label': name });
+  const save = () => {
+    const v = inp.value.trim(); if (!v) { inp.focus(); return; }
+    const sec = store.get('secrets', {}) || {}; sec[name] = v; store.set('secrets', sec);
+    toast(`‘${name}’ 저장했어요 · 이 컴퓨터 브라우저에만 있어요`, 2400);
+    openEmbeds(slides[cur]);
+  };
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); save(); } });
+  // 작은 상자는 한 줄 이름 + 입력 칸만 (저장되는 곳은 저장 뒤 알림으로 알려 준다)
+  return h('form', { class: 'hz-embed-form' + (small ? ' hz-small' : ''), 'data-hz-runtime': '', onsubmit: e => { e.preventDefault(); save(); } },
+    h('b', { class: 'hz-ef-t' }, small ? `‘${name}’ 한 번만` : `‘${name}’ 한 번만 넣어 주세요`),
+    small ? null : h('small', { class: 'hz-ef-s' }, '이 컴퓨터 브라우저에만 저장되고 파일에는 남지 않아요'),
+    h('span', { class: 'hz-ef-row' }, inp, h('button', { class: 'hz-b', type: 'submit' }, '저장')));
+}
+// 웹 화면이 보내는 이동 키·값 오류 (이 슬라이드에서 연 웹 화면과 그 안쪽 화면이 보낸 것만 받는다)
+window.addEventListener('message', e => {
+  const d = e.data;
+  if (IS_PW || !d || typeof d !== 'object' || (d.hz !== 'embed-key' && d.hz !== 'embed-secret-bad')) return;
+  const frames = $$('#deck .hz-embed').map(f => f.contentWindow);
+  let w = e.source, mine = false;
+  for (let i = 0; i < 6 && w && !mine; i++) { mine = frames.includes(w); try { if (w === w.parent) break; w = w.parent; } catch (err) { break; } }
+  if (!mine) return;
+  if (d.hz === 'embed-secret-bad') {
+    const sec = store.get('secrets', {}) || {}; delete sec[String(d.name)]; store.set('secrets', sec);
+    toast(`‘${d.name}’이(가) 맞지 않아요 · 다시 넣어 주세요`, 3000); openEmbeds(slides[cur]); return;
+  }
+  try { window.focus(); } catch (err) { /* 무시 */ }
+  if (editing || modalOpen()) return;
+  const k = String(d.key);
+  if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Spacebar', 'Enter'].includes(k)) next();
+  else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) prev();
+  else if (k === 'Home') go(nextIndexFrom(-1, 1));
+  else if (k === 'End') go(nextIndexFrom(slides.length, -1));
+});
+function nextIndexFrom(i, d) { for (i += d; i >= 0 && i < slides.length; i += d) if (!slides[i].hasAttribute('data-hidden')) return i; return cur; }
+
+/* ------------------------------------------------------------------ */
 /* 이동                                                                */
 /* ------------------------------------------------------------------ */
 function go(n, o = {}) {
@@ -2805,7 +2876,7 @@ function go(n, o = {}) {
   const same = from === to;
   if (same && !o.force) return;
   const dir = o.dir || (n >= cur ? 1 : -1);
-  finishAll(); clearSpot(); closeZoom(); hideTips(); fxLayer.innerHTML = '';
+  finishAll(); clearSpot(); closeZoom(); hideTips(); fxLayer.innerHTML = ''; closeEmbeds();
   if (boardMode) setBoard(false);
   const token = ++navToken;
   cleanupSlide(to);
@@ -2819,6 +2890,7 @@ function go(n, o = {}) {
   if (forward) setInitial(to); else { finalPre(to); stepIdx = steps.length; }
   armInteractions(to);
   if (!forward) motionEls(to).forEach(el => { if (!isNaN(stepVal(el.dataset.interactStep))) stepInteract(el, true, true); }); // 뒤로 오면 끝난 모습
+  openEmbeds(to);
   startAmbient(to);
   const type = o.instant ? 'none' : (dir > 0 ? (to.dataset.transition || deck.dataset.transition || 'fade') : ((from && from.dataset.transition) || deck.dataset.transition || 'fade'));
   transit(same ? null : from, to, type, dir, () => {
@@ -3348,6 +3420,9 @@ function openSettings() {
     segRow('효과음', '타이머가 끝날 때와 랜덤 뽑기에만 소리가 나요 (M)', [[true, '켜기'], [false, '끄기']], S.sound !== false, v => { S.sound = v; saveSettings(); }),
     segRow('카운트다운 기본 시간', '', [[5, '5분'], [10, '10분'], [15, '15분'], [30, '30분'], [50, '50분']], S.timerMin, v => { S.timerMin = v; saveSettings(); renderTimer(); })
   ];
+  const secNames = Object.keys(store.get('secrets', {}) || {});
+  if (secNames.length) rows.push(h('div', { class: 'hz-setting' }, h('div', {}, '웹 화면에 넣은 값', h('small', {}, secNames.join(', ') + ' · 이 브라우저에만 저장돼 있어요')),
+    h('button', { class: 'hz-b', type: 'button', onclick: () => { store.del('secrets'); closeModal(); toast('웹 화면에 넣은 값을 지웠어요'); openEmbeds(slides[cur]); } }, '지우기')));
   if (THEMES.length > 1) rows.splice(1, 0, segRow('테마', '덱 디자인이 제공하는 테마', [[null, '기본']].concat(THEMES.map(t => [t, { dark: '다크', light: '라이트' }[t] || t])), S.theme, v => { S.theme = v; saveSettings(); applyTheme(); }));
   openModal('설정', rows, [
     h('button', { class: 'hz-b', type: 'button', onclick: () => { closeModal(); openHelp(); } }, '단축키 보기'),

@@ -4,6 +4,8 @@
  * 페이지
  *   ?            학생 페이지 (student.html)
  *   ?p=board     결과판 (board.html). &k=교사키 를 붙이면 교사 조작 단추가 보여요. &m=2 를 붙이면 그 미션을 열어요.
+ *   ?p=board&embed=1&m=2              슬라이드 안에 넣는 결과판(미션 2만, 교사 단추 없음). m=F 면 반 대표 대결
+ *   ?p=board&embed=status&m=2&start=1&k=교사키   슬라이드 안의 작은 상태 칸: 들어오면 미션 2를 열고(앞으로만) 제출 인원을 보여 줘요
  *
  * 저장
  *   스프레드시트: 시트 'm{미션}_{반}' 에 제출 기록(추가만 함), 'votes' 에 투표 기록(추가만 함), 맨 앞 '바로 가기' 탭에 링크
@@ -229,6 +231,27 @@ function voteFinal(cls, num, key) {
   return { ok: true, counts: finalCounts_() };
 }
 
+/** 미션 하나의 제출 인원 (작은 그림은 읽지 않아서 가벼워요) */
+function stats(mission) {
+  mission = +mission;
+  if (!validMission_(mission)) return { before: 0, after: 0, classes: {} };
+  var cache = CacheService.getScriptCache(), ck = 'stats' + mission, hit = cache.get(ck);
+  if (hit) return JSON.parse(hit);
+  var out = { before: 0, after: 0, classes: {} }, ss = ss_();
+  for (var c = 1; c <= CLASSES; c++) {
+    var sh = ss.getSheetByName('m' + mission + '_' + c);
+    if (!sh) continue;
+    var n = sh.getLastRow() - 1;
+    if (n <= 0) continue;
+    var b = {}, a = {};
+    sh.getRange(2, 2, n, 2).getValues().forEach(function (v) { if (String(v[1]) === 'after') a[v[0]] = 1; else b[v[0]] = 1; });
+    var nb = Object.keys(b).length, na = Object.keys(a).length;
+    out.before += nb; out.after += na; out.classes[c] = { before: nb, after: na };
+  }
+  try { cache.put(ck, JSON.stringify(out), 3); } catch (e) {}
+  return out;
+}
+
 /* ---------------- 교사용 API (교사 키 필요) ---------------- */
 
 function teacherInfo(key) {
@@ -237,7 +260,8 @@ function teacherInfo(key) {
 }
 
 /**
- * action: 'mission'(arg: 0~6) · 'newCode' · 'final'(arg: true/false) · 'hide'(arg: 'm-c-n', 다시 하면 보이기)
+ * action: 'mission'(arg: 0~6) · 'missionUp'(arg: 1~6, 지금보다 뒤 미션일 때만 열기 — 슬라이드에서 저절로 열 때)
+ *         · 'newCode' · 'final'(arg: true/false) · 'finalOpen'(이미 열렸으면 그대로) · 'hide'(arg: 'm-c-n', 다시 하면 보이기)
  */
 function teacher(key, action, arg) {
   if (!isTeacher_(key)) return { ok: false, msg: '교사 키가 맞지 않아요.' };
@@ -246,6 +270,12 @@ function teacher(key, action, arg) {
     var m = +arg;
     if (!(m >= 0 && m <= MISSIONS)) return { ok: false };
     P.setProperty('mission', String(m));
+  } else if (action === 'missionUp') {
+    var up = +arg, now = +(P.getProperty('mission') || 0);
+    if (!(up >= 1 && up <= MISSIONS)) return { ok: false };
+    if (P.getProperty('final') !== '1' && up > now) P.setProperty('mission', String(up));
+  } else if (action === 'finalOpen') {
+    if (P.getProperty('final') !== '1') { P.setProperty('finalists', JSON.stringify(pickFinalists_())); P.setProperty('final', '1'); }
   } else if (action === 'newCode') {
     P.setProperty('code', newCode_());
     links_();
