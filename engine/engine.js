@@ -1,9 +1,9 @@
-// ===== ENGINE v3.3 =====
+// ===== ENGINE v3.4 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '3.3';
+const VERSION = '3.4';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -216,7 +216,7 @@ const navNext = h('button', { class: 'hz-nav hz-nav-r hz-chrome', type: 'button'
 // 점검 숨기기 (§3.8): main에 data-check="off"면 메뉴의 점검 타일과 메뉴 버튼의 점을 숨긴다. HTMLzip.check()는 그대로 동작한다
 const checkHidden = () => deck.dataset.check === 'off';
 // 힌트 배지 숨기기 (§4.2): main에 data-hints="off"면 상호작용 요소의 힌트 배지(눌러서 뒤집기 등)를 붙이지 않는다. 교사가 강의로 진행하는 덱에 쓴다
-const hintsHidden = () => deck.dataset.hints === 'off';
+const hintsHidden = () => deck.dataset.hints === 'off'; // 요소 하나만 끌 때는 그 요소에 data-hint="off" (v3.4)
 const drawer = h('aside', { class: 'hz-drawer', 'aria-label': '메뉴 서랍' });
 const drTabs = h('div', { class: 'hz-dr-tabs', role: 'tablist' });
 const drMenu = h('div', { class: 'hz-dr-body', 'data-tab': 'menu' });
@@ -988,7 +988,7 @@ function armInteractions(slide) {
     // 크게 보기 단추 (§4.2): 점 없이 원본 그림만 크게 본다
     if (t === 'hotspot' && el.dataset.spots === 'tap') { $$(':scope > .hz-spot-zoom', el).forEach(n => n.remove()); el.appendChild(h('button', { class: 'hz-spot-zoom', type: 'button', 'data-hz-runtime': '', 'aria-label': '그림 크게 보기', title: '그림 크게 보기' }, '⤢')); }
     if (t === 'reveal') { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }
-    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off' && !hintsHidden()) { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
+    if (HINT[t] && el.tagName !== 'IMG' && strength() !== 'off' && !hintsHidden() && el.dataset.hint !== 'off') { ensureHost(el); el.appendChild(h('span', { class: 'hz-hint', 'data-hz-runtime': '' }, HINT[t])); }
   });
 }
 const dropHint = el => $$(':scope > .hz-hint', el).forEach(n => n.remove());
