@@ -17,6 +17,10 @@ var CLASSES = 5;          // 1~5반
 var MAX_NUM = 40;         // 번호 최대
 var MISSIONS = 6;
 var IMAGE_MISSIONS = { 1: true };
+
+// 배포한 웹 앱 주소 (배포 → 배포 관리에 보이는 /exec 주소). 편집기에서 실행하면 시험용 /dev 주소만 알 수 있어서 여기에 적어 둬요.
+// 학생에게 보여 주는 주소라 공개돼도 괜찮아요. 교사 키는 여기에 쓰지 않아요(스크립트 속성에만 있어요).
+var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxPmysKBh7MwI8ms4tZjgSWDqA8GL9yGu5i3_cJZdTAqglddSjqRcDWkZOuwGw2rK0L/exec';
 var MAX_TEXT = 6000;      // 글 결과 최대 글자 수
 var SUB_COLS = 7;         // ts, num, kind, type, text, thumb, fileId
 
@@ -42,12 +46,56 @@ function setup() {
   if (!P.getProperty('code')) P.setProperty('code', newCode_());
   if (!P.getProperty('mission')) P.setProperty('mission', '0');
   clearCache_();
-  var url = '';
-  try { url = ScriptApp.getService().getUrl() || ''; } catch (e) {}
-  Logger.log('입장 코드: ' + P.getProperty('code'));
-  Logger.log('교사 키: ' + P.getProperty('teacherKey'));
-  Logger.log('결과판(교사용): ' + (url ? url + '?p=board&k=' + P.getProperty('teacherKey') : '배포한 뒤 웹 앱 주소 + ?p=board&k=' + P.getProperty('teacherKey')));
-  Logger.log('결과 시트: ' + ss_().getUrl());
+  var L = links_();
+  Logger.log('입장 코드: ' + L.code);
+  Logger.log('교사 키: ' + L.key + '  (학생에게 보여 주지 마세요. setup을 다시 실행해도 바뀌지 않아요)');
+  Logger.log('학생 접속 링크: ' + L.student);
+  Logger.log('결과판(교사용): ' + L.board);
+  Logger.log('결과 시트: ' + L.sheet + '  (맨 앞 ‘바로 가기’ 탭에 링크를 모아 뒀어요)');
+}
+
+/** 결과 시트 맨 앞에 ‘바로 가기’ 탭을 만들어 학생 접속 링크·결과판·결과 시트 링크를 모아 둬요 */
+function links_() {
+  var P = props_(), ss = ss_(), code = P.getProperty('code') || '', key = P.getProperty('teacherKey') || '';
+  var base = WEB_APP_URL;
+  if (!base) { try { base = ScriptApp.getService().getUrl() || ''; } catch (e) { base = ''; } }
+  var L = {
+    code: code, key: key, sheet: ss.getUrl(),
+    student: base ? base + '?c=' + code : '(배포한 뒤 다시 setup 실행)',
+    board: base ? base + '?p=board&k=' + key : '(배포한 뒤 다시 setup 실행)',
+    boardView: base ? base + '?p=board' : ''
+  };
+  try {
+    var sh = ss.getSheetByName('바로 가기');
+    if (!sh) sh = ss.insertSheet('바로 가기', 0);
+    sh.clear();
+    var rows = [
+      ['AI 프롬프트 특강 바로 가기', '', ''],
+      ['', '', ''],
+      ['무엇', '링크 (누르면 열려요)', '설명'],
+      ['학생 접속 링크', L.student, 'QR에 넣는 주소예요. 입장 코드가 자동으로 채워져요.'],
+      ['결과판 (교사용)', L.board, '교사 단추(미션 열기·대결·숨기기)가 있어요. 학생에게 보여 주지 마세요.'],
+      ['결과판 (보기 전용)', L.boardView, '교사 단추 없이 결과만 보여요.'],
+      ['결과 시트', L.sheet, '지금 보고 있는 이 시트예요. 제출은 m미션_반 탭, 투표는 votes 탭.'],
+      ['', '', ''],
+      ['입장 코드', code, '슬라이드 QR에 들어 있어요. 수업 날에는 결과판의 ‘새 입장 코드’를 누르지 마세요.'],
+      ['교사 키', key, '결과판(교사용) 주소에 들어 있어요. 학생에게 보여 주지 마세요.'],
+      ['고친 시각', new Date(), 'setup을 실행하거나 입장 코드를 바꾸면 새로 써요.']
+    ];
+    sh.getRange(1, 1, rows.length, 3).setValues(rows);
+    [[4, L.student], [5, L.board], [6, L.boardView], [7, L.sheet]].forEach(function (r) {
+      if (/^https?:/.test(r[1])) sh.getRange(r[0], 2).setFormula('=HYPERLINK("' + r[1] + '","' + r[1] + '")');
+    });
+    sh.getRange(1, 1).setFontSize(16).setFontWeight('bold');
+    sh.getRange(3, 1, 1, 3).setFontWeight('bold').setBackground('#FFF1E5');
+    sh.getRange(4, 1, 8, 1).setFontWeight('bold');
+    sh.getRange(5, 1, 1, 3).setBackground('#FDECEC');
+    sh.setColumnWidth(1, 150); sh.setColumnWidth(2, 560); sh.setColumnWidth(3, 460);
+    sh.getRange(1, 3, rows.length, 1).setWrap(true);
+    ss.setActiveSheet(sh); ss.moveActiveSheet(1);
+    ['시트1', 'Sheet1'].forEach(function (n) { var d = ss.getSheetByName(n); if (d && d.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(d); });
+  } catch (e) { Logger.log('바로 가기 탭을 만들지 못했어요: ' + e); }
+  return L;
 }
 
 /** 수업이 끝나면 실행: 제출·투표·그림을 모두 지우고 새 입장 코드를 만들어요. (되돌릴 수 없어요) */
@@ -67,7 +115,8 @@ function resetAll() {
   P.deleteProperty('finalists');
   P.deleteProperty('hidden');
   clearCache_();
-  Logger.log('모두 지웠어요. 새 입장 코드: ' + P.getProperty('code'));
+  links_();
+  Logger.log('모두 지웠어요. 새 입장 코드: ' + P.getProperty('code') + '  (슬라이드 QR 속 코드도 새로 바꿔야 해요)');
 }
 
 /* ---------------- 학생용 API ---------------- */
@@ -194,6 +243,7 @@ function teacher(key, action, arg) {
     P.setProperty('mission', String(m));
   } else if (action === 'newCode') {
     P.setProperty('code', newCode_());
+    links_();
   } else if (action === 'final') {
     if (arg) { P.setProperty('finalists', JSON.stringify(pickFinalists_())); P.setProperty('final', '1'); }
     else P.setProperty('final', '0');
