@@ -16,6 +16,7 @@ QR 하나로 학생 페이지가 열리고, 학생이 올린 Before·After가 �
 학교 계정은 ‘모든 사용자’ 공개가 막힐 수 있어서 **개인 Gmail**로 배포해요.
 
 1. 개인 Gmail로 로그인한 크롬에서 [script.google.com](https://script.google.com) → **새 프로젝트**. 이름을 `AI 프롬프트 특강`으로 바꿔요.
+   (구글 시트를 먼저 만들고 **확장 프로그램 → Apps Script**로 열어도 돼요. 그러면 결과도 그 시트에 쌓여요. 이 경우 그 시트를 지우면 코드도 같이 지워지니 지우지 마세요.)
 2. 처음 보이는 `Code.gs`의 내용을 모두 지우고, 이 폴더의 `Code.gs` 내용을 붙여 넣어요.
 3. 왼쪽 **파일 +** → **HTML** → 이름 `student` → 이 폴더의 `student.html` 내용을 붙여 넣어요. 같은 방법으로 `board`도 만들어요(`board.html`).
 4. 왼쪽 **프로젝트 설정(톱니바퀴)** → ‘편집기에서 appsscript.json 매니페스트 파일 표시’를 켜고, `appsscript.json` 내용을 붙여 넣어요.
