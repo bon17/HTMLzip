@@ -185,6 +185,15 @@ function fakeThumb() {
   await st.screenshot({ path: path.join(OUT, 's8-final.png'), fullPage: true });
   await board.screenshot({ path: path.join(OUT, 'b5-final.png') });
 
+  // QR 주소에 입장 코드(?c=)가 있으면 입장 화면에 자동으로 채워지는지 (새 기기)
+  const qctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, hasTouch: true, isMobile: true });
+  const qp = await qctx.newPage(); await wire(qp, '학생(QR)');
+  await qp.goto(file('student.html') + '?c=' + CODE); await wait(1200);
+  const qrCodeFilled = await qp.inputValue('#in-code');
+  await qp.selectOption('#in-cls', '2'); await qp.selectOption('#in-num', '5'); await qp.tap('#btn-join'); await wait(1200);
+  RESULT.qrJoin = { qrCodeFilled, screen: await qp.evaluate(() => document.querySelector('.scr.on').id) };
+  await qctx.close();
+
   // 새로고침해도 이어지는지
   await st.reload(); await wait(1500);
   const after = await st.evaluate(() => document.querySelector('.scr.on').id);

@@ -137,6 +137,7 @@ body.docked #toast{bottom:150px}
   <section class="scr" id="scr-join">
     <h1 class="d">반가워요!</h1>
     <p class="lead">큰 화면에 보이는 입장 코드와 반·번호를 넣어요. 이름은 받지 않아요.</p>
+    <p class="hint" id="join-note">중간에 튕겨도 괜찮아요. QR을 다시 찍거나 이 페이지를 다시 열면 하던 곳부터 이어져요.</p>
     <div class="card">
       <div class="field"><label for="in-code">입장 코드 (숫자 4개)</label><input id="in-code" class="code-in" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></div>
       <div class="two">
@@ -362,6 +363,7 @@ function openJoin() {
   for (i = 1; i <= 40; i++) h += '<option value="' + i + '">' + i + '번</option>';
   ns.innerHTML = h;
   if (S.lastCls) cs.value = S.lastCls;
+  if (S.qrCode && !$('in-code').value) $('in-code').value = S.qrCode;
   show('scr-join');
 }
 $('btn-join').onclick = function () {
@@ -918,6 +920,15 @@ document.addEventListener('visibilitychange', function () {
 
 /* ---------------- 시작 ---------------- */
 renderWho();
+/* QR 주소에 입장 코드가 있으면(…?c=1234) 자동으로 채워요. 튕긴 뒤 다시 찍으면 반·번호만 고르면 돼요 */
+try {
+  google.script.url.getLocation(function (loc) {
+    var c = String(((loc && loc.parameter) || {}).c || '').replace(/\D/g, '').slice(0, 4);
+    if (c.length !== 4) return;
+    S.qrCode = c; save();
+    var ci = $('in-code'); if (ci && !ci.value) ci.value = c;
+  });
+} catch (e) {}
 if (S.cls) {
   show('scr-wait');
   call('getState', [], function (st) { applyState(st, true); }, function () { toast('연결이 안 돼요. 와이파이를 확인해 주세요.', 4000); });
