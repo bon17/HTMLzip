@@ -61,7 +61,7 @@ function fakeThumb() {
   // 결과판 (교사)
   const bctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   const board = await bctx.newPage(); await wire(board, '결과판');
-  await board.goto(file('board.html') + '?p=board&k=' + KEY + '&c=3');
+  await board.goto(file('board.html') + '?p=board&k=' + KEY + '&cls=3');
   await wait(1500);
   await board.screenshot({ path: path.join(OUT, 'b0-wait.png') });
 

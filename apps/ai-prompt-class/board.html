@@ -79,6 +79,29 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fc .col{margin:10px auto 0;width:90px;background:#FF7A1A;border:4px solid #1C2340;border-radius:14px 14px 0 0;transition:height .8s cubic-bezier(.2,.8,.2,1)}
 .fc .vn{font-size:44px;color:#C2410C}
 .fc.win .pic{box-shadow:0 0 0 8px #FFC21A}
+/* 슬라이드 안에 넣은 결과판 (embed=1): 머리글 없이 탭·카드만 */
+body.embed .hd{display:none}
+body.embed .bar2{left:20px;right:20px;top:14px;height:56px}
+body.embed .tabs button{font-size:26px;padding:2px 20px;margin-right:8px}
+body.embed .stat{font-size:24px}
+body.embed .stat b{font-size:28px}
+body.embed #grid,body.embed #final{left:20px;right:20px;top:84px;bottom:16px}
+body.embed #modal .box{left:20px;top:20px;right:20px;bottom:20px}
+body.embed #modal h2{font-size:36px}
+/* 작은 상태 칸 (embed=status) */
+html.status,html.status body{background:#fff;overflow:hidden}
+#status{display:none}
+html.status #stage{display:none}
+html.status #status{display:flex;flex-direction:column;justify-content:center;height:100vh;padding:0 4vh;font-size:calc(100vh / 5.4);line-height:1.22;color:#1C2340;white-space:nowrap;overflow:hidden}
+#status .l1{display:flex;align-items:center;font-family:'Jua',sans-serif}
+#status .mb2{background:#C2410C;color:#fff;border-radius:999px;padding:0 .55em;margin-right:.4em;font-size:.9em}
+#status .ok{color:#0B7A45}
+#status .wait{color:#4A5170}
+#status .bad{color:#C8291D}
+#status .l2{font-weight:800}
+#status .l2 b{color:#C2410C}
+#status .l3{font-size:.8em;font-weight:800;color:#4A5170}
+#status .l3 b{color:#1C2340}
 </style>
 </head>
 <body>
@@ -91,6 +114,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <div id="tbar"></div>
   <div id="modal"><div class="box"><button class="x" id="mx" aria-label="닫기">&times;</button><div id="mbody"></div></div></div>
 </div>
+<div id="status"><div class="l1"><span class="mb2" id="s-mb">MISSION</span><span id="s-st" class="wait">여는 중…</span></div><div class="l2" id="s-cnt">&nbsp;</div><div class="l3" id="s-code">튕기면 QR 다시 찍기</div></div>
 <script>
 (function () {
 'use strict';
@@ -102,6 +126,15 @@ var tab = 'all';     // 'all' 또는 '1'~'5'
 var data = {};       // data[m] = { cursors: {c: n}, works: {'c-n': {cls, num, before, after}}, counts: {}, hidden: [] }
 var seen = {};
 var fin = null;
+var EMBED = '', VIEW_M = 0, VIEW_F = false;   // 슬라이드 안에 넣은 결과판: 정해진 미션(또는 대결)만 보여 줘요
+var SW = 1920, SH = 1080;
+// 슬라이드 안에서 누른 뒤에도 리모컨으로 덱이 넘어가게, 이동 키를 덱에 보내요 (엔진 §6.4)
+document.addEventListener('keydown', function (e) {
+  if (!EMBED || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].indexOf(e.key) < 0) return;
+  e.preventDefault();
+  try { window.top.postMessage({ hz: 'embed-key', key: e.key }, '*'); } catch (x) {}
+});
 
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -110,10 +143,12 @@ function call(fn, args, ok) {
   r[fn].apply(r, args || []);
 }
 function fit() {
-  var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080), s = $('stage');
+  var k = Math.min(window.innerWidth / SW, window.innerHeight / SH), s = $('stage');
+  s.style.width = SW + 'px'; s.style.height = SH + 'px';
+  $('modal').style.width = SW + 'px'; $('modal').style.height = SH + 'px';
   s.style.transform = 'scale(' + k + ')';
-  s.style.left = ((window.innerWidth - 1920 * k) / 2) + 'px';
-  s.style.top = ((window.innerHeight - 1080 * k) / 2) + 'px';
+  s.style.left = ((window.innerWidth - SW * k) / 2) + 'px';
+  s.style.top = ((window.innerHeight - SH * k) / 2) + 'px';
 }
 window.addEventListener('resize', fit); fit();
 
@@ -134,9 +169,12 @@ function renderHead() {
 }
 
 /* ---------- 새 결과 받기 ---------- */
+function viewM() { return EMBED ? VIEW_M : st.mission; }
+function viewF() { return EMBED ? VIEW_F : st.final; }
 function poll() {
-  var m = st.mission;
-  if (st.final) { call('getFinal', [], function (r) { fin = r; renderFinal(); }); return; }
+  if (EMBED === 'status') return pollStatus();
+  var m = viewM();
+  if (viewF()) { call('getFinal', [], function (r) { fin = r; renderFinal(); }); return; }
   if (!(m > 0)) { render(); return; }
   var D = data[m] || (data[m] = { cursors: {}, works: {}, counts: {}, hidden: [] });
   var cur = {};
@@ -152,14 +190,14 @@ function poll() {
       D.cursors[c] = r.classes[c].cursor;
     }
     D.counts = r.counts || {}; D.hidden = r.hidden || [];
-    if (st.mission === m) render();
+    if (viewM() === m) render();
   });
 }
 
 function votesOf(D, w) { return ((D.counts[w.cls] || {})[w.num]) || 0; }
 function render() {
   $('final').className = ''; $('grid').style.display = 'block';
-  var m = st.mission, g = $('grid');
+  var m = viewM(), g = $('grid');
   if (!(m > 0)) { g.innerHTML = '<div class="empty d">선생님이 미션을 열면 결과가 여기에 모여요</div>'; $('stat').innerHTML = ''; return; }
   var D = data[m]; if (!D) { g.innerHTML = '<div class="empty d">불러오는 중…</div>'; return; }
   var list = [], nb = 0, na = 0;
@@ -176,7 +214,7 @@ function render() {
   list.sort(function (a, b) { return (votesOf(D, b) - votesOf(D, a)) || ((b.after ? 1 : 0) - (a.after ? 1 : 0)) || (a.cls - b.cls) || (a.num - b.num); });
   if (!list.length) { g.innerHTML = '<div class="empty d">아직 올라온 결과가 없어요<small>학생 페이지에서 Before와 After를 올리면 여기에 하나씩 튀어나와요</small></div>'; return; }
   /* 모두 한 화면에 들어가는 가장 큰 카드 크기 */
-  var W = 1760, H = 750, gap = 16, n = list.length, cols = 1, cw = 0, ch = 0;
+  var W = SW - (EMBED ? 40 : 160), H = SH - (EMBED ? 100 : 330), gap = 16, n = list.length, cols = 1, cw = 0, ch = 0;
   for (cols = 1; cols <= 20; cols++) {
     cw = (W - gap * (cols - 1)) / cols; ch = cw * 0.66 + 44;
     if (Math.ceil(n / cols) * (ch + gap) - gap <= H) break;
@@ -210,7 +248,7 @@ function bx(r, lab) {
   return '<div><h3 class="d">' + lab + '</h3><div class="bx"><div class="full">' + esc(r.text) + '</div></div></div>';
 }
 function openWork(k) {
-  var m = st.mission, D = data[m], w = D.works[k], key = m + '-' + k;
+  var m = viewM(), D = data[m], w = D.works[k], key = m + '-' + k;
   var h = '<h2 class="d">' + w.cls + '반 ' + w.num + '번 · 미션 ' + m + ' ' + NAMES[m] + '</h2><div class="ba">' + bx(w.before, 'Before') + bx(w.after, 'After') + '</div>';
   h += '<div class="acts"><span class="vn">' + votesOf(D, w) + '표</span>' + (TEACHER ? '<button class="tbtn warn" id="hide">' + (D.hidden.indexOf(key) >= 0 ? '다시 보이기' : '숨기기') + '</button>' : '') + '</div>';
   $('mbody').innerHTML = h; $('modal').className = 'on';
@@ -228,12 +266,12 @@ function renderFinal() {
   var total = 0, maxV = 1, best = -1, h = '';
   fin.list.forEach(function (w) { var v = fin.counts[w.key] || 0; total += v; if (v > maxV) maxV = v; });
   fin.list.forEach(function (w, i) { var v = fin.counts[w.key] || 0; if (v > 0 && (best < 0 || v > (fin.counts[fin.list[best].key] || 0))) best = i; });
-  var n = fin.list.length, slot = 1760 / n;
+  var n = fin.list.length, slot = (SW - (EMBED ? 40 : 160)) / n, fw = Math.min(300, slot - 16), colMax = SH - (EMBED ? 100 : 330) - 420;
   fin.list.forEach(function (w, i) {
     var v = fin.counts[w.key] || 0, a = w.after || {};
     var pic = a.type === 'img' ? '<img src="' + esc(a.thumb) + '" alt="">' : '<div class="tx">' + esc((a.text || '').slice(0, 160)) + '</div>';
-    h += '<div class="fc' + (i === best ? ' win' : '') + '" style="left:' + (i * slot + (slot - 300) / 2) + 'px"><div class="pic" data-k="' + esc(w.key) + '">' + pic + '</div><div class="nm d">' + w.cls + '반 <small style="font-size:26px">미션 ' + w.mission + '</small></div>' +
-      '<div class="col" style="height:' + Math.max(6, Math.round(v / maxV * 330)) + 'px"></div><div class="vn d">' + v + '표</div></div>';
+    h += '<div class="fc' + (i === best ? ' win' : '') + '" style="left:' + (i * slot + (slot - fw) / 2) + 'px;width:' + fw + 'px"><div class="pic" data-k="' + esc(w.key) + '">' + pic + '</div><div class="nm d">' + w.cls + '반 <small style="font-size:26px">미션 ' + w.mission + '</small></div>' +
+      '<div class="col" style="height:' + Math.max(6, Math.round(v / maxV * colMax)) + 'px"></div><div class="vn d">' + v + '표</div></div>';
   });
   f.innerHTML = h;
   var ps = f.querySelectorAll('.pic');
@@ -266,9 +304,29 @@ function teacher(action, arg) {
 }
 function setState(s) {
   if (!s) return;
-  var changed = s.mission !== st.mission || s.final !== st.final;
+  var changed = !EMBED && (s.mission !== st.mission || s.final !== st.final);
   st = s; renderHead(); renderTbar();
+  if (EMBED === 'status') { renderStatus(); return; }
   if (changed) { closeM(); if (st.final) { fin = null; renderFinal(); } else render(); poll(); }
+}
+
+/* ---------- 슬라이드 안의 작은 상태 칸 (embed=status) ---------- */
+var sStart = 'wait', sCnt = null;
+function renderStatus() {
+  var stEl = $('s-st'), m = VIEW_F ? 'F' : VIEW_M;
+  $('s-mb').textContent = VIEW_F ? '반 대표 대결' : 'MISSION ' + VIEW_M;
+  var cls = 'wait', txt = '여는 중…';
+  if (sStart === 'bad') { cls = 'bad'; txt = '키가 달라요'; }
+  else if (VIEW_F ? st.final : (st.mission === VIEW_M && !st.final)) { cls = 'ok'; txt = '열림 ✓'; }
+  else if (!VIEW_F && st.final) { cls = 'wait'; txt = '대결 중'; }
+  else if (!VIEW_F && st.mission > VIEW_M) { cls = 'wait'; txt = '지난 미션'; }
+  else if (sStart === 'none') { cls = 'wait'; txt = '아직 안 열림'; }
+  stEl.className = cls; stEl.textContent = txt;
+  $('s-cnt').innerHTML = sCnt ? 'After <b>' + sCnt.after + '</b>명 · Before ' + sCnt.before + '명' : '&nbsp;';
+}
+function pollStatus() {
+  if (!VIEW_F && VIEW_M > 0) call('stats', [VIEW_M], function (r) { sCnt = r; renderStatus(); });
+  call('getState', [], setState);
 }
 
 /* ---------- 시작 ---------- */
@@ -277,7 +335,24 @@ function loopState() { call('getState', [], setState); setTimeout(loopState, 400
 function loopFeed() { poll(); setTimeout(loopFeed, st.final ? 3000 : 4000); }
 google.script.url.getLocation(function (loc) {
   var p = (loc && loc.parameter) || {};
-  if (p.c && +p.c >= 1 && +p.c <= CLASSES) { tab = String(+p.c); renderTabs(); }
+  if (p.embed === '1' || p.embed === 'status') {
+    EMBED = p.embed; VIEW_F = p.m === 'F'; VIEW_M = VIEW_F ? 0 : (+p.m || 0);
+    if (EMBED === 'status') { document.documentElement.className = 'status'; }
+    else { document.body.className = 'embed'; SW = 1180; SH = 820; tab = 'all'; renderTabs(); fit(); }
+    KEY = p.k || '';
+    if (EMBED === 'status' && KEY) call('teacherInfo', [KEY], function (r) { if (r && r.ok && r.code) $('s-code').innerHTML = '입장 <b>' + r.code + '</b> · 튕기면 QR'; });
+    if (p.start === '1' && KEY && (VIEW_F || VIEW_M > 0)) {
+      var act = VIEW_F ? ['finalOpen', null] : ['missionUp', VIEW_M];
+      call('teacher', [KEY, act[0], act[1]], function (r) {
+        if (!r || !r.ok) { sStart = 'bad'; renderStatus(); try { window.top.postMessage({ hz: 'embed-secret-bad', name: '교사 키' }, '*'); } catch (x) {} return; }
+        sStart = 'ok'; setState(r.state); poll();
+      });
+    } else sStart = 'none';
+    call('getState', [], function (s) { setState(s); poll(); });
+    setTimeout(loopState, 4000); setTimeout(loopFeed, 4500);
+    return;
+  }
+  if (p.cls && +p.cls >= 1 && +p.cls <= CLASSES) { tab = String(+p.cls); renderTabs(); }
   KEY = p.k || '';
   if (KEY) call('teacherInfo', [KEY], function (r) {
     if (!r || !r.ok) return;
