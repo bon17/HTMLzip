@@ -920,10 +920,11 @@ document.addEventListener('visibilitychange', function () {
 
 /* ---------------- 시작 ---------------- */
 renderWho();
-/* QR 주소에 입장 코드가 있으면(…?c=1234) 자동으로 채워요. 튕긴 뒤 다시 찍으면 반·번호만 고르면 돼요 */
+/* QR 주소에 입장 코드가 있으면(…?code=1234) 자동으로 채워요. 튕긴 뒤 다시 찍으면 반·번호만 고르면 돼요
+   (주소 이름 c·sid는 앱스 스크립트가 자기용으로 써서 쓰면 ‘파일을 열 수 없습니다’가 떠요) */
 try {
   google.script.url.getLocation(function (loc) {
-    var c = String(((loc && loc.parameter) || {}).c || '').replace(/\D/g, '').slice(0, 4);
+    var c = String(((loc && loc.parameter) || {}).code || '').replace(/\D/g, '').slice(0, 4);
     if (c.length !== 4) return;
     S.qrCode = c; save();
     var ci = $('in-code'); if (ci && !ci.value) ci.value = c;

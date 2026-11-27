@@ -66,7 +66,7 @@ function links_() {
   if (!base) { try { base = ScriptApp.getService().getUrl() || ''; } catch (e) { base = ''; } }
   var L = {
     code: code, key: key, sheet: ss.getUrl(),
-    student: base ? base + '?c=' + code : '(배포한 뒤 다시 setup 실행)',
+    student: base ? base + '?code=' + code : '(배포한 뒤 다시 setup 실행)', // c·sid는 앱스 스크립트가 자기용으로 써서 쓰면 안 돼요
     board: base ? base + '?p=board&k=' + key : '(배포한 뒤 다시 setup 실행)',
     boardView: base ? base + '?p=board' : ''
   };
