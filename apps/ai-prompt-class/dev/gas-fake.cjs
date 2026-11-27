@@ -12,9 +12,15 @@ function makeContext() {
     appendRow(a) { this.rows.push(a.slice()); }
     getLastRow() { return this.rows.length; }
     deleteRows(s, n) { this.rows.splice(s - 1, n); }
+    clear() { this.rows = []; this.formulas = {}; }
+    setColumnWidth() {}
     getRange(r, c, nr, nc) {
-      const self = this;
+      const self = this; nr = nr || 1; nc = nc || 1;
+      const fmt = { setFontSize() { return fmt; }, setFontWeight() { return fmt; }, setBackground() { return fmt; }, setWrap() { return fmt; } };
       return {
+        ...fmt,
+        setValues(v) { for (let i = 0; i < v.length; i++) { while (self.rows.length < r - 1 + i + 1) self.rows.push([]); for (let j = 0; j < v[i].length; j++) self.rows[r - 1 + i][c - 1 + j] = v[i][j]; } return this; },
+        setFormula(f) { (self.formulas = self.formulas || {})[r + ',' + c] = f; return this; },
         getValues() {
           if (r < 1 || nr < 1 || r - 1 + nr > self.rows.length) throw new Error(`범위 밖: ${self.name} ${r},${nr} (줄 ${self.rows.length})`);
           return self.rows.slice(r - 1, r - 1 + nr).map(row => { const o = []; for (let i = 0; i < nc; i++) o.push(row[c - 1 + i] === undefined ? '' : row[c - 1 + i]); return o; });
@@ -22,7 +28,7 @@ function makeContext() {
       };
     }
   }
-  const ss = { sheets: {}, getSheetByName(n) { return this.sheets[n] || null; }, insertSheet(n) { return (this.sheets[n] = new Sheet(n)); }, getSheets() { return Object.values(this.sheets); }, getId() { return 'ss1'; }, getUrl() { return 'https://docs.google.com/spreadsheets/d/ss1'; } };
+  const ss = { sheets: {}, getSheetByName(n) { return this.sheets[n] || null; }, insertSheet(n) { return (this.sheets[n] = new Sheet(n)); }, setActiveSheet() {}, moveActiveSheet() {}, deleteSheet(sh) { delete this.sheets[sh.getName()]; }, getSheets() { return Object.values(this.sheets); }, getId() { return 'ss1'; }, getUrl() { return 'https://docs.google.com/spreadsheets/d/ss1'; } };
   const files = [];
   const folder = {
     getId() { return 'folder1'; },

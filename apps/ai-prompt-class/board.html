@@ -255,7 +255,7 @@ function renderTbar() {
   var bs = $('tbar').querySelectorAll('[data-m]');
   for (var i = 0; i < bs.length; i++) bs[i].onclick = function () { teacher('mission', +this.getAttribute('data-m')); };
   $('tf').onclick = function () { if (st.final) teacher('final', false); else if (confirm('반 대표 대결을 열까요? 반마다 표를 가장 많이 받은 작품 하나씩 올라가요.')) teacher('final', true); };
-  $('tc').onclick = function () { if (confirm('입장 코드를 새로 만들까요? 이미 들어온 학생은 그대로예요.')) teacher('newCode'); };
+  $('tc').onclick = function () { if (confirm('입장 코드를 새로 만들까요?\n슬라이드 QR 속 코드와 달라져서, QR로 새로 들어오는 학생은 코드를 직접 넣어야 해요.\n(이미 들어온 학생은 그대로예요. 수업 날에는 누르지 마세요)')) teacher('newCode'); };
 }
 function teacher(action, arg) {
   call('teacher', [KEY, action, arg], function (r) {
