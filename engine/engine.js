@@ -1,9 +1,9 @@
-// ===== ENGINE v3.4 =====
+// ===== ENGINE v3.5 =====
 // HTMLzip 슬라이드 엔진: 이동·필기·칠판·타이머·뽑기·화면 가리기·발표자 창·전체 화면·모션·수업 위젯·상호작용·편집·그림 넣기·저장·점검
 // 디자인은 정하지 않는다. 덱 디자인의 CSS 변수(--bg, --fg, --muted, --accent, --accent-2)를 읽어 쓴다.
 (() => {
 'use strict';
-const VERSION = '3.4';
+const VERSION = '3.5';
 if (window.__hzEngine) return;
 window.__hzEngine = VERSION;
 
@@ -1020,6 +1020,30 @@ function handleInteract(target) {
   }
   return !!target.closest('a[href],button,input,select,textarea,label,video,audio,summary,.hz-video-missing');
 }
+// 리모컨 진행 (§4.2): data-interact-step="N"이면 N번째 '다음'에서 그 요소를 누른 것처럼 동작한다.
+// 뒤집기·가리개 열기·크게 보기·정답 보이기·점 보이기, <video>는 재생. '이전'이면 되돌리고, quiet면 움직임 없이 끝난 모습만 만든다
+function stepInteract(el, on, quiet) {
+  const t = el.tagName === 'VIDEO' ? 'video' : el.dataset.interact;
+  if (t === 'flip') { el.classList.toggle('hz-flipped', on); dropHint(el); }
+  else if (t === 'reveal') {
+    const c = $(':scope > .hz-cover', el);
+    if (on && c) { if (quiet || strength() === 'off') c.remove(); else { uncover(c); return T(560); } }
+    if (!on && !c) { ensureHost(el); el.appendChild(h('div', { class: 'hz-cover', 'data-hz-runtime': '' }, el.dataset.coverText || '클릭해서 확인')); }
+  } else if (t === 'zoom') {
+    if (on && !quiet && zoomed !== el) { toggleZoom(el); return T(480); }
+    if (!on && zoomed === el) toggleZoom(el);
+  } else if (t === 'quiz') {
+    $$('[data-option]', el).forEach(o => o.classList.remove('hz-correct', 'hz-wrong'));
+    if (on) { dropHint(el); $$('[data-option][data-correct]', el).forEach(o => { if (quiet) o.classList.add('hz-correct'); else answer(el, o); }); }
+  } else if (t === 'hotspot') { if (el.dataset.spots === 'tap') el.classList.toggle('hz-spots-hidden', !on); if (!on) hideTips(); }
+  else if (t === 'video') {
+    try {
+      if (on && !quiet) { const p = el.play(); if (p && p.catch) p.catch(() => toast('영상을 재생하지 못했어요. 영상을 눌러 재생해 주세요')); }
+      if (!on) { el.pause(); el.currentTime = 0; }
+    } catch (e) { /* 영상 없음 */ }
+  }
+  return 0;
+}
 function answer(quiz, opt) {
   dropHint(quiz);
   if (opt.hasAttribute('data-correct')) {
@@ -1461,11 +1485,11 @@ const isEntrance = el => el.dataset.anim != null || hasStep(el) || el.dataset.wi
 const staggerChildAuto = el => { const p = el.parentElement; return !!p && p.dataset.anim === 'stagger' && !hasStep(el); };
 const stepVal = v => (v == null || v === '' ? NaN : parseFloat(v));
 function motionEls(slide) {
-  return $$('[data-anim],[data-step],[data-emphasis],[data-exit],[data-widget="chapter"]', slide).filter(el => !el.closest('template,.notes,[data-hz-runtime]'));
+  return $$('[data-anim],[data-step],[data-emphasis],[data-exit],[data-interact-step],[data-widget="chapter"]', slide).filter(el => !el.closest('template,.notes,[data-hz-runtime]'));
 }
 function stepsOf(slide) {
   const set = new Set();
-  motionEls(slide).forEach(el => [el.dataset.step, el.dataset.emphasisStep, el.dataset.exitStep].forEach(v => { const n = stepVal(v); if (!isNaN(n)) set.add(n); }));
+  motionEls(slide).forEach(el => [el.dataset.step, el.dataset.emphasisStep, el.dataset.exitStep, el.dataset.interactStep].forEach(v => { const n = stepVal(v); if (!isNaN(n)) set.add(n); }));
   return [...set].sort((a, b) => a - b);
 }
 const visible = () => slides.filter(s => editing || !s.hasAttribute('data-hidden'));
@@ -1517,11 +1541,13 @@ function doStep(slide, s) {
     if (stepVal(el.dataset.step) === s && isEntrance(el)) end = Math.max(end, enter(el));
     if (stepVal(el.dataset.emphasisStep) === s) end = Math.max(end, emphasize(el));
     if (stepVal(el.dataset.exitStep) === s) end = Math.max(end, exitEl(el));
+    if (stepVal(el.dataset.interactStep) === s) end = Math.max(end, stepInteract(el, true));
   });
   return end;
 }
 function revertStep(slide, s) {
   motionEls(slide).forEach(el => {
+    if (stepVal(el.dataset.interactStep) === s) stepInteract(el, false);
     if (stepVal(el.dataset.exitStep) === s) {
       el.getAnimations().forEach(a => { if (!isCssAnim(a)) a.cancel(); });
       el.classList.remove('hz-gone', 'hz-struck');
@@ -1546,6 +1572,7 @@ function revertStep(slide, s) {
 }
 function cleanupSlide(slide) {
   if (!slide) return;
+  $$('video', slide).forEach(v => { try { if (!v.paused) v.pause(); } catch (e) { /* 영상 없음 */ } }); // 슬라이드를 떠나면 영상은 멈춘다 (§6.3)
   stopAmbient(slide);
   cleanEl(slide);
 }
@@ -1573,6 +1600,7 @@ function go(n, o = {}) {
   const forward = dir > 0 && !o.final;
   if (forward) setInitial(to); else { finalPre(to); stepIdx = steps.length; }
   armInteractions(to);
+  if (!forward) motionEls(to).forEach(el => { if (!isNaN(stepVal(el.dataset.interactStep))) stepInteract(el, true, true); }); // 뒤로 오면 끝난 모습
   startAmbient(to);
   const type = o.instant ? 'none' : (dir > 0 ? (to.dataset.transition || deck.dataset.transition || 'fade') : ((from && from.dataset.transition) || deck.dataset.transition || 'fade'));
   transit(same ? null : from, to, type, dir, () => {
@@ -1594,6 +1622,7 @@ function next() {
   if (blankMode) return setBlank(null); // 가린 화면은 먼저 걷는다
   if (boardMode) return boardNav(1);
   if (editing) return go(nextIndex(1), { instant: true });
+  if (zoomed) { toggleZoom(zoomed); return; } // 크게 보기 중이면 먼저 원래 크기로 (리모컨 강의, §3.1)
   finishAll(); clearSpot(); closeZoom(); hideTips();
   if (stepIdx < steps.length) { doStep(slides[cur], steps[stepIdx++]); updateChrome(); return; }
   const n = nextIndex(1);
@@ -3334,7 +3363,8 @@ function buildMotion(body, ts) {
     h('h5', {}, '퇴장'), F('효과', pick('exit', LIB.exit, 'exit')), F('단계', numD('exitStep', '')));
   const it = selectIn(opts(LIB.interact), el.dataset.interact || '');
   it.addEventListener('change', () => setInteract(el, it.value));
-  body.append(h('h5', {}, '상호작용'), F('종류', it));
+  body.append(h('h5', {}, '상호작용'), F('종류', it), F('단계', numD('interactStep', '누를 때만')),
+    hint('단계에 번호를 넣으면 그 번째 "다음"에서 저절로 뒤집히거나 열려요(영상은 재생). 발표용 리모컨만으로 강의할 때 써요.'));
   const t = el.dataset.interact;
   if (t === 'flip') {
     const on = el.classList.contains('hz-flipped');
