@@ -37,7 +37,7 @@ function makeContext() {
   };
   const ctx = {
     console,
-    SpreadsheetApp: { create: () => ss, openById: () => ss },
+    SpreadsheetApp: { create: () => ss, openById: () => ss, getActiveSpreadsheet: () => ctx.__bound || null },
     PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k in props ? props[k] : null), setProperty: (k, v) => { props[k] = String(v); }, getProperties: () => Object.assign({}, props), deleteProperty: k => { delete props[k]; } }) },
     CacheService: { getScriptCache: () => ({ get: k => (cache[k] && cache[k].exp > Date.now() ? cache[k].v : null), put: (k, v, s) => { if (String(v).length > 100000) throw new Error('캐시 값이 너무 커요'); cache[k] = { v: String(v), exp: Date.now() + s * 1000 }; }, remove: k => { delete cache[k]; }, removeAll: ks => ks.forEach(k => delete cache[k]) }) },
     LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },

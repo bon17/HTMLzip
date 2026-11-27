@@ -6,7 +6,8 @@
  *   ?p=board     결과판 (board.html). &k=교사키 를 붙이면 교사 조작 단추가 보여요. &m=2 를 붙이면 그 미션을 열어요.
  *
  * 저장
- *   스프레드시트: 시트 'm{미션}_{반}' 에 제출 기록(추가만 함), 'votes' 에 투표 기록(추가만 함)
+ *   스프레드시트: 시트 'm{미션}_{반}' 에 제출 기록(추가만 함), 'votes' 에 투표 기록(추가만 함), 맨 앞 '바로 가기' 탭에 링크
+ *               (시트에서 '확장 프로그램 → Apps Script'로 만들었으면 그 시트에, 아니면 setup이 'AI 프롬프트 특강 결과' 시트를 새로 만들어요)
  *   드라이브 폴더: 그림 원본(링크가 있는 사람 보기)
  *   스크립트 속성: 지금 미션, 입장 코드, 교사 키, 대결 상태, 숨긴 작품
  *
@@ -40,6 +41,10 @@ function doGet(e) {
 /** 처음 한 번 실행: 시트·폴더·교사 키·입장 코드를 만들고 로그에 알려 줘요. */
 function setup() {
   var P = props_();
+  // 시트에서 ‘확장 프로그램 → Apps Script’로 만든 경우: 결과도 그 시트(코드가 붙어 있는 시트)에 쌓아요
+  var bound = null;
+  try { bound = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) { bound = null; }
+  if (bound && P.getProperty('ssId') !== bound.getId()) P.setProperty('ssId', bound.getId());
   ss_();
   folder_();
   if (!P.getProperty('teacherKey')) P.setProperty('teacherKey', randKey_(12));
