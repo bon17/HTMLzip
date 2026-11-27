@@ -8,6 +8,8 @@
 > **다음 세션은 [HANDOFF.md](HANDOFF.md)부터 읽어요.** 맨 위 ‘0. 최신 상태’에 이번 세션(브랜치 `claude/pensive-mayer-nxsjcp`)에서 끝낸 일과 다음 할 일이 있어요.
 > 예전 브랜치 `claude/keen-ramanujan-tzzg8b`(엔진 v1.0)는 참고용이에요. 거기 엔진은 가져오지 않아요.
 
+> **학생 제출 페이지·결과판(2026-11-26)**: `apps/ai-prompt-class/`(구글 앱스 스크립트 웹 앱, 선생님 개인 Gmail로 배포). 배포 순서와 리허설 목록은 그 폴더의 `README.md`. 투표는 모든 미션에서 After를 올리면 바로 열리고, 마무리에 반 대표 대결을 한 번 해요.
+
 이 폴더는 HTMLzip 원칙([../../docs/PRINCIPLES.md](../../docs/PRINCIPLES.md))이 생기기 전에 만든 작업본이에요. 도입부 17장은 원칙에 맞춰 옮겼고, **앞으로의 작업은 새 덱에서** 해요.
 
 - 새 덱: `decks/2026-12-24-ai-prompt-class/index.html` (영상 때문에 폴더형 덱이에요. 영상은 `assets/`에 따로 넣어요. `assets/README.md` 참고)

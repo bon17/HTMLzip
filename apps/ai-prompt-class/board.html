@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>결과판 · AI 프롬프트 특강</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap">
+<style>
+/* 결과판: 1920×1080 무대를 창에 맞춰 키우고 줄여요. 큰 화면(교실 TV·프로젝터)용 */
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#E9E2D6}
+body{font-family:'Nanum Gothic','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;font-weight:800;color:#1C2340;word-break:keep-all}
+.d{font-family:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:400}
+button{font:inherit;color:inherit;cursor:pointer}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;background:#FFF8EE;background-image:radial-gradient(rgba(28,35,64,.07) 2.6px,transparent 2.8px);background-size:44px 44px;overflow:hidden}
+.hd{position:absolute;left:80px;top:40px;right:80px;height:120px;display:flex;align-items:center}
+.mb{background:#C2410C;color:#fff;border-radius:999px;padding:6px 24px;font-size:36px;margin-right:24px;white-space:nowrap}
+.ttl{font-size:76px;line-height:1;white-space:nowrap}
+.code{margin-left:auto;display:flex;align-items:center;background:#fff;border:4px solid #1C2340;border-radius:24px;box-shadow:6px 6px 0 #1C2340;padding:10px 22px}
+.code .l{font-size:28px;margin-right:16px;line-height:1.1}
+.code .v{font-size:64px;letter-spacing:.18em;line-height:1}
+.bar2{position:absolute;left:80px;right:80px;top:180px;height:64px;display:flex;align-items:center}
+.tabs button{border:3px solid #DDE1EC;background:#EEF0F6;border-radius:999px;padding:4px 26px;margin-right:12px;font-family:'Jua',sans-serif;font-size:32px}
+.tabs button.on{background:#1C2340;color:#fff;border-color:#1C2340}
+.stat{margin-left:auto;font-size:30px;color:#4A5170}
+.stat b{color:#C2410C;font-size:36px}
+#grid{position:absolute;left:80px;right:80px;top:270px;bottom:60px}
+.card{position:absolute;background:#fff;border:3px solid #1C2340;border-radius:18px;box-shadow:5px 5px 0 #1C2340;overflow:hidden;padding:0;text-align:left;transition:left .5s,top .5s,width .5s,height .5s}
+.card.new{animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
+.card.hid{opacity:.35}
+.card .im{position:absolute;left:0;top:0;right:0;bottom:44px;background:#EEF0F6}
+.card .im img{width:100%;height:100%;object-fit:cover;display:block}
+.card .bf{position:absolute;left:8px;top:8px;width:30%;height:30%;border:2px solid #fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.card .bf img{width:100%;height:100%;object-fit:cover;display:block}
+.card .tx{position:absolute;left:0;top:0;right:0;bottom:44px;padding:12px 14px;font-size:20px;line-height:1.5;overflow:hidden;background:#F7F8FC;font-weight:700}
+.card .tx:after{content:"";position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(rgba(247,248,252,0),#F7F8FC)}
+.card .ft{position:absolute;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;padding:0 12px;font-size:22px;background:#fff;border-top:2px solid #EEF0F6}
+.card .ft .vb{flex:1;height:12px;margin:0 10px;border-radius:6px;background:#EEF0F6;position:relative;overflow:hidden}
+.card .ft .vb i{position:absolute;left:0;top:0;bottom:0;background:#FF7A1A;border-radius:6px;transition:width .6s}
+.card .ft .vn{color:#C2410C;font-family:'Jua',sans-serif;font-size:24px}
+.card .rk{position:absolute;right:8px;top:8px;width:52px;height:52px;border-radius:50%;background:#FFC21A;border:3px solid #1C2340;display:flex;align-items:center;justify-content:center;font-family:'Jua',sans-serif;font-size:30px}
+.card .rk.r2{background:#E3E6EF}.card .rk.r3{background:#F2B48C}
+.card .only{position:absolute;right:8px;bottom:52px;background:rgba(28,35,64,.75);color:#fff;border-radius:999px;padding:0 10px;font-size:16px}
+.empty{position:absolute;left:0;right:0;top:220px;text-align:center;font-size:44px;color:#4A5170}
+.empty small{display:block;font-size:30px;margin-top:16px}
+/* 크게 보기 */
+#modal{position:absolute;left:0;top:0;width:1920px;height:1080px;background:rgba(21,27,58,.8);display:none;z-index:10}
+#modal.on{display:block}
+#modal .box{position:absolute;left:80px;top:60px;right:80px;bottom:60px;background:#fff;border-radius:28px;padding:30px 36px}
+#modal h2{margin:0;font-size:48px}
+#modal .x{position:absolute;right:24px;top:20px;width:64px;height:64px;border:0;border-radius:50%;background:#EEF0F6;font-size:36px}
+#modal .ba{position:absolute;left:36px;right:36px;top:110px;bottom:100px;display:flex}
+#modal .ba > div{flex:1;display:flex;flex-direction:column;min-width:0}
+#modal .ba > div + div{margin-left:30px}
+#modal .ba h3{margin:0 0 10px;font-size:36px}
+#modal .ba .bx{flex:1;min-height:0;border:3px solid #1C2340;border-radius:20px;overflow:hidden;background:#F7F8FC}
+#modal .ba img{width:100%;height:100%;object-fit:contain;display:block}
+#modal .ba .full{padding:16px 20px;font-size:26px;line-height:1.6;white-space:pre-wrap;height:100%;overflow:auto;font-weight:700}
+#modal .acts{position:absolute;left:36px;right:36px;bottom:24px;display:flex;align-items:center;font-size:30px}
+#modal .acts .vn{color:#C2410C;font-family:'Jua',sans-serif;font-size:40px;margin-right:auto}
+.tbtn{border:3px solid #1C2340;background:#fff;border-radius:999px;padding:6px 22px;font-family:'Jua',sans-serif;font-size:26px;margin-left:10px}
+.tbtn.on{background:#1C2340;color:#fff}
+.tbtn.warn{border-color:#C8291D;color:#C8291D}
+/* 교사 조작 */
+#tbar{position:absolute;left:80px;bottom:8px;display:none;align-items:center;font-size:22px;color:#4A5170;opacity:.35;transition:opacity .2s}
+#tbar:hover{opacity:1}
+#tbar.on{display:flex}
+#tbar .tbtn{font-size:20px;padding:2px 14px;margin-left:6px}
+/* 대결 */
+#final{position:absolute;left:80px;right:80px;top:270px;bottom:60px;display:none}
+#final.on{display:block}
+.fc{position:absolute;bottom:0;width:300px;text-align:center}
+.fc .pic{height:200px;border:4px solid #1C2340;border-radius:18px;overflow:hidden;background:#F7F8FC;cursor:pointer}
+.fc .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.fc .pic .tx{padding:10px;font-size:18px;line-height:1.45;text-align:left;font-weight:700;height:100%;overflow:hidden}
+.fc .nm{font-size:40px;margin-top:8px}
+.fc .col{margin:10px auto 0;width:90px;background:#FF7A1A;border:4px solid #1C2340;border-radius:14px 14px 0 0;transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.fc .vn{font-size:44px;color:#C2410C}
+.fc.win .pic{box-shadow:0 0 0 8px #FFC21A}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="hd"><span class="mb d" id="mb">MISSION</span><span class="ttl d" id="ttl">결과판</span>
+    <div class="code" id="codebox" style="display:none"><span class="l d">입장<br>코드</span><span class="v d" id="code">----</span></div></div>
+  <div class="bar2"><div class="tabs" id="tabs"></div><div class="stat" id="stat"></div></div>
+  <div id="grid"></div>
+  <div id="final"></div>
+  <div id="tbar"></div>
+  <div id="modal"><div class="box"><button class="x" id="mx" aria-label="닫기">&times;</button><div id="mbody"></div></div></div>
+</div>
+<script>
+(function () {
+'use strict';
+var NAMES = { 1: '몽타주', 2: '세계관 요리', 3: '누가 설명해 줄래?', 4: '시험공부', 5: '진로', 6: '진짜 숙제' };
+var CLASSES = 5;
+var KEY = '', TEACHER = false;
+var st = { mission: 0, final: false, rev: -1 };
+var tab = 'all';     // 'all' 또는 '1'~'5'
+var data = {};       // data[m] = { cursors: {c: n}, works: {'c-n': {cls, num, before, after}}, counts: {}, hidden: [] }
+var seen = {};
+var fin = null;
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function call(fn, args, ok) {
+  var r = google.script.run.withSuccessHandler(function (x) { if (ok) ok(x); }).withFailureHandler(function (e) { if (window.console) console.warn(fn, e); });
+  r[fn].apply(r, args || []);
+}
+function fit() {
+  var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080), s = $('stage');
+  s.style.transform = 'scale(' + k + ')';
+  s.style.left = ((window.innerWidth - 1920 * k) / 2) + 'px';
+  s.style.top = ((window.innerHeight - 1080 * k) / 2) + 'px';
+}
+window.addEventListener('resize', fit); fit();
+
+function renderTabs() {
+  var h = '';
+  for (var c = 1; c <= CLASSES; c++) h += '<button class="' + (tab === String(c) ? 'on' : '') + '" data-t="' + c + '">' + c + '반</button>';
+  h += '<button class="' + (tab === 'all' ? 'on' : '') + '" data-t="all">전체</button>';
+  $('tabs').innerHTML = h;
+  var bs = $('tabs').getElementsByTagName('button');
+  for (var i = 0; i < bs.length; i++) bs[i].onclick = function () { tab = this.getAttribute('data-t'); renderTabs(); render(); poll(); };
+}
+function renderHead() {
+  var m = st.mission;
+  if (st.final) { $('mb').textContent = '오늘의 베스트'; $('ttl').textContent = '반 대표 대결!'; }
+  else if (m > 0) { $('mb').textContent = 'MISSION ' + m; $('ttl').textContent = NAMES[m] + ' · Before → After'; }
+  else { $('mb').textContent = '곧 시작'; $('ttl').textContent = '결과판'; }
+  $('tabs').style.visibility = st.final ? 'hidden' : 'visible';
+}
+
+/* ---------- 새 결과 받기 ---------- */
+function poll() {
+  var m = st.mission;
+  if (st.final) { call('getFinal', [], function (r) { fin = r; renderFinal(); }); return; }
+  if (!(m > 0)) { render(); return; }
+  var D = data[m] || (data[m] = { cursors: {}, works: {}, counts: {}, hidden: [] });
+  var cur = {};
+  for (var c = 1; c <= CLASSES; c++) if (tab === 'all' || tab === String(c)) cur[c] = D.cursors[c] || 0;
+  call('feed', [m, cur], function (r) {
+    if (!r) return;
+    for (var c in r.classes) {
+      r.classes[c].rows.forEach(function (row) {
+        var k = c + '-' + row.num;
+        D.works[k] = D.works[k] || { cls: +c, num: row.num };
+        D.works[k][row.kind] = row;
+      });
+      D.cursors[c] = r.classes[c].cursor;
+    }
+    D.counts = r.counts || {}; D.hidden = r.hidden || [];
+    if (st.mission === m) render();
+  });
+}
+
+function votesOf(D, w) { return ((D.counts[w.cls] || {})[w.num]) || 0; }
+function render() {
+  $('final').className = ''; $('grid').style.display = 'block';
+  var m = st.mission, g = $('grid');
+  if (!(m > 0)) { g.innerHTML = '<div class="empty d">선생님이 미션을 열면 결과가 여기에 모여요</div>'; $('stat').innerHTML = ''; return; }
+  var D = data[m]; if (!D) { g.innerHTML = '<div class="empty d">불러오는 중…</div>'; return; }
+  var list = [], nb = 0, na = 0;
+  for (var k in D.works) {
+    var w = D.works[k];
+    if (tab !== 'all' && String(w.cls) !== tab) continue;
+    if (w.before) nb++;
+    if (w.after) na++;
+    var hidden = D.hidden.indexOf(m + '-' + k) >= 0;
+    if (hidden && !TEACHER) continue;
+    if (w.after || w.before) list.push(w);
+  }
+  $('stat').innerHTML = 'Before <b>' + nb + '</b> · After <b>' + na + '</b>' + (tab === 'all' ? ' · 전체' : ' · ' + tab + '반');
+  list.sort(function (a, b) { return (votesOf(D, b) - votesOf(D, a)) || ((b.after ? 1 : 0) - (a.after ? 1 : 0)) || (a.cls - b.cls) || (a.num - b.num); });
+  if (!list.length) { g.innerHTML = '<div class="empty d">아직 올라온 결과가 없어요<small>학생 페이지에서 Before와 After를 올리면 여기에 하나씩 튀어나와요</small></div>'; return; }
+  /* 모두 한 화면에 들어가는 가장 큰 카드 크기 */
+  var W = 1760, H = 750, gap = 16, n = list.length, cols = 1, cw = 0, ch = 0;
+  for (cols = 1; cols <= 20; cols++) {
+    cw = (W - gap * (cols - 1)) / cols; ch = cw * 0.66 + 44;
+    if (Math.ceil(n / cols) * (ch + gap) - gap <= H) break;
+  }
+  if (cw > 420) { cw = 420; ch = cw * 0.66 + 44; }
+  var maxV = 1; list.forEach(function (w) { maxV = Math.max(maxV, votesOf(D, w)); });
+  var h = '';
+  list.forEach(function (w, i) {
+    var x = (i % cols) * (cw + gap), y = Math.floor(i / cols) * (ch + gap), v = votesOf(D, w), key = m + '-' + w.cls + '-' + w.num;
+    var isNew = !seen[key + (w.after ? 'a' : 'b')]; seen[key + (w.after ? 'a' : 'b')] = 1;
+    var main = w.after || w.before, small = cw < 200;
+    var body = main.type === 'img'
+      ? '<div class="im"><img src="' + esc(main.thumb) + '" alt=""></div>' + (w.after && w.before && !small ? '<div class="bf"><img src="' + esc(w.before.thumb) + '" alt=""></div>' : '')
+      : '<div class="tx" style="font-size:' + (small ? 13 : cw < 300 ? 16 : 20) + 'px">' + esc(main.text.slice(0, 260)) + '</div>';
+    var rank = v > 0 && i < 3 ? '<div class="rk r' + (i + 1) + '">' + (i + 1) + '</div>' : '';
+    h += '<button class="card' + (isNew ? ' new' : '') + (D.hidden.indexOf(key) >= 0 ? ' hid' : '') + '" data-k="' + w.cls + '-' + w.num + '" style="left:' + x + 'px;top:' + y + 'px;width:' + cw + 'px;height:' + ch + 'px">' + body + rank +
+      (!w.after ? '<span class="only">Before만</span>' : '') +
+      '<div class="ft" style="font-size:' + (small ? 15 : 22) + 'px">' + (tab === 'all' ? w.cls + '-' : '') + w.num + '번<span class="vb"><i style="width:' + Math.round(v / maxV * 100) + '%"></i></span><span class="vn">' + v + '</span></div></button>';
+  });
+  g.innerHTML = h;
+  var bs = g.getElementsByTagName('button');
+  for (var j = 0; j < bs.length; j++) bs[j].onclick = function () { openWork(this.getAttribute('data-k')); };
+}
+
+function bx(r, lab) {
+  if (!r) return '<div><h3 class="d">' + lab + '</h3><div class="bx"><div class="full" style="color:#4A5170">아직 안 올렸어요</div></div></div>';
+  if (r.type === 'img') {
+    var src = r.fileId ? 'https://drive.google.com/thumbnail?id=' + r.fileId + '&sz=w1600' : r.thumb;
+    return '<div><h3 class="d">' + lab + '</h3><div class="bx"><img src="' + esc(src) + '" onerror="this.onerror=null;this.src=\'' + esc(r.thumb) + '\'" alt=""></div></div>';
+  }
+  return '<div><h3 class="d">' + lab + '</h3><div class="bx"><div class="full">' + esc(r.text) + '</div></div></div>';
+}
+function openWork(k) {
+  var m = st.mission, D = data[m], w = D.works[k], key = m + '-' + k;
+  var h = '<h2 class="d">' + w.cls + '반 ' + w.num + '번 · 미션 ' + m + ' ' + NAMES[m] + '</h2><div class="ba">' + bx(w.before, 'Before') + bx(w.after, 'After') + '</div>';
+  h += '<div class="acts"><span class="vn">' + votesOf(D, w) + '표</span>' + (TEACHER ? '<button class="tbtn warn" id="hide">' + (D.hidden.indexOf(key) >= 0 ? '다시 보이기' : '숨기기') + '</button>' : '') + '</div>';
+  $('mbody').innerHTML = h; $('modal').className = 'on';
+  var hb = $('hide'); if (hb) hb.onclick = function () { call('teacher', [KEY, 'hide', key], function () { closeM(); poll(); }); };
+}
+function closeM() { $('modal').className = ''; $('mbody').innerHTML = ''; }
+$('mx').onclick = closeM;
+$('modal').onclick = function (e) { if (e.target === this) closeM(); };
+
+/* ---------- 반 대표 대결 ---------- */
+function renderFinal() {
+  $('grid').style.display = 'none'; $('final').className = 'on'; $('stat').innerHTML = '반마다 오늘 표를 가장 많이 받은 작품 · 150명 모두 투표';
+  var f = $('final');
+  if (!fin || !fin.open || !fin.list.length) { f.innerHTML = '<div class="empty d">아직 표를 받은 작품이 없어요</div>'; return; }
+  var total = 0, maxV = 1, best = -1, h = '';
+  fin.list.forEach(function (w) { var v = fin.counts[w.key] || 0; total += v; if (v > maxV) maxV = v; });
+  fin.list.forEach(function (w, i) { var v = fin.counts[w.key] || 0; if (v > 0 && (best < 0 || v > (fin.counts[fin.list[best].key] || 0))) best = i; });
+  var n = fin.list.length, slot = 1760 / n;
+  fin.list.forEach(function (w, i) {
+    var v = fin.counts[w.key] || 0, a = w.after || {};
+    var pic = a.type === 'img' ? '<img src="' + esc(a.thumb) + '" alt="">' : '<div class="tx">' + esc((a.text || '').slice(0, 160)) + '</div>';
+    h += '<div class="fc' + (i === best ? ' win' : '') + '" style="left:' + (i * slot + (slot - 300) / 2) + 'px"><div class="pic" data-k="' + esc(w.key) + '">' + pic + '</div><div class="nm d">' + w.cls + '반 <small style="font-size:26px">미션 ' + w.mission + '</small></div>' +
+      '<div class="col" style="height:' + Math.max(6, Math.round(v / maxV * 330)) + 'px"></div><div class="vn d">' + v + '표</div></div>';
+  });
+  f.innerHTML = h;
+  var ps = f.querySelectorAll('.pic');
+  for (var j = 0; j < ps.length; j++) ps[j].onclick = function () {
+    var k = this.getAttribute('data-k'), w = null; fin.list.forEach(function (x) { if (x.key === k) w = x; });
+    $('mbody').innerHTML = '<h2 class="d">' + w.cls + '반 대표 · 미션 ' + w.mission + ' ' + NAMES[w.mission] + '</h2><div class="ba">' + bx(w.before, 'Before') + bx(w.after, 'After') + '</div><div class="acts"><span class="vn">' + (fin.counts[k] || 0) + '표</span></div>';
+    $('modal').className = 'on';
+  };
+}
+
+/* ---------- 교사 조작 ---------- */
+function renderTbar() {
+  if (!TEACHER) return;
+  var h = '<span>교사</span>';
+  for (var m = 0; m <= 6; m++) h += '<button class="tbtn' + (st.mission === m && !st.final ? ' on' : '') + '" data-m="' + m + '">' + (m === 0 ? '대기' : '미션 ' + m) + '</button>';
+  h += '<button class="tbtn' + (st.final ? ' on' : '') + '" id="tf">' + (st.final ? '대결 닫기' : '반 대표 대결') + '</button>';
+  h += '<button class="tbtn" id="tc">새 입장 코드</button>';
+  $('tbar').innerHTML = h; $('tbar').className = 'on';
+  var bs = $('tbar').querySelectorAll('[data-m]');
+  for (var i = 0; i < bs.length; i++) bs[i].onclick = function () { teacher('mission', +this.getAttribute('data-m')); };
+  $('tf').onclick = function () { if (st.final) teacher('final', false); else if (confirm('반 대표 대결을 열까요? 반마다 표를 가장 많이 받은 작품 하나씩 올라가요.')) teacher('final', true); };
+  $('tc').onclick = function () { if (confirm('입장 코드를 새로 만들까요? 이미 들어온 학생은 그대로예요.')) teacher('newCode'); };
+}
+function teacher(action, arg) {
+  call('teacher', [KEY, action, arg], function (r) {
+    if (!r || !r.ok) { alert((r && r.msg) || '바꾸지 못했어요.'); return; }
+    if (r.code) $('code').textContent = r.code;
+    setState(r.state);
+  });
+}
+function setState(s) {
+  if (!s) return;
+  var changed = s.mission !== st.mission || s.final !== st.final;
+  st = s; renderHead(); renderTbar();
+  if (changed) { closeM(); if (st.final) { fin = null; renderFinal(); } else render(); poll(); }
+}
+
+/* ---------- 시작 ---------- */
+renderTabs(); renderHead(); render();
+function loopState() { call('getState', [], setState); setTimeout(loopState, 4000); }
+function loopFeed() { poll(); setTimeout(loopFeed, st.final ? 3000 : 4000); }
+google.script.url.getLocation(function (loc) {
+  var p = (loc && loc.parameter) || {};
+  if (p.c && +p.c >= 1 && +p.c <= CLASSES) { tab = String(+p.c); renderTabs(); }
+  KEY = p.k || '';
+  if (KEY) call('teacherInfo', [KEY], function (r) {
+    if (!r || !r.ok) return;
+    TEACHER = true; $('codebox').style.display = 'flex'; $('code').textContent = r.code;
+    renderTbar();
+    if (p.m != null && p.m !== '') teacher('mission', +p.m);
+  });
+  call('getState', [], function (s) { setState(s); poll(); });
+  setTimeout(loopState, 4000); setTimeout(loopFeed, 4500);
+});
+})();
+</script>
+</body>
+</html>

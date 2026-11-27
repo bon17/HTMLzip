@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 프롬프트 특강</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap">
+<style>
+/* 학생 페이지 · 구형 갤럭시탭(크롬·삼성 인터넷)용: ES5 스크립트, 최신 CSS(color-mix, :is, flex gap) 쓰지 않음 */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#FFF8EE;color:#1C2340;font-family:'Nanum Gothic','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;font-weight:700;font-size:19px;line-height:1.5;word-break:keep-all;-webkit-text-size-adjust:100%}
+.d{font-family:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:400}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px 120px}
+.top{position:sticky;top:0;z-index:20;background:#1C2340;color:#fff}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;padding:10px 16px}
+.brand{font-size:20px}
+.who{font-size:16px;opacity:.9}
+.who a{color:#FFE58A;margin-left:8px;text-decoration:underline;cursor:pointer}
+.scr{display:none}
+.scr.on{display:block}
+h1{margin:18px 0 4px;font-size:34px;line-height:1.2}
+.lead{margin:0 0 14px;color:#4A5170}
+.card{background:#fff;border:3px solid #1C2340;border-radius:22px;box-shadow:5px 5px 0 #1C2340;padding:18px 18px 20px;margin:18px 0}
+.card h2{margin:0 0 6px;font-size:26px;line-height:1.25}
+.card h2 .n{display:inline-block;width:38px;height:38px;line-height:38px;text-align:center;border-radius:50%;background:#C2410C;color:#fff;margin-right:8px;font-size:22px;vertical-align:2px}
+.card.locked{opacity:.55}
+.hint{color:#4A5170;font-size:16px;margin:4px 0 10px}
+.btn{display:inline-block;border:0;border-radius:999px;background:#C2410C;color:#fff;padding:12px 22px;font-family:'Jua',sans-serif;font-weight:400;font-size:22px;text-decoration:none;text-align:center;margin:6px 8px 0 0;min-height:52px}
+.btn.blue{background:#1E5BD8}
+.btn.line{background:#fff;color:#1C2340;border:3px solid #1C2340;padding:9px 19px}
+.btn.big{display:block;width:100%;margin:12px 0 0}
+.btn[disabled]{opacity:.45;cursor:default}
+.row2{display:flex;flex-wrap:wrap}
+.row2 .btn{flex:1 1 200px}
+.field{margin:12px 0}
+.field label{display:block;font-size:16px;color:#4A5170;margin-bottom:4px}
+.field input,.field select,textarea{width:100%;border:3px solid #DDE1EC;border-radius:14px;padding:10px 12px;background:#fff;font-size:22px}
+textarea{min-height:150px;font-size:18px;line-height:1.5;resize:vertical}
+.code-in{letter-spacing:.5em;text-align:center;font-family:'Jua',sans-serif;font-size:40px !important}
+.two{display:flex}
+.two > *{flex:1}
+.two > * + *{margin-left:12px}
+.msg{color:#C8291D;font-size:17px;min-height:1.5em;margin-top:6px}
+/* 미션 */
+.mtabs{display:flex;flex-wrap:wrap;margin:14px 0 0}
+.mtabs button{border:2px solid #1C2340;background:#fff;border-radius:999px;padding:4px 14px;margin:0 6px 6px 0;font-family:'Jua',sans-serif;font-size:18px}
+.mtabs button.on{background:#1C2340;color:#fff}
+.mtabs button.done{border-color:#0B7A45;color:#0B7A45}
+.mtabs button.on.done{background:#0B7A45;color:#fff}
+.mbadge{display:inline-block;background:#C2410C;color:#fff;border-radius:999px;padding:2px 14px;font-size:18px;margin-top:14px}
+.ing{display:inline-block;background:#FFE58A;border-radius:10px;padding:0 10px;margin-left:6px;font-size:18px}
+.oneline{font-family:'Jua',sans-serif;font-size:30px;background:#F7F8FC;border:3px dashed #9AA0B5;border-radius:16px;padding:12px 16px;margin:8px 0;-webkit-user-select:text;user-select:text}
+.slot{margin:12px 0 0}
+.slot-l{font-family:'Jua',sans-serif;font-size:20px;margin-bottom:4px}
+.slot-l small{font-family:'Nanum Gothic',sans-serif;font-size:14px;color:#4A5170;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap}
+.chip{border:2px solid #1C2340;background:#fff;border-radius:999px;padding:6px 14px;margin:0 6px 7px 0;font-family:'Jua',sans-serif;font-size:19px;line-height:1.25;min-height:42px}
+.chip.on{background:var(--c,#F2B48C);box-shadow:inset 0 0 0 2px #1C2340}
+.dice{display:flex;align-items:center;justify-content:space-between;background:#FFF1E5;border:3px solid #C2410C;border-radius:18px;padding:10px 12px 10px 16px;margin:8px 0 4px}
+.dice p{margin:0;font-size:17px}
+.dice .btn{margin:0;flex:none}
+.ico{width:1.1em;height:1.1em;vertical-align:-.18em;display:inline-block}
+.prompt{background:#FFF8EE;border:3px solid #1C2340;border-radius:16px;padding:14px 16px;margin:14px 0 4px;font-size:20px;line-height:1.7;-webkit-user-select:text;user-select:text}
+.prompt mark{background:transparent;background-image:linear-gradient(transparent 50%,var(--c,#FFE58A) 50%);color:inherit;padding:0 1px}
+.prompt .miss{color:#C8291D;border-bottom:2px dashed #C8291D}
+.safe{display:flex;align-items:flex-start;margin-top:12px;font-size:17px;background:#EAFBF2;border-radius:14px;padding:10px 12px}
+.safe input{width:26px;height:26px;margin:2px 10px 0 0;flex:none}
+.story .field{margin:8px 0}
+.story .field input{font-size:19px}
+.custom{margin-top:6px}
+.custom input{width:100%;border:2px dashed #1C2340;border-radius:14px;padding:8px 12px;font-size:19px}
+.upload{margin-top:14px;border-top:2px dashed #DDE1EC;padding-top:12px}
+.upload h3{margin:0 0 6px;font-size:20px}
+.pick{display:block;border:3px dashed #1E5BD8;border-radius:16px;padding:16px;text-align:center;color:#1E5BD8;font-family:'Jua',sans-serif;font-size:21px;cursor:pointer;background:#F4F8FF}
+.pick input{display:none}
+.preview{display:block;max-width:100%;max-height:300px;margin:10px auto 0;border-radius:12px;border:2px solid #1C2340}
+.done-box{display:flex;align-items:center;background:#EAFBF2;border:2px solid #0B7A45;border-radius:14px;padding:8px 12px;margin-top:10px;color:#0B7A45;font-size:17px}
+.done-box img{width:84px;height:56px;object-fit:cover;border-radius:8px;margin-right:10px;border:2px solid #0B7A45}
+.done-box .t{flex:1;color:#1C2340;font-weight:700;overflow:hidden;max-height:3em}
+.tips{margin:10px 0 0;padding:0;list-style:none}
+.tips li{font-size:16px;background:#F7F8FC;border-radius:10px;padding:6px 10px;margin-top:6px}
+details{margin-top:12px}
+summary{font-family:'Jua',sans-serif;font-size:19px;cursor:pointer;color:#1E5BD8}
+/* 투표 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));grid-gap:12px;gap:12px;margin-top:10px}
+.w{border:3px solid #DDE1EC;border-radius:16px;background:#fff;padding:6px;text-align:left;cursor:pointer;position:relative}
+.w.mine{border-color:#C2410C;box-shadow:0 0 0 3px #FFD9C2}
+.w img{display:block;width:100%;height:100px;object-fit:cover;border-radius:10px}
+.w .tx{height:100px;overflow:hidden;font-size:14px;line-height:1.45;background:#F7F8FC;border-radius:10px;padding:6px 8px}
+.w .lb{font-size:15px;margin-top:4px}
+.w .pick-mark{position:absolute;right:8px;top:8px;background:#C2410C;color:#fff;border-radius:999px;padding:0 10px;font-family:'Jua',sans-serif;font-size:16px}
+.empty{color:#4A5170;font-size:17px;text-align:center;padding:16px 0}
+/* 크게 보기 */
+.modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(21,27,58,.72);z-index:50;display:none;overflow:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:block}
+.modal .box{background:#fff;max-width:760px;margin:24px auto;border-radius:22px;padding:18px;position:relative}
+.modal .x{position:absolute;right:12px;top:10px;border:0;background:#EEF0F6;border-radius:999px;width:46px;height:46px;font-size:24px}
+.modal .ba{margin-top:10px}
+.modal .ba h3{margin:12px 0 6px;font-size:20px}
+.modal .ba img{display:block;width:100%;border-radius:14px;border:2px solid #1C2340}
+.modal .ba .full{white-space:pre-wrap;font-size:17px;line-height:1.6;background:#F7F8FC;border-radius:14px;padding:10px 12px;max-height:340px;overflow:auto}
+/* 알림 */
+#toast{position:fixed;left:50%;bottom:24px;-webkit-transform:translateX(-50%);transform:translateX(-50%);background:#1C2340;color:#fff;border-radius:999px;padding:12px 22px;font-size:18px;z-index:60;opacity:0;pointer-events:none;-webkit-transition:opacity .25s;transition:opacity .25s;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.wait{text-align:center;padding:40px 0}
+.wait .big{font-size:40px;margin:10px 0}
+.spin{display:inline-block;width:46px;height:46px;border:6px solid #DDE1EC;border-top-color:#C2410C;border-radius:50%;-webkit-animation:sp 1s linear infinite;animation:sp 1s linear infinite}
+@-webkit-keyframes sp{to{-webkit-transform:rotate(360deg)}}
+@keyframes sp{to{transform:rotate(360deg)}}
+.final-tag{display:inline-block;background:#1E5BD8;color:#fff;border-radius:8px;padding:0 8px;font-size:14px;margin-left:6px}
+@media (max-width:520px){h1{font-size:28px}.oneline{font-size:24px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="brand d">AI 잘 쓰면, 나도 잘 된다!</div><div class="who" id="who"></div></div></header>
+
+<main class="wrap">
+  <!-- 입장 -->
+  <section class="scr" id="scr-join">
+    <h1 class="d">반가워요!</h1>
+    <p class="lead">큰 화면에 보이는 입장 코드와 반·번호를 넣어요. 이름은 받지 않아요.</p>
+    <div class="card">
+      <div class="field"><label for="in-code">입장 코드 (숫자 4개)</label><input id="in-code" class="code-in" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"></div>
+      <div class="two">
+        <div class="field"><label for="in-cls">반</label><select id="in-cls"></select></div>
+        <div class="field"><label for="in-num">번호</label><select id="in-num"></select></div>
+      </div>
+      <button class="btn big" id="btn-join">시작하기</button>
+      <div class="msg" id="join-msg"></div>
+    </div>
+  </section>
+
+  <!-- 기다리기 -->
+  <section class="scr" id="scr-wait">
+    <div class="wait"><div class="spin"></div><div class="big d">곧 시작해요</div><p class="lead">선생님이 미션을 열면 이 화면이 저절로 바뀌어요.</p></div>
+  </section>
+
+  <!-- 미션 -->
+  <section class="scr" id="scr-mission">
+    <div class="mtabs" id="mtabs"></div>
+    <div id="mission"></div>
+  </section>
+
+  <!-- 반 대표 대결 -->
+  <section class="scr" id="scr-final">
+    <div class="mtabs" id="mtabs2"></div>
+    <h1 class="d">반 대표 대결!</h1>
+    <p class="lead">반마다 오늘 표를 가장 많이 받은 작품이에요. 눌러서 크게 보고, 가장 좋은 작품에 한 표!</p>
+    <div class="card"><div class="grid" id="final-grid"></div><div class="msg" id="final-msg"></div></div>
+  </section>
+</main>
+
+<div class="modal" id="modal"><div class="box"><button class="x" id="modal-x" aria-label="닫기">&times;</button><div id="modal-body"></div></div></div>
+<div id="toast"></div>
+
+<script>
+(function () {
+'use strict';
+/* =========================================================
+   미션 메뉴 (수업 설계: wip/ai-prompt-class/docs/수업_설계.md)
+   보기: 문자열 하나면 그 글자 그대로, {l: 칩에 보일 말, t: 프롬프트에 들어갈 말}
+   틀: {칸} 은 고른 말, {칸|을/를} 처럼 쓰면 받침에 맞춰 조사를 붙여요
+   ========================================================= */
+var COLORS = ['#F2B48C', '#A9C8E8', '#A6D8D2', '#A8CDB3', '#EDB3BF', '#F3D899', '#BEB0E3'];
+var GEMINI = 'https://gemini.google.com/app';
+var MISSIONS = {
+  1: {
+    name: '몽타주', ing: '디테일', type: 'img', subject: 'who',
+    goal: '상상한 그대로 그림 받기',
+    before: '{who} 그려줘',
+    tpl: '{style|으로/로}, {wear} {who|이/가} {place}에서 {act} 모습을 {mood} 느낌으로 그려줘.',
+    slots: [
+      { k: 'who', l: '주인공', items: ['고양이', '강아지', '펭귄', '햄스터', '공룡', '로봇', '토끼', '북극곰', '판다', '수달'] },
+      { k: 'wear', l: '옷차림·소품', items: [{ l: '교복', t: '교복을 입은' }, { l: '우주복', t: '우주복을 입은' }, { l: '요리사 모자', t: '요리사 모자를 쓴' }, { l: '헤드폰', t: '헤드폰을 쓴' }, { l: '노란 우비', t: '노란 우비를 입은' }, { l: '왕관', t: '왕관을 쓴' }, { l: '안경과 책가방', t: '안경을 쓰고 책가방을 멘' }, { l: '축구 유니폼', t: '축구 유니폼을 입은' }, { l: '마법사 망토', t: '마법사 망토를 두른' }, { l: '한복', t: '한복을 입은' }] },
+      { k: 'place', l: '장소', items: ['학교 매점', '우주 정거장', '바닷속', '도서관', '비 오는 편의점 앞', '놀이공원', '눈 덮인 산꼭대기', '교실 맨 뒷자리', '떡볶이 가게', '무대 위'] },
+      { k: 'act', l: '행동·표정', items: [{ l: '마지막 빵 보고 놀란', t: '마지막 남은 빵을 보고 놀란' }, { l: '시험지 보고 좌절한', t: '시험지를 보고 좌절한' }, { l: '신나게 춤추는', t: '신나게 춤추는' }, { l: '졸려서 하품하는', t: '졸려서 하품하는' }, { l: '컵라면 먹으며 행복한', t: '컵라면을 먹으며 행복한' }, { l: '친구와 하이파이브', t: '친구와 하이파이브하는' }, { l: '간식 먹다 들킨', t: '몰래 간식을 먹다 들킨' }, { l: '노래 부르는', t: '노래 부르는' }, { l: '셀카 찍는', t: '셀카 찍는' }, { l: '숙제하다 머리 싸맨', t: '숙제하다 머리를 싸맨' }] },
+      { k: 'style', l: '그림체', items: ['웹툰 그림체', '픽셀 아트', '수채화', '클레이 애니메이션', '스티커', '3D 애니메이션', '동화책 삽화', '레고 블록', '크레파스 그림', '따뜻한 애니메이션'] },
+      { k: 'mood', l: '분위기', items: ['밝고 알록달록한', '노을빛', '밤하늘과 반짝이는 불빛', '파스텔 톤', '흑백'] }
+    ],
+    tips: ['그림이 거절되면: 사람 → 동물로 바꿔요', '‘사실적인’ 대신 ‘귀여운 일러스트’로 써요', '무서운 단어는 빼요', '캐릭터 이름 대신 생김새로 설명해요'],
+    more: ['배경을 밤으로 바꿔 줘', '표정을 더 웃기게 해 줘', '옆에 친구 한 마리 추가해 줘', '그림체를 픽셀 아트로 바꿔 줘', '소품 하나 더 들려 줘']
+  },
+  2: {
+    name: '세계관 요리', ing: '상황', type: 'text', subject: 'food',
+    goal: '내 상황에 딱 맞는 답 받기',
+    before: '{food} 만드는 법 알려줘',
+    tpl: '나는 {world}에 있어. {have} {limit} {food} 만드는 법 알려줘.',
+    slots: [
+      { k: 'food', l: '음식', items: ['라면', '김밥', '떡볶이', '주먹밥', '토스트', '샌드위치', '계란후라이', '팬케이크', '과일 화채', '핫초코'] },
+      { k: 'world', l: '세계관', items: ['무인도', '우주 정거장', '조선시대 수라간', '정전된 우리 집', '캠핑장', '시험 기간 새벽 1시 내 방', '100년 뒤 미래 도시', '남극 기지', '수학여행 숙소', '해적선'] },
+      { k: 'have', l: '가진 것', items: [{ l: '전자레인지만', t: '가진 건 전자레인지 하나뿐이야.' }, { l: '불 없이', t: '불은 쓸 수 없어.' }, { l: '냄비 하나', t: '가진 건 냄비 하나뿐이야.' }, { l: '편의점 재료만', t: '재료는 편의점에서 산 것뿐이야.' }, { l: '물 500ml', t: '물은 500ml밖에 없어.' }, { l: '숟가락 하나', t: '도구는 숟가락 하나뿐이야.' }, { l: '재료 3개', t: '재료는 딱 3개만 쓸 수 있어.' }] },
+      { k: 'limit', l: '제약', items: [{ l: '10분 안에', t: '10분 안에 만들어야 해.' }, { l: '소리 내면 안 됨', t: '소리를 내면 안 돼.' }, { l: '5,000원 이하', t: '5,000원 이하로 만들어야 해.' }, { l: '3명이 나눠 먹기', t: '3명이 나눠 먹어야 해.' }, { l: '설거지 없이', t: '설거지가 나오면 안 돼.' }, { l: '그 시대 재료만', t: '그 시대에 있던 재료만 써야 해.' }] }
+    ],
+    tips: ['세계관은 웃기게 골라도 좋아요', '답을 받으면 처음부터 끝까지 복사해서 올려요']
+  },
+  3: {
+    name: '누가 설명해 줄래?', ing: '역할', type: 'text', subject: 'topic',
+    goal: '내가 고른 사람처럼 설명 듣기',
+    before: '{topic} 설명해 줘',
+    tpl: '너는 {role|이야/야}. {to}{topic|을/를} 설명해 줘.',
+    slots: [
+      { k: 'topic', l: '개념', items: ['4대 문명의 탄생', '아테네의 민주 정치', '진시황의 중국 통일', '칭기즈 칸과 몽골 제국', '신항로 개척', '고조선의 건국', '광개토 대왕의 영토 확장', '신라의 삼국 통일', '세종의 훈민정음 창제', '이순신과 임진왜란'] },
+      { k: 'role', l: '역할', items: ['축구 해설위원', { l: '아이돌 리더', t: '팬들에게 메시지를 보내는 아이돌 리더' }, { l: '래퍼', t: '8마디 랩을 하는 래퍼' }, '유치원 선생님', '게임 속 NPC', '요리 유튜버', '기상 캐스터', '홈쇼핑 쇼호스트', '조선시대 선비', '탐정'] },
+      { k: 'to', l: '듣는 사람', opt: true, items: [{ l: '초등학교 2학년 동생', t: '초등학교 2학년 동생에게 ' }, { l: '벼락치기하는 중2', t: '시험 전날 벼락치기하는 중2에게 ' }, { l: '지구에 처음 온 외계인', t: '지구에 처음 온 외계인에게 ' }, { l: '우리 할머니', t: '우리 할머니에게 ' }] }
+    ],
+    tips: ['역할이 바뀌면 말투와 예시가 어떻게 달라지는지 봐요', '설명이 틀린 곳은 없는지 교과서와 비교해 봐요']
+  },
+  4: {
+    name: '시험공부', ing: '모양', type: 'text', subject: 'topic',
+    goal: '공부하기 좋은 모양으로 정리받기',
+    before: '{topic} 정리해 줘',
+    tpl: '{topic|을/를} 중2 수준으로 {shape|으로/로} 정리해 줘. {safe}',
+    safe: '확실하지 않은 내용은 ‘확인 필요’라고 표시해 줘.',
+    slots: [
+      { k: 'topic', l: '주제', custom: '직접 쓰기 (예: 지층과 화석)', items: ['광합성', '소화 과정', '전류와 전압', '별의 밝기', '일차함수', '확률', '연립방정식', '기후 변화', '민주주의', '비유법'] },
+      { k: 'shape', l: '모양', items: ['핵심 5개 표', '3줄 요약', 'OX 퀴즈 5개', '객관식 3문제와 해설', '헷갈리는 개념 비교표', '카톡 단톡방 대화', '4컷 만화 대본', '쉬운 비유 3개', '시험 전날 10분 체크리스트', '동요 가락에 맞춘 암기송'] }
+    ],
+    tips: ['‘확인 필요’가 붙은 곳은 교과서로 꼭 확인해요']
+  },
+  5: {
+    name: '진로', ing: '질문받기', type: 'text', subject: '',
+    goal: 'AI가 나에게 먼저 묻게 하기',
+    before: '나한테 맞는 진로 추천해 줘',
+    tpl: '나는 중2인데 진로를 아직 모르겠어. 나한테 {how} 질문을 {count} 해서 내 {what|을/를} 파악해 줘. 다 묻고 나면 {result} 알려 줘.',
+    slots: [
+      { k: 'how', l: '질문 방식', items: ['한 번에 하나씩', { l: '밸런스 게임처럼', t: '밸런스 게임처럼(A vs B)' }, { l: '보기 3개 객관식', t: '보기 3개 객관식으로' }, '짧게 한 줄로'] },
+      { k: 'count', l: '개수', items: ['3개', '5개', '7개'] },
+      { k: 'what', l: '알아볼 것', items: ['좋아하는 것', '잘하는 것', '싫어하는 것', '쉬는 날 하는 것', '칭찬받은 경험'] },
+      { k: 'result', l: '결과 모양', items: [{ l: '직업 3개와 이유', t: '직업 3개와 이유를' }, { l: '그 직업의 하루 일과', t: '그 직업의 하루 일과를' }, { l: '지금 해 볼 활동', t: '지금 해 볼 수 있는 활동을 1개씩' }, { l: '관련 있는 과목', t: '관련 있는 과목을' }] }
+    ],
+    tips: ['AI가 질문하면 솔직하게 답해요', '마지막 추천까지 받으면 그 답을 복사해서 올려요']
+  },
+  6: {
+    name: '진짜 숙제', ing: '내 이야기', type: 'text', subject: 'task',
+    goal: '내 이름으로 낼 수 있는 글 만들기',
+    before: '{task} 써줘',
+    tpl: '너는 {role|이야/야}. 나는 {where} {task|을/를} {len} 정도로 써야 해. {story} {todo} {shape} {safe}',
+    safe: '내가 말하지 않은 경험은 지어내지 마.',
+    story: [
+      { k: 'when', pre: '그건 ', post: ' 때였어.', ph: '예: 초등학교 6학년 운동회' },
+      { k: 'feel', pre: '그때 나는 ', post: ' 기분이었어.', ph: '예: 떨리면서도 신나는' },
+      { k: 'scene', pre: '가장 기억나는 장면은 ', post: '.', ph: '예: 마지막 바퀴에서 친구가 손을 잡아 준 것' }
+    ],
+    slots: [
+      { k: 'task', l: '과제', items: [{ l: '나를 소개하는 글', t: '나를 소개하는 글' }, { l: '나에게 특별한 물건', t: '나에게 특별한 물건에 대한 글' }, { l: '내가 좋아하는 계절', t: '내가 좋아하는 계절에 대한 글' }, { l: '최근 본 영화·책 감상', t: '최근 본 영화나 책 감상문' }, { l: '우리 학교 자랑', t: '우리 학교 자랑 글' }, { l: '바꾸고 싶은 학교 규칙', t: '바꾸고 싶은 학교 규칙에 대한 글' }, { l: '나의 인생 음식', t: '나의 인생 음식 소개 글' }, { l: '10년 뒤 나에게 편지', t: '10년 뒤 나에게 쓰는 편지' }] },
+      { k: 'role', l: '역할', items: ['국어 선생님', '글쓰기 코치', '친한 선배', '출판사 편집자', '라디오 DJ'] },
+      { k: 'where', l: '쓰는 곳', items: [{ l: '발표', t: '발표 때 읽을' }, { l: '학급 신문', t: '학급 신문에 실을' }, { l: '수행평가', t: '수행평가로 낼' }, { l: '블로그', t: '블로그에 올릴' }] },
+      { k: 'len', l: '분량', items: ['200자', '300자', '500자'] },
+      { k: 'story', l: '내 이야기', storyBox: true },
+      { k: 'todo', l: '할 일', items: [{ l: '내 이야기로 초안', t: '내 이야기로 초안을 써 줘.' }, { l: '질문으로 더 끌어내기', t: '질문으로 내 이야기를 더 끌어내 줘.' }, { l: '첫 문장 아이디어 3개', t: '첫 문장 아이디어 3개만 줘.' }, { l: '개요만', t: '개요만 짜 줘.' }] },
+      { k: 'shape', l: '모양', opt: true, items: [{ l: '문단 3개', t: '문단 3개로 나눠 줘.' }, { l: '개요표', t: '개요표로 보여 줘.' }, { l: '중2 말투', t: '중2 말투로 써 줘.' }] }
+    ],
+    tips: ['내 이야기 칸은 짧게라도 꼭 채워요', '두 글을 비교해 봐요: 내 이름으로 낼 수 있는 건 어느 쪽?']
+  }
+};
+
+/* ---------------- 작은 도구 ---------------- */
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function iT(it) { return typeof it === 'string' ? it : it.t; }
+function iL(it) { return typeof it === 'string' ? it : it.l; }
+var toastTimer = null;
+function toast(msg, ms) {
+  var t = $('toast'); t.textContent = msg; t.className = 'on';
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.className = ''; }, ms || 2400);
+}
+var ICON = {
+  dice: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+  check: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+};
+
+/* 받침에 맞는 조사 */
+function hasBatchim(word, forRo) {
+  var s = String(word).replace(/[\s\)\]\.'"’]+$/, '');
+  var ch = s.charCodeAt(s.length - 1);
+  if (ch >= 0xAC00 && ch <= 0xD7A3) {
+    var j = (ch - 0xAC00) % 28;
+    if (forRo && j === 8) return false; // ㄹ받침 + 로
+    return j !== 0;
+  }
+  if (/[0-9]$/.test(s)) return /[013678]$/.test(s) && !(forRo && /[178]$/.test(s));
+  return false;
+}
+function josa(word, pair) {
+  var a = pair.split('/');
+  return hasBatchim(word, a[0] === '으로') ? a[0] : a[1];
+}
+
+/* 씨앗으로 정하는 난수 (반·번호·미션마다 다른 추천 조합) */
+function seedRand(str) {
+  var h = 1779033703 ^ str.length;
+  for (var i = 0; i < str.length; i++) { h = Math.imul ? Math.imul(h ^ str.charCodeAt(i), 3432918353) : ((h ^ str.charCodeAt(i)) * 3432918353) | 0; h = (h << 13) | (h >>> 19); }
+  var a = h >>> 0;
+  return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; var t = Math.imul ? Math.imul(a ^ (a >>> 15), 1 | a) : ((a ^ (a >>> 15)) * (1 | a)) | 0; t = (t + (Math.imul ? Math.imul(t ^ (t >>> 7), 61 | t) : ((t ^ (t >>> 7)) * (61 | t)) | 0)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
+/* ---------------- 저장 (기기) ---------------- */
+var KEY = 'apc:v1';
+var S = load();
+function load() { try { var v = JSON.parse(localStorage.getItem(KEY) || 'null'); if (v && typeof v === 'object') return v; } catch (e) {} return {}; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function mstate(m) {
+  S.ms = S.ms || {};
+  if (!S.ms[m]) S.ms[m] = { sel: null, roll: 0, custom: '', story: {}, safe: true, drafts: { before: '', after: '' } };
+  return S.ms[m];
+}
+
+/* ---------------- 서버 부르기 (실패하면 자동으로 다시) ---------------- */
+function call(fn, args, ok, fail, tries) {
+  tries = tries || 0;
+  var r = google.script.run
+    .withSuccessHandler(function (res) { if (ok) ok(res); })
+    .withFailureHandler(function (err) {
+      if (tries < 4) {
+        if (tries === 1) toast('사람이 많아서 잠깐 기다리는 중… 다시 보내요');
+        setTimeout(function () { call(fn, args, ok, fail, tries + 1); }, 900 * Math.pow(2, tries) + Math.random() * 1200);
+      } else if (fail) fail(err); else toast('연결이 불안해요. 잠시 뒤 다시 눌러 주세요.', 3500);
+    });
+  r[fn].apply(r, args || []);
+}
+
+/* ---------------- 화면 전환 ---------------- */
+var state = { mission: 0, final: false, rev: -1 };
+var view = 0;        // 지금 보고 있는 미션 번호
+var mine = {};       // 미션별 내 제출 상태 (window.status 와 겹치지 않게 mine)
+var feedData = {};   // 미션별 { cursor, byNum: { 번호: { before, after } }, counts, hidden }
+function show(id) {
+  var all = ['scr-join', 'scr-wait', 'scr-mission', 'scr-final'];
+  for (var i = 0; i < all.length; i++) $(all[i]).className = 'scr' + (all[i] === id ? ' on' : '');
+  window.scrollTo(0, 0);
+}
+function renderWho() {
+  $('who').innerHTML = S.cls ? esc(S.cls + '반 ' + S.num + '번') + '<a id="who-change">바꾸기</a>' : '';
+  var a = $('who-change'); if (a) a.onclick = function () { S.cls = 0; save(); renderWho(); openJoin(); };
+}
+
+function openJoin() {
+  var cs = $('in-cls'), ns = $('in-num'), i, h = '<option value="">반</option>';
+  for (i = 1; i <= 5; i++) h += '<option value="' + i + '">' + i + '반</option>';
+  cs.innerHTML = h; h = '<option value="">번호</option>';
+  for (i = 1; i <= 40; i++) h += '<option value="' + i + '">' + i + '번</option>';
+  ns.innerHTML = h;
+  if (S.lastCls) cs.value = S.lastCls;
+  show('scr-join');
+}
+$('btn-join').onclick = function () {
+  var code = $('in-code').value.replace(/\D/g, ''), c = +$('in-cls').value, n = +$('in-num').value;
+  if (code.length !== 4) { $('join-msg').textContent = '입장 코드는 숫자 4개예요.'; return; }
+  if (!c || !n) { $('join-msg').textContent = '반과 번호를 골라 주세요.'; return; }
+  var b = this; b.disabled = true; $('join-msg').textContent = '';
+  call('join', [code, c, n], function (res) {
+    b.disabled = false;
+    if (!res || !res.ok) { $('join-msg').textContent = (res && res.msg) || '다시 시도해 주세요.'; return; }
+    S.cls = c; S.num = n; S.lastCls = c; save(); renderWho();
+    applyState(res.state, true);
+  }, function () { b.disabled = false; $('join-msg').textContent = '연결이 안 돼요. 와이파이를 확인하고 다시 눌러 주세요.'; });
+};
+
+function applyState(st, force) {
+  if (!st) return;
+  var prev = state;
+  state = st;
+  if (!S.cls) return;
+  if (st.final) {
+    if (force || !prev.final) { openFinal(); if (!force) toast('반 대표 대결이 열렸어요!'); }
+    return;
+  }
+  if (st.mission <= 0) { show('scr-wait'); view = 0; return; }
+  if (force || prev.final || prev.mission !== st.mission || !view) {
+    if (!force && prev.mission !== st.mission && st.mission > 0) toast('미션 ' + st.mission + '이 열렸어요!', 3000);
+    openMission(st.mission);
+  }
+}
+
+function tabsHtml(cur) {
+  var h = '';
+  for (var m = 1; m <= Math.max(state.mission, 0); m++) {
+    var done = mine[m] && mine[m].after;
+    h += '<button data-m="' + m + '" class="' + (m === cur ? 'on' : '') + (done ? ' done' : '') + '">' + m + '. ' + esc(MISSIONS[m].name) + '</button>';
+  }
+  if (state.final) h += '<button data-m="F" class="' + (cur === 'F' ? 'on' : '') + '">반 대표 대결</button>';
+  return h;
+}
+function bindTabs(el) {
+  var bs = el.getElementsByTagName('button');
+  for (var i = 0; i < bs.length; i++) bs[i].onclick = function () { var m = this.getAttribute('data-m'); if (m === 'F') openFinal(); else openMission(+m); };
+}
+
+/* ---------------- 미션 화면 ---------------- */
+function ensureSel(m, roll) {
+  var M = MISSIONS[m], ms = mstate(m);
+  if (ms.sel && roll == null) return ms.sel;
+  ms.roll = roll == null ? (ms.roll || 0) : roll;
+  var rnd = seedRand(S.cls + '-' + S.num + '-m' + m + '-r' + ms.roll), sel = {};
+  for (var i = 0; i < M.slots.length; i++) {
+    var sl = M.slots[i];
+    if (sl.storyBox) continue;
+    if (sl.opt && rnd() < 0.3) { sel[sl.k] = -1; continue; }
+    sel[sl.k] = Math.floor(rnd() * sl.items.length);
+  }
+  if (ms.sel && ms.sel[M.subject] === -2) sel[M.subject] = -2; // 직접 쓰기는 유지
+  ms.sel = sel; save();
+  return sel;
+}
+
+function slotText(m, k) {
+  var M = MISSIONS[m], ms = mstate(m), sel = ms.sel || {};
+  if (k === 'safe') return ms.safe ? M.safe : '';
+  if (k === 'story') {
+    var out = [], st = ms.story || {};
+    for (var i = 0; i < M.story.length; i++) { var f = M.story[i], v = (st[f.k] || '').trim(); if (v) out.push(f.pre + v + f.post); }
+    return out.length ? '내 이야기: ' + out.join(' ') : '';
+  }
+  var sl = null;
+  for (var j = 0; j < M.slots.length; j++) if (M.slots[j].k === k) sl = M.slots[j];
+  if (!sl) return '';
+  var idx = sel[k];
+  if (idx === -2) return (ms.custom || '').trim();
+  if (idx == null || idx < 0) return '';
+  return iT(sl.items[idx]);
+}
+function slotColor(m, k) {
+  var M = MISSIONS[m];
+  for (var i = 0; i < M.slots.length; i++) if (M.slots[i].k === k) return COLORS[i % COLORS.length];
+  return '#B8F0D0';
+}
+/* 틀에 고른 말을 넣어 글자와 HTML(형광 밑줄)을 만들어요 */
+function build(m, tpl) {
+  var M = MISSIONS[m], plain = '', html = '', missing = [];
+  var parts = tpl.split(/(\{[^}]+\})/);
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    if (!/^\{.+\}$/.test(p)) { plain += p; html += esc(p); continue; }
+    var a = p.slice(1, -1).split('|'), k = a[0], v = slotText(m, k);
+    var sl = null; for (var j = 0; j < M.slots.length; j++) if (M.slots[j].k === k) sl = M.slots[j];
+    if (!v) {
+      if (k === 'safe' || (sl && sl.opt)) continue;
+      var label = sl ? sl.l : k;
+      missing.push(label);
+      plain += '[' + label + ']'; html += '<span class="miss">[' + esc(label) + ']</span>';
+      if (a[1]) { var j2 = a[1].split('/')[1]; plain += j2; html += esc(j2); }
+      continue;
+    }
+    var j3 = a[1] ? josa(v, a[1]) : '';
+    var core = v.replace(/\s+$/, ''), tail = v.slice(core.length);
+    plain += v + j3;
+    html += (k === 'safe' ? '<mark style="--c:#B8F0D0">' : '<mark style="--c:' + slotColor(m, k) + '">') + esc(core) + '</mark>' + esc(tail) + esc(j3);
+  }
+  plain = plain.replace(/\s{2,}/g, ' ').replace(/\s+([.,])/g, '$1').trim();
+  html = html.replace(/\s{2,}/g, ' ');
+  return { plain: plain, html: html, missing: missing };
+}
+
+function openMission(m) {
+  if (!MISSIONS[m]) return;
+  view = m;
+  ensureSel(m);
+  show('scr-mission');
+  $('mtabs').innerHTML = tabsHtml(m); bindTabs($('mtabs'));
+  renderMission(m);
+  loadStatus(m);
+}
+
+function chipsHtml(m, sl, si) {
+  var ms = mstate(m), sel = ms.sel || {}, h = '<div class="chips">';
+  for (var i = 0; i < sl.items.length; i++) {
+    h += '<button class="chip' + (sel[sl.k] === i ? ' on' : '') + '" style="--c:' + COLORS[si % COLORS.length] + '" data-k="' + sl.k + '" data-i="' + i + '">' + esc(iL(sl.items[i])) + '</button>';
+  }
+  if (sl.custom) h += '<button class="chip' + (sel[sl.k] === -2 ? ' on' : '') + '" style="--c:' + COLORS[si % COLORS.length] + '" data-k="' + sl.k + '" data-i="-2">직접 쓰기</button>';
+  h += '</div>';
+  if (sl.custom && sel[sl.k] === -2) h += '<div class="custom"><input id="custom-in" maxlength="40" placeholder="' + esc(sl.custom) + '" value="' + esc(ms.custom) + '"></div>';
+  return h;
+}
+
+function renderMission(m) {
+  var M = MISSIONS[m], ms = mstate(m), h = '';
+  var subj = null, si = 0;
+  for (var i = 0; i < M.slots.length; i++) if (M.slots[i].k === M.subject) { subj = M.slots[i]; si = i; }
+  var one = build(m, M.before);
+  h += '<span class="mbadge d">MISSION ' + m + '</span><span class="ing d">재료: ' + esc(M.ing) + '</span>';
+  h += '<h1 class="d">' + esc(M.name) + '</h1><p class="lead">' + esc(M.goal) + '</p>';
+
+  /* ① 한 줄로 */
+  h += '<div class="card" id="c1"><h2 class="d"><span class="n">1</span>평소처럼 한 줄로</h2>';
+  h += '<p class="hint">먼저 평소처럼 짧게 시켜 봐요. 결과를 Before로 올려요.</p>';
+  if (subj) h += '<div class="slot"><div class="slot-l">' + esc(subj.l) + ' 고르기</div>' + chipsHtml(m, subj, si) + '</div>';
+  h += '<div class="oneline" id="one">' + esc(one.plain) + '</div>';
+  h += '<div class="row2"><button class="btn" data-copy="before">복사하기</button><a class="btn blue" href="' + GEMINI + '" target="_blank" rel="noopener">제미나이 열기</a></div>';
+  h += uploadHtml(m, 'before') + '</div>';
+
+  /* ② 재료 넣어서 */
+  h += '<div class="card" id="c2"><h2 class="d"><span class="n">2</span>재료를 넣어서 다시</h2>';
+  h += '<div class="dice"><p>너만의 추천 조합이 골라져 있어요.<br>마음에 안 들면 바꿔도 돼요!' + (subj ? '<br>' + esc(subj.l) + '은 1번에서 고른 그대로예요.' : '') + '</p><button class="btn" id="btn-roll">' + ICON.dice + ' 다른 조합</button></div>';
+  for (var k = 0; k < M.slots.length; k++) {
+    var sl = M.slots[k];
+    if (sl.k === M.subject) continue;
+    if (sl.storyBox) {
+      h += '<div class="slot story"><div class="slot-l">' + esc(sl.l) + '<small>짧게라도 꼭 채워요</small></div>';
+      for (var f = 0; f < M.story.length; f++) {
+        var F = M.story[f];
+        h += '<div class="field"><label>' + esc(F.pre) + '___' + esc(F.post) + '</label><input data-story="' + F.k + '" maxlength="60" placeholder="' + esc(F.ph) + '" value="' + esc((ms.story || {})[F.k] || '') + '"></div>';
+      }
+      h += '</div>';
+      continue;
+    }
+    h += '<div class="slot"><div class="slot-l">' + esc(sl.l) + (sl.opt ? '<small>안 골라도 돼요 · 다시 누르면 빼기</small>' : '') + '</div>' + chipsHtml(m, sl, k) + '</div>';
+  }
+  if (M.safe) h += '<label class="safe"><input type="checkbox" id="safe-in"' + (ms.safe ? ' checked' : '') + '><span><b>보너스 재료 ‘안전장치’</b><br>' + esc(M.safe) + '</span></label>';
+  h += '<div class="prompt" id="prompt"></div>';
+  h += '<div class="row2"><button class="btn" data-copy="after">복사하기</button><a class="btn blue" href="' + GEMINI + '" target="_blank" rel="noopener">제미나이 열기</a></div>';
+  if (M.tips || M.more) {
+    h += '<details><summary>막혔을 때 · 더 해 보기</summary><ul class="tips">';
+    var t; for (t = 0; t < (M.tips || []).length; t++) h += '<li>' + esc(M.tips[t]) + '</li>';
+    for (t = 0; t < (M.more || []).length; t++) h += '<li>도전: “' + esc(M.more[t]) + '”라고 한 번 더 보내 보기</li>';
+    h += '</ul></details>';
+  }
+  h += uploadHtml(m, 'after') + '</div>';
+
+  /* ③ 구경하고 투표 */
+  h += '<div class="card" id="c3"><h2 class="d"><span class="n">3</span>우리 반 구경하고 한 표</h2>';
+  if (m === 6) h += '<p class="hint">내 Before와 After를 비교해 봐요. 둘 중에 내 이름으로 낼 수 있는 건 어느 쪽이야?</p>';
+  h += '<p class="hint" id="vote-hint">After를 올리면 친구들 작품이 보여요. 가장 많이 달라진 작품에 한 표! (내 작품 빼고, 다시 누르면 바꿀 수 있어요)</p>';
+  h += '<div class="grid" id="vote-grid"></div></div>';
+
+  $('mission').innerHTML = h;
+  bindMission(m);
+  updatePrompt(m);
+  renderUploads(m);
+  renderVotes(m);
+}
+
+function uploadHtml(m, kind) {
+  var M = MISSIONS[m], lab = kind === 'before' ? 'Before' : 'After', ms = mstate(m), h = '<div class="upload" id="up-' + kind + '"><h3 class="d">' + lab + ' 올리기</h3>';
+  if (M.type === 'img') {
+    h += '<label class="pick">제미나이 그림을 길게 눌러 저장하거나 화면을 캡처한 뒤,<br>여기를 눌러 사진을 골라요<input type="file" accept="image/*" data-file="' + kind + '"></label>';
+    h += '<img class="preview" id="pv-' + kind + '" style="display:none" alt="">';
+  } else {
+    h += '<textarea data-text="' + kind + '" placeholder="제미나이 답을 길게 눌러 복사한 뒤, 여기에 붙여 넣어요">' + esc((ms.drafts || {})[kind] || '') + '</textarea>';
+  }
+  h += '<button class="btn big" data-send="' + kind + '">' + lab + ' 올리기</button><div id="st-' + kind + '"></div></div>';
+  return h;
+}
+
+var pending = {}; // 고른 사진 { 'm1-before': {image, thumb} }
+function bindMission(m) {
+  var root = $('mission'), M = MISSIONS[m], ms = mstate(m);
+  var chips = root.querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) chips[i].onclick = function () {
+    var k = this.getAttribute('data-k'), idx = +this.getAttribute('data-i'), sl = null;
+    for (var j = 0; j < M.slots.length; j++) if (M.slots[j].k === k) sl = M.slots[j];
+    if (sl && sl.opt && ms.sel[k] === idx) idx = -1;
+    ms.sel[k] = idx; save();
+    renderMissionKeepScroll(m);
+  };
+  var roll = $('btn-roll'); if (roll) roll.onclick = function () { spin(m); };
+  var safe = $('safe-in'); if (safe) safe.onchange = function () { ms.safe = this.checked; save(); updatePrompt(m); };
+  var cin = $('custom-in'); if (cin) cin.oninput = function () { ms.custom = this.value; save(); updatePrompt(m); };
+  var st = root.querySelectorAll('[data-story]');
+  for (i = 0; i < st.length; i++) st[i].oninput = function () { ms.story = ms.story || {}; ms.story[this.getAttribute('data-story')] = this.value; save(); updatePrompt(m); };
+  var cps = root.querySelectorAll('[data-copy]');
+  for (i = 0; i < cps.length; i++) cps[i].onclick = function () {
+    var kind = this.getAttribute('data-copy');
+    if (kind === 'before') copyText(build(m, M.before).plain, $('one'));
+    else { var b = build(m, M.tpl); if (b.missing.length) toast('아직 안 고른 재료: ' + b.missing.join(', '), 3000); copyText(b.plain, $('prompt')); }
+  };
+  var tx = root.querySelectorAll('[data-text]');
+  for (i = 0; i < tx.length; i++) tx[i].oninput = function () { ms.drafts = ms.drafts || {}; ms.drafts[this.getAttribute('data-text')] = this.value; save(); };
+  var fs = root.querySelectorAll('[data-file]');
+  for (i = 0; i < fs.length; i++) fs[i].onchange = function () {
+    var kind = this.getAttribute('data-file'), file = this.files && this.files[0];
+    if (!file) return;
+    toast('사진을 준비하는 중…');
+    prepImage(file, function (res) {
+      if (!res) { toast('이 사진은 열 수 없어요. 다른 사진을 골라 주세요.', 3000); return; }
+      pending[m + '-' + kind] = res;
+      var pv = $('pv-' + kind); pv.src = res.thumb; pv.style.display = 'block';
+    });
+  };
+  var sends = root.querySelectorAll('[data-send]');
+  for (i = 0; i < sends.length; i++) sends[i].onclick = function () { send(m, this.getAttribute('data-send'), this); };
+}
+
+function renderMissionKeepScroll(m) {
+  var y = window.pageYOffset;
+  renderMission(m);
+  window.scrollTo(0, y);
+}
+function updatePrompt(m) {
+  var M = MISSIONS[m], b = build(m, M.tpl), one = $('one'), p = $('prompt');
+  if (p) p.innerHTML = b.html;
+  if (one) one.textContent = build(m, M.before).plain;
+}
+
+/* 다른 조합: 슬롯머신처럼 돌다가 멈춰요 */
+function spin(m) {
+  var M = MISSIONS[m], ms = mstate(m), n = 0, keepSubj = ms.sel[M.subject];
+  var tick = setInterval(function () {
+    n++;
+    for (var i = 0; i < M.slots.length; i++) {
+      var sl = M.slots[i];
+      if (sl.storyBox || sl.k === M.subject) continue;
+      ms.sel[sl.k] = Math.floor(Math.random() * sl.items.length);
+    }
+    updateChipsOnly(m); updatePrompt(m);
+    if (n >= 9) {
+      clearInterval(tick);
+      ensureSel(m, (ms.roll || 0) + 1);
+      ms.sel[M.subject] = keepSubj; save();
+      renderMissionKeepScroll(m);
+      toast('새 조합이 나왔어요!');
+    }
+  }, 70);
+}
+function updateChipsOnly(m) {
+  var ms = mstate(m), chips = $('mission').querySelectorAll('.chip');
+  for (var i = 0; i < chips.length; i++) {
+    var on = ms.sel[chips[i].getAttribute('data-k')] === +chips[i].getAttribute('data-i');
+    chips[i].className = 'chip' + (on ? ' on' : '');
+  }
+}
+
+/* 복사: 막힌 기기에서는 글자를 골라 두고 길게 눌러 복사하라고 알려요 */
+function copyText(text, el) {
+  function fallback() {
+    var ok = false, ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '0'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { ta.setSelectionRange(0, 99999); } catch (e) {}
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    if (ok) { toast('복사했어요! 제미나이 입력칸에 붙여 넣어요'); return; }
+    if (el && window.getSelection) {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+    toast('복사가 막혔어요. 파란 글자를 길게 눌러 복사해 주세요.', 4000);
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('복사했어요! 제미나이 입력칸에 붙여 넣어요'); }, fallback);
+      return;
+    }
+  } catch (e) {}
+  fallback();
+}
+
+/* 사진 줄이기: 원본은 긴 변 1280px, 작은 그림은 320px */
+function prepImage(file, cb) {
+  var fr = new FileReader();
+  fr.onerror = function () { cb(null); };
+  fr.onload = function () {
+    var img = new Image();
+    img.onerror = function () { cb(null); };
+    img.onload = function () {
+      try {
+        var full = shrink(img, 1280, 0.82), thumb = shrink(img, 320, 0.6);
+        if (thumb.length > 44000) thumb = shrink(img, 240, 0.5);
+        cb({ image: full.split(',')[1], thumb: thumb });
+      } catch (e) { cb(null); }
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+function shrink(img, max, q) {
+  var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, k = Math.min(1, max / Math.max(w, h));
+  var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+  var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', q);
+}
+
+function send(m, kind, btn) {
+  var M = MISSIONS[m], ms = mstate(m), p = { cls: S.cls, num: S.num, mission: m, kind: kind };
+  if (M.type === 'img') {
+    var pk = pending[m + '-' + kind];
+    if (!pk) { toast('먼저 사진을 골라 주세요.'); return; }
+    p.image = pk.image; p.thumb = pk.thumb;
+  } else {
+    p.text = ((ms.drafts || {})[kind] || '').trim();
+    if (!p.text) { toast('제미나이 답을 붙여 넣어 주세요.'); return; }
+  }
+  btn.disabled = true; btn.textContent = '올리는 중…';
+  call('submit', [p], function (res) {
+    btn.disabled = false; btn.textContent = (kind === 'before' ? 'Before' : 'After') + ' 다시 올리기';
+    if (!res || !res.ok) { toast((res && res.msg) || '다시 시도해 주세요.', 3000); return; }
+    mine[m] = mine[m] || {};
+    mine[m][kind] = { type: M.type, text: p.text || '', thumb: p.thumb || '' };
+    delete pending[m + '-' + kind];
+    if (kind === 'before') { toast('Before를 올렸어요! 이제 재료를 넣어 다시 해 봐요'); }
+    else { toast('After를 올렸어요! 친구들 작품을 구경해요', 3000); }
+    renderUploads(m);
+    $('mtabs').innerHTML = tabsHtml(m); bindTabs($('mtabs'));
+    if (kind === 'after') { renderVotes(m); pollFeed(true); var c3 = $('c3'); if (c3 && c3.scrollIntoView) setTimeout(function () { c3.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400); }
+  }, function () { btn.disabled = false; btn.textContent = (kind === 'before' ? 'Before' : 'After') + ' 올리기'; toast('올리지 못했어요. 와이파이를 확인하고 다시 눌러 주세요.', 3500); });
+}
+
+function loadStatus(m) {
+  call('myStatus', [S.cls, S.num, m], function (res) {
+    if (!res) return;
+    mine[m] = res;
+    if (view === m) { renderUploads(m); renderVotes(m); $('mtabs').innerHTML = tabsHtml(m); bindTabs($('mtabs')); }
+  });
+}
+function renderUploads(m) {
+  var s = mine[m] || {};
+  ['before', 'after'].forEach(function (kind) {
+    var el = $('st-' + kind); if (!el) return;
+    var d = s[kind];
+    if (!d) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="done-box">' + (d.thumb ? '<img src="' + esc(d.thumb) + '" alt="">' : '') + '<span>' + ICON.check + ' 올렸어요 </span><span class="t">' + (d.text ? '&nbsp;' + esc(d.text.slice(0, 60)) : '') + '</span></div>';
+    var btn = $('up-' + kind).querySelector('[data-send]'); if (btn) btn.textContent = (kind === 'before' ? 'Before' : 'After') + ' 다시 올리기';
+  });
+  var c3 = $('c3'); if (c3) c3.className = 'card' + (s.after ? '' : ' locked');
+}
+
+/* ---------------- 우리 반 구경·투표 ---------------- */
+function pollFeed(now) {
+  var m = view;
+  if (!m || !S.cls || !(mine[m] && mine[m].after)) return;
+  var fd = feedData[m] || (feedData[m] = { cursor: 0, byNum: {}, counts: {}, hidden: [] });
+  var cur = {}; cur[S.cls] = fd.cursor;
+  call('feed', [m, cur], function (res) {
+    if (!res || !res.classes) return;
+    var c = res.classes[S.cls];
+    if (c) {
+      c.rows.forEach(function (r) { fd.byNum[r.num] = fd.byNum[r.num] || {}; fd.byNum[r.num][r.kind] = r; });
+      fd.cursor = c.cursor;
+    }
+    fd.hidden = res.hidden || [];
+    if (view === m) renderVotes(m);
+  });
+}
+function renderVotes(m) {
+  var g = $('vote-grid'); if (!g) return;
+  var s = mine[m] || {}, fd = feedData[m];
+  if (!s.after) { g.innerHTML = ''; return; }
+  if (!fd) { g.innerHTML = '<div class="empty">불러오는 중…</div>'; return; }
+  var nums = [], h = '';
+  for (var n in fd.byNum) if (fd.byNum[n].after && +n !== S.num && fd.hidden.indexOf(m + '-' + S.cls + '-' + n) < 0) nums.push(+n);
+  nums.sort(function (a, b) { return a - b; });
+  if (!nums.length) { g.innerHTML = '<div class="empty">아직 올린 친구가 없어요. 조금만 기다려요!</div>'; return; }
+  for (var i = 0; i < nums.length; i++) {
+    var w = fd.byNum[nums[i]], a = w.after, picked = String(s.vote) === String(nums[i]);
+    h += '<button class="w' + (picked ? ' mine' : '') + '" data-n="' + nums[i] + '">' + (picked ? '<span class="pick-mark">내 한 표</span>' : '') +
+      (a.type === 'img' ? '<img src="' + esc(a.thumb) + '" alt="' + nums[i] + '번 작품">' : '<div class="tx">' + esc(a.text.slice(0, 120)) + '</div>') +
+      '<div class="lb">' + S.cls + '반 ' + nums[i] + '번</div></button>';
+  }
+  g.innerHTML = h;
+  var bs = g.getElementsByTagName('button');
+  for (i = 0; i < bs.length; i++) bs[i].onclick = function () { openWork(m, +this.getAttribute('data-n')); };
+}
+function baHtml(before, after) {
+  function one(lab, r) {
+    if (!r) return '<h3 class="d">' + lab + '</h3><div class="empty">아직 안 올렸어요</div>';
+    if (r.type === 'img') return '<h3 class="d">' + lab + '</h3><img src="' + esc(r.fileId ? 'https://drive.google.com/thumbnail?id=' + r.fileId + '&sz=w1200' : r.thumb) + '" onerror="this.onerror=null;this.src=\'' + esc(r.thumb) + '\'" alt="' + lab + '">';
+    return '<h3 class="d">' + lab + '</h3><div class="full">' + esc(r.text) + '</div>';
+  }
+  return '<div class="ba">' + one('Before', before) + one('After', after) + '</div>';
+}
+function openWork(m, n) {
+  var w = feedData[m].byNum[n], s = mine[m] || {};
+  var h = '<h2 class="d" style="margin:0 46px 0 0;font-size:26px">' + S.cls + '반 ' + n + '번 · 미션 ' + m + '</h2>' + baHtml(w.before, w.after);
+  h += '<button class="btn big" id="btn-vote">' + (String(s.vote) === String(n) ? '이미 이 작품에 투표했어요' : '이 작품에 한 표!') + '</button>';
+  openModal(h);
+  $('btn-vote').onclick = function () {
+    var b = this; b.disabled = true; b.textContent = '투표하는 중…';
+    call('vote', [S.cls, S.num, m, n], function (res) {
+      if (!res || !res.ok) { b.disabled = false; b.textContent = '이 작품에 한 표!'; toast((res && res.msg) || '다시 시도해 주세요.'); return; }
+      mine[m].vote = String(n); closeModal(); renderVotes(m); toast(n + '번 작품에 한 표! 바꾸고 싶으면 다른 작품을 눌러요', 3000);
+    }, function () { b.disabled = false; b.textContent = '이 작품에 한 표!'; toast('투표하지 못했어요. 다시 눌러 주세요.'); });
+  };
+}
+function openModal(h) { $('modal-body').innerHTML = h; $('modal').className = 'modal on'; }
+function closeModal() { $('modal').className = 'modal'; $('modal-body').innerHTML = ''; }
+$('modal-x').onclick = closeModal;
+$('modal').onclick = function (e) { if (e.target === this) closeModal(); };
+
+/* ---------------- 반 대표 대결 ---------------- */
+var finalData = null, myFinal = null;
+function openFinal() {
+  view = 0;
+  show('scr-final');
+  $('mtabs2').innerHTML = tabsHtml('F'); bindTabs($('mtabs2'));
+  call('getFinal', [], function (res) { finalData = res; renderFinal(); });
+  call('myStatus', [S.cls, S.num, 1], function (res) { if (res) { myFinal = res.finalVote; renderFinal(); } });
+}
+function renderFinal() {
+  var g = $('final-grid');
+  if (!finalData) { g.innerHTML = '<div class="empty">불러오는 중…</div>'; return; }
+  if (!finalData.open || !finalData.list.length) { g.innerHTML = '<div class="empty">곧 대결 작품이 나와요.</div>'; return; }
+  var h = '';
+  finalData.list.forEach(function (w) {
+    var a = w.after || {}, picked = myFinal === w.key;
+    h += '<button class="w' + (picked ? ' mine' : '') + '" data-k="' + esc(w.key) + '">' + (picked ? '<span class="pick-mark">내 한 표</span>' : '') +
+      (a.type === 'img' ? '<img src="' + esc(a.thumb) + '" alt="">' : '<div class="tx">' + esc((a.text || '').slice(0, 120)) + '</div>') +
+      '<div class="lb">' + w.cls + '반 대표<span class="final-tag">미션 ' + w.mission + '</span></div></button>';
+  });
+  g.innerHTML = h;
+  var bs = g.getElementsByTagName('button');
+  for (var i = 0; i < bs.length; i++) bs[i].onclick = function () { openFinalWork(this.getAttribute('data-k')); };
+}
+function openFinalWork(key) {
+  var w = null; finalData.list.forEach(function (x) { if (x.key === key) w = x; });
+  if (!w) return;
+  var own = w.cls === S.cls && w.num === S.num;
+  openModal('<h2 class="d" style="margin:0 46px 0 0;font-size:26px">' + w.cls + '반 대표 · 미션 ' + w.mission + ' ' + esc(MISSIONS[w.mission].name) + '</h2>' + baHtml(w.before, w.after) +
+    (own ? '<div class="empty">내 작품이에요!</div>' : '<button class="btn big" id="btn-fvote">' + (myFinal === key ? '이미 이 작품에 투표했어요' : '이 작품에 한 표!') + '</button>'));
+  var b = $('btn-fvote'); if (!b) return;
+  b.onclick = function () {
+    b.disabled = true;
+    call('voteFinal', [S.cls, S.num, key], function (res) {
+      if (!res || !res.ok) { b.disabled = false; toast((res && res.msg) || '다시 시도해 주세요.'); return; }
+      myFinal = key; closeModal(); renderFinal(); toast('한 표 완료! 큰 화면을 봐요', 3000);
+    }, function () { b.disabled = false; toast('투표하지 못했어요. 다시 눌러 주세요.'); });
+  };
+}
+
+/* ---------------- 몇 초마다 확인 ---------------- */
+function pollState() {
+  call('getState', [], function (st) { applyState(st, false); }, function () {});
+  setTimeout(pollState, 7000 + Math.random() * 4000);
+}
+function pollLoop() {
+  if (S.cls && view && document.visibilityState !== 'hidden') pollFeed();
+  setTimeout(pollLoop, 9000 + Math.random() * 4000);
+}
+document.addEventListener('visibilitychange', function () {
+  // 제미나이에 다녀오면 바로 새 상태를 확인해요
+  if (document.visibilityState === 'visible' && S.cls) call('getState', [], function (st) { applyState(st, false); }, function () {});
+});
+
+/* ---------------- 시작 ---------------- */
+renderWho();
+if (S.cls) {
+  show('scr-wait');
+  call('getState', [], function (st) { applyState(st, true); }, function () { toast('연결이 안 돼요. 와이파이를 확인해 주세요.', 4000); });
+} else openJoin();
+setTimeout(pollState, 6000);
+setTimeout(pollLoop, 8000);
+})();
+</script>
+</body>
+</html>
